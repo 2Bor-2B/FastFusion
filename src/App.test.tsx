@@ -1,7 +1,7 @@
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
-import Home from './page';
+import Home from './App';
 
 describe('拾光清单', () => {
   it('添加新待办并自动选中', async () => {

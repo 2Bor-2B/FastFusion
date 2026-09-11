@@ -11,10 +11,9 @@
 # testing
 /coverage
 
-# next.js
+# TypeScript
+*.tsbuildinfo
 /.next/
-/.vinext/
-/out/
 
 # misc
 .DS_Store
