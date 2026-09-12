@@ -99,6 +99,25 @@ describe('TraceLab Agent Canvas', () => {
     expect(screen.getAllByText('SYNTHESIS COMPLETE')).toHaveLength(2);
   });
 
+  it('始终按节点编号顺序连接箭头', async () => {
+    const { container } = render(<App />);
+
+    for (const question of ['节点一', '节点二']) {
+      fireEvent.change(screen.getByLabelText('输入问题'), { target: { value: question } });
+      fireEvent.click(screen.getByLabelText('提交问题'));
+      await finishAnalysis();
+    }
+
+    fireEvent.click(container.querySelectorAll<HTMLElement>('.node-stack')[0]);
+    fireEvent.change(screen.getByLabelText('输入问题'), { target: { value: '节点三' } });
+    fireEvent.click(screen.getByLabelText('提交问题'));
+
+    const paths = container.querySelectorAll<SVGPathElement>('.connections > path');
+    expect(paths).toHaveLength(2);
+    expect(paths[0].getAttribute('d')).toMatch(/^M 550 361/);
+    expect(paths[1].getAttribute('d')).toMatch(/^M 1100 361/);
+  });
+
   it('拖动选中节点时会更新位置并保持连接线同步', async () => {
     const { container } = render(<App />);
     fireEvent.change(screen.getByLabelText('输入问题'), { target: { value: '创建父节点' } });

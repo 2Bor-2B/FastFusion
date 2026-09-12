@@ -62,11 +62,11 @@ export default function App() {
   const selectedCount = selectedNodes.size;
   const benchmarkStateLabel = phase === 'summarizing' ? 'SUMMARIZING' : phase === 'complete' ? 'WINNER SELECTED' : 'EVALUATING';
 
-  const connections = useMemo(() => nodes.flatMap((node) => {
-    if (!node.parentId) return [];
-    const parent = nodes.find((candidate) => candidate.id === node.parentId);
-    return parent ? [{ id: `${parent.id}-${node.id}`, from: parent, to: node }] : [];
-  }), [nodes]);
+  const connections = useMemo(() => nodes.slice(1).map((node, index) => ({
+    id: `${nodes[index].id}-${node.id}`,
+    from: nodes[index],
+    to: node,
+  })), [nodes]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -82,7 +82,7 @@ export default function App() {
     if (!cleanPrompt || isProcessing) return;
 
     const id = `trace-${Date.now()}`;
-    const parentId = activeNodeId ?? nodes.at(-1)?.id;
+    const parentId = nodes.at(-1)?.id;
     const nextNode: ThoughtNode = {
       id,
       parentId,
