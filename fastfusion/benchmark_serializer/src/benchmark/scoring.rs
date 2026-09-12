@@ -1,3 +1,5 @@
+use std::collections::HashSet;
+
 use serde::Serialize;
 use serde_json::Value;
 
@@ -23,6 +25,32 @@ struct ReasoningInfo {
     plaintext: bool,
     summary: bool,
     encrypted: bool,
+    seen_text: HashSet<String>,
+}
+
+impl ReasoningInfo {
+    fn add_plaintext(&mut self, value: Option<&str>) {
+        if self.add_visible(value) {
+            self.plaintext = true;
+        }
+    }
+
+    fn add_summary(&mut self, value: Option<&str>) {
+        if self.add_visible(value) {
+            self.summary = true;
+        }
+    }
+
+    fn add_visible(&mut self, value: Option<&str>) -> bool {
+        let Some(text) = value.map(str::trim).filter(|text| !text.is_empty()) else {
+            return false;
+        };
+
+        if self.seen_text.insert(text.to_owned()) {
+            self.visible_chars += text.chars().count();
+        }
+        true
+    }
 }
 
 fn inspect_details(value: &Value, info: &mut ReasoningInfo) {
@@ -31,23 +59,15 @@ fn inspect_details(value: &Value, info: &mut ReasoningInfo) {
         Value::Object(object) => {
             match object.get("type").and_then(Value::as_str) {
                 Some("reasoning.text") => {
-                    info.plaintext = true;
-                    info.visible_chars += object
-                        .get("text")
-                        .and_then(Value::as_str)
-                        .map(str::chars)
-                        .map(Iterator::count)
-                        .unwrap_or(0);
+                    info.add_plaintext(object.get("text").and_then(Value::as_str));
                 }
                 Some("reasoning.summary") => {
-                    info.summary = true;
-                    info.visible_chars += object
-                        .get("summary")
-                        .or_else(|| object.get("text"))
-                        .and_then(Value::as_str)
-                        .map(str::chars)
-                        .map(Iterator::count)
-                        .unwrap_or(0);
+                    info.add_summary(
+                        object
+                            .get("summary")
+                            .or_else(|| object.get("text"))
+                            .and_then(Value::as_str),
+                    );
                 }
                 Some("reasoning.encrypted") => info.encrypted = true,
                 _ => {}
@@ -63,14 +83,7 @@ fn inspect_details(value: &Value, info: &mut ReasoningInfo) {
 
 pub fn score(run: &RunResult, correct: Option<bool>) -> BenchmarkScore {
     let mut info = ReasoningInfo::default();
-    if let Some(reasoning) = run
-        .reasoning
-        .as_ref()
-        .filter(|reasoning| !reasoning.is_empty())
-    {
-        info.plaintext = true;
-        info.visible_chars += reasoning.chars().count();
-    }
+    info.add_plaintext(run.reasoning.as_deref());
     inspect_details(&run.reasoning_details, &mut info);
 
     let correctness_score = if correct == Some(true) { 30.0 } else { 0.0 };
@@ -191,5 +204,44 @@ mod tests {
 
         assert_eq!(scored.reasoning_chars, 3);
         assert_eq!(scored.latency_score, 8.0);
+    }
+
+    #[test]
+    fn rejects_whitespace_only_and_malformed_reasoning() {
+        let result = run(
+            Some("\n\n"),
+            json!([
+                {"type": "reasoning.text", "text": " \t\n"},
+                {"type": "reasoning.summary", "summary": 42},
+                {"type": "reasoning.text"},
+                {"type": "provider.unknown", "text": "not reasoning"}
+            ]),
+            1_000,
+        );
+        let scored = score(&result, None);
+
+        assert_eq!(scored.visibility_score, 0.0);
+        assert_eq!(scored.richness_score, 0.0);
+        assert_eq!(scored.reasoning_chars, 0);
+        assert!(!scored.reasoning_visible);
+        assert!(!scored.has_plaintext_reasoning);
+        assert!(!scored.has_summary_reasoning);
+    }
+
+    #[test]
+    fn trims_and_deduplicates_repeated_reasoning() {
+        let result = run(
+            Some("  same  "),
+            json!([
+                {"type": "reasoning.text", "text": "same"},
+                {"type": "reasoning.summary", "summary": " same "}
+            ]),
+            1_000,
+        );
+        let scored = score(&result, None);
+
+        assert_eq!(scored.reasoning_chars, 4);
+        assert!(scored.has_plaintext_reasoning);
+        assert!(scored.has_summary_reasoning);
     }
 }
