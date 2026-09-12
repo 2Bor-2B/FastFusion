@@ -1,25 +1,35 @@
-##[pylyzer] failed /home/wizard49/Projects/fastfusion/backend/main.py 1789196193 1075
+##[pylyzer] failed /home/wizard49/Projects/fastfusion/backend/main.py 1789237185 2137
 .json: Never
 
-.___v_desugar_1 = pyimport "fastapi"
-.fastapi = pyimport "fastapi"
+.___v_desugar_1: Never
 .FastAPI: Never
-.___v_desugar_2 = pyimport "cors"
-.cors = pyimport "cors"
+.HTTPException: Never
+.___v_desugar_2: Never
 .CORSMiddleware: Never
-.___v_desugar_3 = pyimport "responses"
-.responses = pyimport "responses"
+.___v_desugar_3: Never
 .StreamingResponse: Never
-.___v_desugar_4: Never
-.RunRequest: Never
-.BenchmarkRequest: Never
-.___v_desugar_5: Never
-.run_model: Never
-.benchmark_stream: Never
+.___v_desugar_4 = pyimport "schemas"
+.schemas = pyimport "schemas"
+.RunRequest: {schemas.RunRequest}
+.BenchmarkRequest: {schemas.BenchmarkRequest}
+.ReasoningParseRequest: Never
+.ParsedReasoning: Never
+.SkillGenerateRequest: Never
+.AgentSkill: Never
+.___v_desugar_5 = pyimport "rust_client"
+.rust_client = pyimport "rust_client"
+.run_model: (payload: global::Dict!({Obj: Obj})) -> global::Dict!({Obj: Obj})
+.benchmark_stream: (payload: global::Dict!({Obj: Obj})) -> NoneType
+.___v_desugar_6 = pyimport "ollama_client"
+.ollama_client = pyimport "ollama_client"
+.OllamaProcessingError: {ollama_client.OllamaProcessingError}
+.OllamaUnavailableError: {ollama_client.OllamaUnavailableError}
+.generate_skill: (payload: Obj) -> Never
+.parse_reasoning: (payload: Obj) -> Never
 .app: Never
 
 .health: () -> global::Dict!({{"status"}: {"ok"}})
-.run: (request: Obj) -> Never
-.benchmark: (request: Obj) -> Never
-ver
-.benchmark: (request: Obj) -> Never
+.run: (request: schemas.RunRequest) -> Never
+.benchmark: (request: schemas.BenchmarkRequest) -> Never
+.reasoning_parse: (request: Obj) -> Never
+.skill_generate: (request: Obj) -> Never

@@ -1,4 +1,4 @@
-##[pylyzer] failed /home/wizard49/Projects/fastfusion/backend/ollama_client.py 1789232617 5608
+##[pylyzer] failed /home/wizard49/Projects/fastfusion/backend/ollama_client.py 1789237185 5570
 .json: Never
 
 .os: Never
@@ -21,7 +21,7 @@
 .OLLAMA_HOST: Never
 .OLLAMA_MODEL: Never
 .OLLAMA_TIMEOUT: Never
-.PARSER_SYSTEM_PROMPT: {"You are a reasoning-trace interpreter.\n\nYou receive reasoning telemetry explicitly exposed by an AI provider.\nConvert it into concise human-readable reasoning snippets.\n\nRules:\n- Do not invent missing reasoning or unsupported conclusions.\n- Treat the input as provider-exposed telemetry, not hidden chain-of-thought.\n- Preserve the original logical order.\n- Group only closely related adjacent steps.\n- Every snippet must contain one or more indices from valid_source_indices.\n- Summaries describe what the model did; they do not imitate private thoughts.\n- Prefer short, engineering-oriented descriptions.\n- Return only data matching the provided JSON schema.\n"}
+.PARSER_SYSTEM_PROMPT: {"You are a reasoning-trace interpreter.\n\nYou receive reasoning telemetry explicitly exposed by an AI provider.\nConvert it into concise human-readable reasoning snippets.\n\nRules:\n- Do not invent missing reasoning or unsupported conclusions.\n- Treat the input as provider-exposed telemetry, not hidden chain-of-thought.\n- Preserve the original logical order.\n- Group only closely related adjacent steps.\n- Every snippet must contain one or more indices from valid_source_indices.\n- The server assigns snippet IDs; any generated ID is treated as provisional.\n- Summaries describe what the model did; they do not imitate private thoughts.\n- Prefer short, engineering-oriented descriptions.\n- Return only data matching the provided JSON schema.\n"}
 .SKILL_SYSTEM_PROMPT: {"You are an AI-agent skill synthesizer.\n\nYou receive reasoning snippets explicitly selected by an engineer because they\nrepresent useful behavior. Convert that behavior into a reusable general skill.\n\nRules:\n- Generalize beyond the specific benchmark example.\n- Do not reproduce the trace verbatim or invent unsupported capabilities.\n- Preserve the useful strategy and make it actionable for another AI agent.\n- Keep the skill compact.\n- Separate triggers, procedure, validation checks, and failure modes.\n- source_snippet_ids must include every selected snippet ID exactly once.\n- Return only data matching the provided JSON schema.\n"}
 .OllamaUnavailableError: ClassType
 .OllamaUnavailableError <: global::RuntimeError

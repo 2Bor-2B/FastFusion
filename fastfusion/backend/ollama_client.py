@@ -25,6 +25,7 @@ You receive reasoning telemetry explicitly exposed by an AI provider.
 Convert it into concise human-readable reasoning snippets.
 
 Rules:
+- Write every output field in English, regardless of the input language.
 - Do not invent missing reasoning or unsupported conclusions.
 - Treat the input as provider-exposed telemetry, not hidden chain-of-thought.
 - Preserve the original logical order.
@@ -43,6 +44,7 @@ You receive reasoning snippets explicitly selected by an engineer because they
 represent useful behavior. Convert that behavior into a reusable general skill.
 
 Rules:
+- Write every output field in English, regardless of the input language.
 - Generalize beyond the specific benchmark example.
 - Do not reproduce the trace verbatim or invent unsupported capabilities.
 - Preserve the useful strategy and make it actionable for another AI agent.
