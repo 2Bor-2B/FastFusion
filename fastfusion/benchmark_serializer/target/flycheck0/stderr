@@ -1,10 +1,6 @@
-    Blocking waiting for file lock on package cache
-    Blocking waiting for file lock on package cache
-    Blocking waiting for file lock on package cache
-    Blocking waiting for file lock on package cache
     Blocking waiting for file lock on build directory
-   1.029029337s  INFO prepare_target{force=false package_id=benchmark_serializer v0.1.0 (/home/wizard49/Projects/fastfusion/benchmark_serializer) target="benchmark_serializer"}: cargo::core::compiler::fingerprint: fingerprint error for benchmark_serializer v0.1.0 (/home/wizard49/Projects/fastfusion/benchmark_serializer)/Check { test: false }/TargetInner { name: "benchmark_serializer", doc: true, ..: with_path("/home/wizard49/Projects/fastfusion/benchmark_serializer/src/main.rs", Edition2024) }
-   1.029051549s  INFO prepare_target{force=false package_id=benchmark_serializer v0.1.0 (/home/wizard49/Projects/fastfusion/benchmark_serializer) target="benchmark_serializer"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/benchmark_serializer-93a6e1bd2bccb713/bin-benchmark_serializer`
+   2.710408780s  INFO prepare_target{force=false package_id=benchmark_serializer v0.1.0 (/home/wizard49/Projects/fastfusion/benchmark_serializer) target="benchmark_serializer"}: cargo::core::compiler::fingerprint: fingerprint error for benchmark_serializer v0.1.0 (/home/wizard49/Projects/fastfusion/benchmark_serializer)/Check { test: false }/TargetInner { name: "benchmark_serializer", doc: true, ..: with_path("/home/wizard49/Projects/fastfusion/benchmark_serializer/src/main.rs", Edition2024) }
+   2.710445238s  INFO prepare_target{force=false package_id=benchmark_serializer v0.1.0 (/home/wizard49/Projects/fastfusion/benchmark_serializer) target="benchmark_serializer"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/benchmark_serializer-93a6e1bd2bccb713/bin-benchmark_serializer`
 
 Caused by:
     No such file or directory (os error 2)
@@ -45,8 +41,8 @@ Stack backtrace:
   23: __libc_start_call_main
   24: __libc_start_main@GLIBC_2.17
   25: <unknown>
-   1.063702681s  INFO prepare_target{force=false package_id=axum v0.8.9 target="axum"}: cargo::core::compiler::fingerprint: fingerprint error for axum v0.8.9/Check { test: false }/TargetInner { ..: lib_target("axum", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/axum-0.8.9/src/lib.rs", Edition2021) }
-   1.063715266s  INFO prepare_target{force=false package_id=axum v0.8.9 target="axum"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/axum-e84bd4fb3d04f724/lib-axum`
+   2.753121673s  INFO prepare_target{force=false package_id=axum v0.8.9 target="axum"}: cargo::core::compiler::fingerprint: fingerprint error for axum v0.8.9/Check { test: false }/TargetInner { ..: lib_target("axum", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/axum-0.8.9/src/lib.rs", Edition2021) }
+   2.753141131s  INFO prepare_target{force=false package_id=axum v0.8.9 target="axum"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/axum-e84bd4fb3d04f724/lib-axum`
 
 Caused by:
     No such file or directory (os error 2)
@@ -88,8 +84,8 @@ Stack backtrace:
   24: __libc_start_call_main
   25: __libc_start_main@GLIBC_2.17
   26: <unknown>
-   1.064139500s  INFO prepare_target{force=false package_id=axum-core v0.5.6 target="axum_core"}: cargo::core::compiler::fingerprint: fingerprint error for axum-core v0.5.6/Check { test: false }/TargetInner { ..: lib_target("axum_core", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/axum-core-0.5.6/src/lib.rs", Edition2021) }
-   1.064147460s  INFO prepare_target{force=false package_id=axum-core v0.5.6 target="axum_core"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/axum-core-8183abd9dee153a4/lib-axum_core`
+   2.753877003s  INFO prepare_target{force=false package_id=axum-core v0.5.6 target="axum_core"}: cargo::core::compiler::fingerprint: fingerprint error for axum-core v0.5.6/Check { test: false }/TargetInner { ..: lib_target("axum_core", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/axum-core-0.5.6/src/lib.rs", Edition2021) }
+   2.753887420s  INFO prepare_target{force=false package_id=axum-core v0.5.6 target="axum_core"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/axum-core-8183abd9dee153a4/lib-axum_core`
 
 Caused by:
     No such file or directory (os error 2)
@@ -132,8 +128,8 @@ Stack backtrace:
   25: __libc_start_call_main
   26: __libc_start_main@GLIBC_2.17
   27: <unknown>
-   1.064690796s  INFO prepare_target{force=false package_id=sync_wrapper v1.0.2 target="sync_wrapper"}: cargo::core::compiler::fingerprint: fingerprint error for sync_wrapper v1.0.2/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("sync_wrapper", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sync_wrapper-1.0.2/src/lib.rs", Edition2021) }
-   1.064699047s  INFO prepare_target{force=false package_id=sync_wrapper v1.0.2 target="sync_wrapper"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/sync_wrapper-a1e60e4f5fa19598/lib-sync_wrapper`
+   2.755538664s  INFO prepare_target{force=false package_id=sync_wrapper v1.0.2 target="sync_wrapper"}: cargo::core::compiler::fingerprint: fingerprint error for sync_wrapper v1.0.2/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("sync_wrapper", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sync_wrapper-1.0.2/src/lib.rs", Edition2021) }
+   2.755555706s  INFO prepare_target{force=false package_id=sync_wrapper v1.0.2 target="sync_wrapper"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/sync_wrapper-a1e60e4f5fa19598/lib-sync_wrapper`
 
 Caused by:
     No such file or directory (os error 2)
@@ -177,8 +173,8 @@ Stack backtrace:
   26: __libc_start_call_main
   27: __libc_start_main@GLIBC_2.17
   28: <unknown>
-   1.065035017s  INFO prepare_target{force=false package_id=tracing v0.1.44 target="tracing"}: cargo::core::compiler::fingerprint: fingerprint error for tracing v0.1.44/Check { test: false }/TargetInner { ..: lib_target("tracing", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tracing-0.1.44/src/lib.rs", Edition2018) }
-   1.065041894s  INFO prepare_target{force=false package_id=tracing v0.1.44 target="tracing"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/tracing-40c290a80361a278/lib-tracing`
+   2.756324536s  INFO prepare_target{force=false package_id=tracing v0.1.44 target="tracing"}: cargo::core::compiler::fingerprint: fingerprint error for tracing v0.1.44/Check { test: false }/TargetInner { ..: lib_target("tracing", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tracing-0.1.44/src/lib.rs", Edition2018) }
+   2.756347411s  INFO prepare_target{force=false package_id=tracing v0.1.44 target="tracing"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/tracing-40c290a80361a278/lib-tracing`
 
 Caused by:
     No such file or directory (os error 2)
@@ -222,8 +218,8 @@ Stack backtrace:
   26: __libc_start_call_main
   27: __libc_start_main@GLIBC_2.17
   28: <unknown>
-   1.065327564s  INFO prepare_target{force=false package_id=tracing-attributes v0.1.31 target="tracing_attributes"}: cargo::core::compiler::fingerprint: fingerprint error for tracing-attributes v0.1.31/Build/TargetInner { for_host: true, proc_macro: true, ..: lib_target("tracing_attributes", ["proc-macro"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tracing-attributes-0.1.31/src/lib.rs", Edition2018) }
-   1.065336190s  INFO prepare_target{force=false package_id=tracing-attributes v0.1.31 target="tracing_attributes"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/tracing-attributes-0bfecb02e20ef6ed/lib-tracing_attributes`
+   2.756837076s  INFO prepare_target{force=false package_id=tracing-attributes v0.1.31 target="tracing_attributes"}: cargo::core::compiler::fingerprint: fingerprint error for tracing-attributes v0.1.31/Build/TargetInner { for_host: true, proc_macro: true, ..: lib_target("tracing_attributes", ["proc-macro"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tracing-attributes-0.1.31/src/lib.rs", Edition2018) }
+   2.756846785s  INFO prepare_target{force=false package_id=tracing-attributes v0.1.31 target="tracing_attributes"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/tracing-attributes-0bfecb02e20ef6ed/lib-tracing_attributes`
 
 Caused by:
     No such file or directory (os error 2)
@@ -268,8 +264,8 @@ Stack backtrace:
   27: __libc_start_call_main
   28: __libc_start_main@GLIBC_2.17
   29: <unknown>
-   1.065939453s  INFO prepare_target{force=false package_id=syn v2.0.119 target="syn"}: cargo::core::compiler::fingerprint: fingerprint error for syn v2.0.119/Build/TargetInner { ..: lib_target("syn", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/syn-2.0.119/src/lib.rs", Edition2021) }
-   1.065946204s  INFO prepare_target{force=false package_id=syn v2.0.119 target="syn"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/syn-660c1d2e9d89e849/lib-syn`
+   2.759154818s  INFO prepare_target{force=false package_id=syn v2.0.119 target="syn"}: cargo::core::compiler::fingerprint: fingerprint error for syn v2.0.119/Build/TargetInner { ..: lib_target("syn", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/syn-2.0.119/src/lib.rs", Edition2021) }
+   2.759176235s  INFO prepare_target{force=false package_id=syn v2.0.119 target="syn"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/syn-660c1d2e9d89e849/lib-syn`
 
 Caused by:
     No such file or directory (os error 2)
@@ -315,8 +311,8 @@ Stack backtrace:
   28: __libc_start_call_main
   29: __libc_start_main@GLIBC_2.17
   30: <unknown>
-   1.066211996s  INFO prepare_target{force=false package_id=tracing-core v0.1.36 target="tracing_core"}: cargo::core::compiler::fingerprint: fingerprint error for tracing-core v0.1.36/Check { test: false }/TargetInner { ..: lib_target("tracing_core", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tracing-core-0.1.36/src/lib.rs", Edition2018) }
-   1.066218956s  INFO prepare_target{force=false package_id=tracing-core v0.1.36 target="tracing_core"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/tracing-core-1fe3ee1ee89cce06/lib-tracing_core`
+   2.759625942s  INFO prepare_target{force=false package_id=tracing-core v0.1.36 target="tracing_core"}: cargo::core::compiler::fingerprint: fingerprint error for tracing-core v0.1.36/Check { test: false }/TargetInner { ..: lib_target("tracing_core", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tracing-core-0.1.36/src/lib.rs", Edition2018) }
+   2.759636733s  INFO prepare_target{force=false package_id=tracing-core v0.1.36 target="tracing_core"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/tracing-core-1fe3ee1ee89cce06/lib-tracing_core`
 
 Caused by:
     No such file or directory (os error 2)
@@ -361,8 +357,8 @@ Stack backtrace:
   27: __libc_start_call_main
   28: __libc_start_main@GLIBC_2.17
   29: <unknown>
-   1.066538715s  INFO prepare_target{force=false package_id=futures-util v0.3.34 target="futures_util"}: cargo::core::compiler::fingerprint: fingerprint error for futures-util v0.3.34/Check { test: false }/TargetInner { ..: lib_target("futures_util", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/futures-util-0.3.34/src/lib.rs", Edition2018) }
-   1.066545341s  INFO prepare_target{force=false package_id=futures-util v0.3.34 target="futures_util"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/futures-util-b1933e38d40847be/lib-futures_util`
+   2.761124770s  INFO prepare_target{force=false package_id=futures-util v0.3.34 target="futures_util"}: cargo::core::compiler::fingerprint: fingerprint error for futures-util v0.3.34/Check { test: false }/TargetInner { ..: lib_target("futures_util", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/futures-util-0.3.34/src/lib.rs", Edition2018) }
+   2.761142145s  INFO prepare_target{force=false package_id=futures-util v0.3.34 target="futures_util"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/futures-util-b1933e38d40847be/lib-futures_util`
 
 Caused by:
     No such file or directory (os error 2)
@@ -405,8 +401,8 @@ Stack backtrace:
   25: __libc_start_call_main
   26: __libc_start_main@GLIBC_2.17
   27: <unknown>
-   1.066873893s  INFO prepare_target{force=false package_id=futures-macro v0.3.34 target="futures_macro"}: cargo::core::compiler::fingerprint: fingerprint error for futures-macro v0.3.34/Build/TargetInner { for_host: true, proc_macro: true, ..: lib_target("futures_macro", ["proc-macro"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/futures-macro-0.3.34/src/lib.rs", Edition2018) }
-   1.066882853s  INFO prepare_target{force=false package_id=futures-macro v0.3.34 target="futures_macro"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/futures-macro-f91a6f274a416b0a/lib-futures_macro`
+   2.762268349s  INFO prepare_target{force=false package_id=futures-macro v0.3.34 target="futures_macro"}: cargo::core::compiler::fingerprint: fingerprint error for futures-macro v0.3.34/Build/TargetInner { for_host: true, proc_macro: true, ..: lib_target("futures_macro", ["proc-macro"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/futures-macro-0.3.34/src/lib.rs", Edition2018) }
+   2.762281016s  INFO prepare_target{force=false package_id=futures-macro v0.3.34 target="futures_macro"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/futures-macro-f91a6f274a416b0a/lib-futures_macro`
 
 Caused by:
     No such file or directory (os error 2)
@@ -450,8 +446,8 @@ Stack backtrace:
   26: __libc_start_call_main
   27: __libc_start_main@GLIBC_2.17
   28: <unknown>
-   1.067085552s  INFO prepare_target{force=false package_id=syn v3.0.5 target="syn"}: cargo::core::compiler::fingerprint: fingerprint error for syn v3.0.5/Build/TargetInner { ..: lib_target("syn", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/syn-3.0.5/src/lib.rs", Edition2021) }
-   1.067091344s  INFO prepare_target{force=false package_id=syn v3.0.5 target="syn"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/syn-89ee70012a77fa7d/lib-syn`
+   2.762542598s  INFO prepare_target{force=false package_id=syn v3.0.5 target="syn"}: cargo::core::compiler::fingerprint: fingerprint error for syn v3.0.5/Build/TargetInner { ..: lib_target("syn", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/syn-3.0.5/src/lib.rs", Edition2021) }
+   2.762552098s  INFO prepare_target{force=false package_id=syn v3.0.5 target="syn"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/syn-89ee70012a77fa7d/lib-syn`
 
 Caused by:
     No such file or directory (os error 2)
@@ -496,8 +492,8 @@ Stack backtrace:
   27: __libc_start_call_main
   28: __libc_start_main@GLIBC_2.17
   29: <unknown>
-   1.067420855s  INFO prepare_target{force=false package_id=hyper v1.11.1 target="hyper"}: cargo::core::compiler::fingerprint: fingerprint error for hyper v1.11.1/Check { test: false }/TargetInner { ..: lib_target("hyper", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/hyper-1.11.1/src/lib.rs", Edition2021) }
-   1.067427106s  INFO prepare_target{force=false package_id=hyper v1.11.1 target="hyper"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/hyper-49940575bcd79adb/lib-hyper`
+   2.763276262s  INFO prepare_target{force=false package_id=hyper v1.11.1 target="hyper"}: cargo::core::compiler::fingerprint: fingerprint error for hyper v1.11.1/Check { test: false }/TargetInner { ..: lib_target("hyper", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/hyper-1.11.1/src/lib.rs", Edition2021) }
+   2.763286470s  INFO prepare_target{force=false package_id=hyper v1.11.1 target="hyper"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/hyper-49940575bcd79adb/lib-hyper`
 
 Caused by:
     No such file or directory (os error 2)
@@ -540,8 +536,8 @@ Stack backtrace:
   25: __libc_start_call_main
   26: __libc_start_main@GLIBC_2.17
   27: <unknown>
-   1.067931436s  INFO prepare_target{force=false package_id=tokio v1.53.1 target="tokio"}: cargo::core::compiler::fingerprint: fingerprint error for tokio v1.53.1/Check { test: false }/TargetInner { ..: lib_target("tokio", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-1.53.1/src/lib.rs", Edition2021) }
-   1.067937562s  INFO prepare_target{force=false package_id=tokio v1.53.1 target="tokio"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/tokio-ec14224b6d6686e0/lib-tokio`
+   2.764311008s  INFO prepare_target{force=false package_id=tokio v1.53.1 target="tokio"}: cargo::core::compiler::fingerprint: fingerprint error for tokio v1.53.1/Check { test: false }/TargetInner { ..: lib_target("tokio", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-1.53.1/src/lib.rs", Edition2021) }
+   2.764320925s  INFO prepare_target{force=false package_id=tokio v1.53.1 target="tokio"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/tokio-ec14224b6d6686e0/lib-tokio`
 
 Caused by:
     No such file or directory (os error 2)
@@ -585,8 +581,8 @@ Stack backtrace:
   26: __libc_start_call_main
   27: __libc_start_main@GLIBC_2.17
   28: <unknown>
-   1.068501485s  INFO prepare_target{force=false package_id=tokio-macros v2.7.2 target="tokio_macros"}: cargo::core::compiler::fingerprint: fingerprint error for tokio-macros v2.7.2/Build/TargetInner { for_host: true, proc_macro: true, ..: lib_target("tokio_macros", ["proc-macro"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-macros-2.7.2/src/lib.rs", Edition2021) }
-   1.068507319s  INFO prepare_target{force=false package_id=tokio-macros v2.7.2 target="tokio_macros"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/tokio-macros-23f3159db17cfd3b/lib-tokio_macros`
+   2.765484338s  INFO prepare_target{force=false package_id=tokio-macros v2.7.2 target="tokio_macros"}: cargo::core::compiler::fingerprint: fingerprint error for tokio-macros v2.7.2/Build/TargetInner { for_host: true, proc_macro: true, ..: lib_target("tokio_macros", ["proc-macro"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-macros-2.7.2/src/lib.rs", Edition2021) }
+   2.765495421s  INFO prepare_target{force=false package_id=tokio-macros v2.7.2 target="tokio_macros"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/tokio-macros-23f3159db17cfd3b/lib-tokio_macros`
 
 Caused by:
     No such file or directory (os error 2)
@@ -631,8 +627,8 @@ Stack backtrace:
   27: __libc_start_call_main
   28: __libc_start_main@GLIBC_2.17
   29: <unknown>
-   1.068729855s  INFO prepare_target{force=false package_id=hyper-util v0.1.20 target="hyper_util"}: cargo::core::compiler::fingerprint: fingerprint error for hyper-util v0.1.20/Check { test: false }/TargetInner { ..: lib_target("hyper_util", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/hyper-util-0.1.20/src/lib.rs", Edition2021) }
-   1.068735147s  INFO prepare_target{force=false package_id=hyper-util v0.1.20 target="hyper_util"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/hyper-util-55dfee774ad7dc58/lib-hyper_util`
+   2.766010878s  INFO prepare_target{force=false package_id=hyper-util v0.1.20 target="hyper_util"}: cargo::core::compiler::fingerprint: fingerprint error for hyper-util v0.1.20/Check { test: false }/TargetInner { ..: lib_target("hyper_util", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/hyper-util-0.1.20/src/lib.rs", Edition2021) }
+   2.766020961s  INFO prepare_target{force=false package_id=hyper-util v0.1.20 target="hyper_util"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/hyper-util-55dfee774ad7dc58/lib-hyper_util`
 
 Caused by:
     No such file or directory (os error 2)
@@ -675,8 +671,8 @@ Stack backtrace:
   25: __libc_start_call_main
   26: __libc_start_main@GLIBC_2.17
   27: <unknown>
-   1.069499102s  INFO prepare_target{force=false package_id=serde_urlencoded v0.7.1 target="serde_urlencoded"}: cargo::core::compiler::fingerprint: fingerprint error for serde_urlencoded v0.7.1/Check { test: false }/TargetInner { name_inferred: true, tested: false, ..: lib_target("serde_urlencoded", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde_urlencoded-0.7.1/src/lib.rs", Edition2018) }
-   1.069505186s  INFO prepare_target{force=false package_id=serde_urlencoded v0.7.1 target="serde_urlencoded"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/serde_urlencoded-9cc0ce436cc82550/lib-serde_urlencoded`
+   2.768387994s  INFO prepare_target{force=false package_id=serde_urlencoded v0.7.1 target="serde_urlencoded"}: cargo::core::compiler::fingerprint: fingerprint error for serde_urlencoded v0.7.1/Check { test: false }/TargetInner { name_inferred: true, tested: false, ..: lib_target("serde_urlencoded", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde_urlencoded-0.7.1/src/lib.rs", Edition2018) }
+   2.768402453s  INFO prepare_target{force=false package_id=serde_urlencoded v0.7.1 target="serde_urlencoded"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/serde_urlencoded-9cc0ce436cc82550/lib-serde_urlencoded`
 
 Caused by:
     No such file or directory (os error 2)
@@ -719,8 +715,8 @@ Stack backtrace:
   25: __libc_start_call_main
   26: __libc_start_main@GLIBC_2.17
   27: <unknown>
-   1.069716887s  INFO prepare_target{force=false package_id=serde v1.0.229 target="serde"}: cargo::core::compiler::fingerprint: fingerprint error for serde v1.0.229/Check { test: false }/TargetInner { ..: lib_target("serde", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/lib.rs", Edition2021) }
-   1.069722054s  INFO prepare_target{force=false package_id=serde v1.0.229 target="serde"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/serde-780cb38f9f72703f/lib-serde`
+   2.768757868s  INFO prepare_target{force=false package_id=serde v1.0.229 target="serde"}: cargo::core::compiler::fingerprint: fingerprint error for serde v1.0.229/Check { test: false }/TargetInner { ..: lib_target("serde", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/lib.rs", Edition2021) }
+   2.768767951s  INFO prepare_target{force=false package_id=serde v1.0.229 target="serde"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/serde-780cb38f9f72703f/lib-serde`
 
 Caused by:
     No such file or directory (os error 2)
@@ -764,8 +760,8 @@ Stack backtrace:
   26: __libc_start_call_main
   27: __libc_start_main@GLIBC_2.17
   28: <unknown>
-   1.070013975s  INFO prepare_target{force=false package_id=serde_derive v1.0.229 target="serde_derive"}: cargo::core::compiler::fingerprint: fingerprint error for serde_derive v1.0.229/Build/TargetInner { for_host: true, proc_macro: true, ..: lib_target("serde_derive", ["proc-macro"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde_derive-1.0.229/src/lib.rs", Edition2021) }
-   1.070019726s  INFO prepare_target{force=false package_id=serde_derive v1.0.229 target="serde_derive"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/serde_derive-783e44519640b292/lib-serde_derive`
+   2.769351033s  INFO prepare_target{force=false package_id=serde_derive v1.0.229 target="serde_derive"}: cargo::core::compiler::fingerprint: fingerprint error for serde_derive v1.0.229/Build/TargetInner { for_host: true, proc_macro: true, ..: lib_target("serde_derive", ["proc-macro"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde_derive-1.0.229/src/lib.rs", Edition2021) }
+   2.769361658s  INFO prepare_target{force=false package_id=serde_derive v1.0.229 target="serde_derive"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/serde_derive-783e44519640b292/lib-serde_derive`
 
 Caused by:
     No such file or directory (os error 2)
@@ -810,8 +806,8 @@ Stack backtrace:
   27: __libc_start_call_main
   28: __libc_start_main@GLIBC_2.17
   29: <unknown>
-   1.070198213s  INFO prepare_target{force=false package_id=tower v0.5.3 target="tower"}: cargo::core::compiler::fingerprint: fingerprint error for tower v0.5.3/Check { test: false }/TargetInner { ..: lib_target("tower", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tower-0.5.3/src/lib.rs", Edition2018) }
-   1.070203172s  INFO prepare_target{force=false package_id=tower v0.5.3 target="tower"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/tower-4b172d38f398df21/lib-tower`
+   2.769604615s  INFO prepare_target{force=false package_id=tower v0.5.3 target="tower"}: cargo::core::compiler::fingerprint: fingerprint error for tower v0.5.3/Check { test: false }/TargetInner { ..: lib_target("tower", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tower-0.5.3/src/lib.rs", Edition2018) }
+   2.769614157s  INFO prepare_target{force=false package_id=tower v0.5.3 target="tower"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/tower-4b172d38f398df21/lib-tower`
 
 Caused by:
     No such file or directory (os error 2)
@@ -854,8 +850,8 @@ Stack backtrace:
   25: __libc_start_call_main
   26: __libc_start_main@GLIBC_2.17
   27: <unknown>
-   1.070458546s  INFO prepare_target{force=false package_id=futures v0.3.34 target="futures"}: cargo::core::compiler::fingerprint: fingerprint error for futures v0.3.34/Check { test: false }/TargetInner { ..: lib_target("futures", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/futures-0.3.34/src/lib.rs", Edition2018) }
-   1.070463463s  INFO prepare_target{force=false package_id=futures v0.3.34 target="futures"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/futures-dd903c50222abc95/lib-futures`
+   2.770205738s  INFO prepare_target{force=false package_id=futures v0.3.34 target="futures"}: cargo::core::compiler::fingerprint: fingerprint error for futures v0.3.34/Check { test: false }/TargetInner { ..: lib_target("futures", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/futures-0.3.34/src/lib.rs", Edition2018) }
+   2.770215821s  INFO prepare_target{force=false package_id=futures v0.3.34 target="futures"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/futures-dd903c50222abc95/lib-futures`
 
 Caused by:
     No such file or directory (os error 2)
@@ -897,8 +893,8 @@ Stack backtrace:
   24: __libc_start_call_main
   25: __libc_start_main@GLIBC_2.17
   26: <unknown>
-   1.070674664s  INFO prepare_target{force=false package_id=futures-executor v0.3.34 target="futures_executor"}: cargo::core::compiler::fingerprint: fingerprint error for futures-executor v0.3.34/Check { test: false }/TargetInner { ..: lib_target("futures_executor", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/futures-executor-0.3.34/src/lib.rs", Edition2018) }
-   1.070680040s  INFO prepare_target{force=false package_id=futures-executor v0.3.34 target="futures_executor"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/futures-executor-2a7d044cabcbaee9/lib-futures_executor`
+   2.770507154s  INFO prepare_target{force=false package_id=futures-executor v0.3.34 target="futures_executor"}: cargo::core::compiler::fingerprint: fingerprint error for futures-executor v0.3.34/Check { test: false }/TargetInner { ..: lib_target("futures_executor", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/futures-executor-0.3.34/src/lib.rs", Edition2018) }
+   2.770517403s  INFO prepare_target{force=false package_id=futures-executor v0.3.34 target="futures_executor"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/futures-executor-2a7d044cabcbaee9/lib-futures_executor`
 
 Caused by:
     No such file or directory (os error 2)
@@ -941,8 +937,8 @@ Stack backtrace:
   25: __libc_start_call_main
   26: __libc_start_main@GLIBC_2.17
   27: <unknown>
-   1.070858901s  INFO prepare_target{force=false package_id=reqwest v0.13.5 target="reqwest"}: cargo::core::compiler::fingerprint: fingerprint error for reqwest v0.13.5/Check { test: false }/TargetInner { ..: lib_target("reqwest", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/reqwest-0.13.5/src/lib.rs", Edition2021) }
-   1.070863652s  INFO prepare_target{force=false package_id=reqwest v0.13.5 target="reqwest"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/reqwest-27078df26b01baeb/lib-reqwest`
+   2.770763611s  INFO prepare_target{force=false package_id=reqwest v0.13.5 target="reqwest"}: cargo::core::compiler::fingerprint: fingerprint error for reqwest v0.13.5/Check { test: false }/TargetInner { ..: lib_target("reqwest", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/reqwest-0.13.5/src/lib.rs", Edition2021) }
+   2.770773361s  INFO prepare_target{force=false package_id=reqwest v0.13.5 target="reqwest"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/reqwest-27078df26b01baeb/lib-reqwest`
 
 Caused by:
     No such file or directory (os error 2)
@@ -984,8 +980,8 @@ Stack backtrace:
   24: __libc_start_call_main
   25: __libc_start_main@GLIBC_2.17
   26: <unknown>
-   1.071269175s  INFO prepare_target{force=false package_id=hyper-rustls v0.27.9 target="hyper_rustls"}: cargo::core::compiler::fingerprint: fingerprint error for hyper-rustls v0.27.9/Check { test: false }/TargetInner { ..: lib_target("hyper_rustls", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/hyper-rustls-0.27.9/src/lib.rs", Edition2021) }
-   1.071275343s  INFO prepare_target{force=false package_id=hyper-rustls v0.27.9 target="hyper_rustls"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/hyper-rustls-fb2284d98b833b47/lib-hyper_rustls`
+   2.771523108s  INFO prepare_target{force=false package_id=hyper-rustls v0.27.9 target="hyper_rustls"}: cargo::core::compiler::fingerprint: fingerprint error for hyper-rustls v0.27.9/Check { test: false }/TargetInner { ..: lib_target("hyper_rustls", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/hyper-rustls-0.27.9/src/lib.rs", Edition2021) }
+   2.771536025s  INFO prepare_target{force=false package_id=hyper-rustls v0.27.9 target="hyper_rustls"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/hyper-rustls-fb2284d98b833b47/lib-hyper_rustls`
 
 Caused by:
     No such file or directory (os error 2)
@@ -1028,8 +1024,8 @@ Stack backtrace:
   25: __libc_start_call_main
   26: __libc_start_main@GLIBC_2.17
   27: <unknown>
-   1.071549678s  INFO prepare_target{force=false package_id=rustls v0.23.44 target="rustls"}: cargo::core::compiler::fingerprint: fingerprint error for rustls v0.23.44/Check { test: false }/TargetInner { ..: lib_target("rustls", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rustls-0.23.44/src/lib.rs", Edition2021) }
-   1.071554804s  INFO prepare_target{force=false package_id=rustls v0.23.44 target="rustls"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/rustls-d4a46e00c41f0455/lib-rustls`
+   2.771876065s  INFO prepare_target{force=false package_id=rustls v0.23.44 target="rustls"}: cargo::core::compiler::fingerprint: fingerprint error for rustls v0.23.44/Check { test: false }/TargetInner { ..: lib_target("rustls", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rustls-0.23.44/src/lib.rs", Edition2021) }
+   2.771886024s  INFO prepare_target{force=false package_id=rustls v0.23.44 target="rustls"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/rustls-d4a46e00c41f0455/lib-rustls`
 
 Caused by:
     No such file or directory (os error 2)
@@ -1073,8 +1069,8 @@ Stack backtrace:
   26: __libc_start_call_main
   27: __libc_start_main@GLIBC_2.17
   28: <unknown>
-   1.071764629s  INFO prepare_target{force=false package_id=aws-lc-rs v1.18.1 target="aws_lc_rs"}: cargo::core::compiler::fingerprint: fingerprint error for aws-lc-rs v1.18.1/Check { test: false }/TargetInner { ..: lib_target("aws_lc_rs", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/aws-lc-rs-1.18.1/src/lib.rs", Edition2021) }
-   1.071769588s  INFO prepare_target{force=false package_id=aws-lc-rs v1.18.1 target="aws_lc_rs"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/aws-lc-rs-21f1a2a9607aa983/lib-aws_lc_rs`
+   2.772167064s  INFO prepare_target{force=false package_id=aws-lc-rs v1.18.1 target="aws_lc_rs"}: cargo::core::compiler::fingerprint: fingerprint error for aws-lc-rs v1.18.1/Check { test: false }/TargetInner { ..: lib_target("aws_lc_rs", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/aws-lc-rs-1.18.1/src/lib.rs", Edition2021) }
+   2.772176273s  INFO prepare_target{force=false package_id=aws-lc-rs v1.18.1 target="aws_lc_rs"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/aws-lc-rs-21f1a2a9607aa983/lib-aws_lc_rs`
 
 Caused by:
     No such file or directory (os error 2)
@@ -1119,8 +1115,8 @@ Stack backtrace:
   27: __libc_start_call_main
   28: __libc_start_main@GLIBC_2.17
   29: <unknown>
-   1.072035213s  INFO prepare_target{force=false package_id=aws-lc-rs v1.18.1 target="build-script-build"}: cargo::core::compiler::fingerprint: fingerprint error for aws-lc-rs v1.18.1/RunCustomBuild/TargetInner { ..: custom_build_target("build-script-build", "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/aws-lc-rs-1.18.1/build.rs", Edition2021) }
-   1.072041006s  INFO prepare_target{force=false package_id=aws-lc-rs v1.18.1 target="build-script-build"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/aws-lc-rs-fc87dc0976b1c96a/run-build-script-build-script-build`
+   2.772542563s  INFO prepare_target{force=false package_id=aws-lc-rs v1.18.1 target="build-script-build"}: cargo::core::compiler::fingerprint: fingerprint error for aws-lc-rs v1.18.1/RunCustomBuild/TargetInner { ..: custom_build_target("build-script-build", "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/aws-lc-rs-1.18.1/build.rs", Edition2021) }
+   2.772552521s  INFO prepare_target{force=false package_id=aws-lc-rs v1.18.1 target="build-script-build"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/aws-lc-rs-fc87dc0976b1c96a/run-build-script-build-script-build`
 
 Caused by:
     No such file or directory (os error 2)
@@ -1167,8 +1163,8 @@ Stack backtrace:
   29: __libc_start_call_main
   30: __libc_start_main@GLIBC_2.17
   31: <unknown>
-   1.072263291s  INFO prepare_target{force=false package_id=aws-lc-sys v0.45.0 target="build-script-main"}: cargo::core::compiler::fingerprint: fingerprint error for aws-lc-sys v0.45.0/RunCustomBuild/TargetInner { ..: custom_build_target("build-script-main", "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/aws-lc-sys-0.45.0/builder/main.rs", Edition2021) }
-   1.072268625s  INFO prepare_target{force=false package_id=aws-lc-sys v0.45.0 target="build-script-main"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/aws-lc-sys-36102cc52f196dcc/run-build-script-build-script-main`
+   2.772886104s  INFO prepare_target{force=false package_id=aws-lc-sys v0.45.0 target="build-script-main"}: cargo::core::compiler::fingerprint: fingerprint error for aws-lc-sys v0.45.0/RunCustomBuild/TargetInner { ..: custom_build_target("build-script-main", "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/aws-lc-sys-0.45.0/builder/main.rs", Edition2021) }
+   2.772895895s  INFO prepare_target{force=false package_id=aws-lc-sys v0.45.0 target="build-script-main"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/aws-lc-sys-36102cc52f196dcc/run-build-script-build-script-main`
 
 Caused by:
     No such file or directory (os error 2)
@@ -1216,8 +1212,8 @@ Stack backtrace:
   30: __libc_start_call_main
   31: __libc_start_main@GLIBC_2.17
   32: <unknown>
-   1.072379310s  INFO prepare_target{force=false package_id=aws-lc-sys v0.45.0 target="build-script-main"}: cargo::core::compiler::fingerprint: fingerprint error for aws-lc-sys v0.45.0/Build/TargetInner { ..: custom_build_target("build-script-main", "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/aws-lc-sys-0.45.0/builder/main.rs", Edition2021) }
-   1.072384060s  INFO prepare_target{force=false package_id=aws-lc-sys v0.45.0 target="build-script-main"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/aws-lc-sys-8f5a3eb6aa5d234f/build-script-build-script-main`
+   2.773066353s  INFO prepare_target{force=false package_id=aws-lc-sys v0.45.0 target="build-script-main"}: cargo::core::compiler::fingerprint: fingerprint error for aws-lc-sys v0.45.0/Build/TargetInner { ..: custom_build_target("build-script-main", "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/aws-lc-sys-0.45.0/builder/main.rs", Edition2021) }
+   2.773073103s  INFO prepare_target{force=false package_id=aws-lc-sys v0.45.0 target="build-script-main"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/aws-lc-sys-8f5a3eb6aa5d234f/build-script-build-script-main`
 
 Caused by:
     No such file or directory (os error 2)
@@ -1265,8 +1261,8 @@ Stack backtrace:
   30: __libc_start_call_main
   31: __libc_start_main@GLIBC_2.17
   32: <unknown>
-   1.072821505s  INFO prepare_target{force=false package_id=aws-lc-sys v0.45.0 target="aws_lc_sys"}: cargo::core::compiler::fingerprint: fingerprint error for aws-lc-sys v0.45.0/Check { test: false }/TargetInner { ..: lib_target("aws_lc_sys", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/aws-lc-sys-0.45.0/src/lib.rs", Edition2021) }
-   1.072827089s  INFO prepare_target{force=false package_id=aws-lc-sys v0.45.0 target="aws_lc_sys"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/aws-lc-sys-98b7a0ea77d35dce/lib-aws_lc_sys`
+   2.774395057s  INFO prepare_target{force=false package_id=aws-lc-sys v0.45.0 target="aws_lc_sys"}: cargo::core::compiler::fingerprint: fingerprint error for aws-lc-sys v0.45.0/Check { test: false }/TargetInner { ..: lib_target("aws_lc_sys", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/aws-lc-sys-0.45.0/src/lib.rs", Edition2021) }
+   2.774411057s  INFO prepare_target{force=false package_id=aws-lc-sys v0.45.0 target="aws_lc_sys"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/aws-lc-sys-98b7a0ea77d35dce/lib-aws_lc_sys`
 
 Caused by:
     No such file or directory (os error 2)
@@ -1312,8 +1308,8 @@ Stack backtrace:
   28: __libc_start_call_main
   29: __libc_start_main@GLIBC_2.17
   30: <unknown>
-   1.073117260s  INFO prepare_target{force=false package_id=rustls v0.23.44 target="build-script-build"}: cargo::core::compiler::fingerprint: fingerprint error for rustls v0.23.44/RunCustomBuild/TargetInner { ..: custom_build_target("build-script-build", "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rustls-0.23.44/build.rs", Edition2021) }
-   1.073122553s  INFO prepare_target{force=false package_id=rustls v0.23.44 target="build-script-build"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/rustls-d6252429c1ada04a/run-build-script-build-script-build`
+   2.774862013s  INFO prepare_target{force=false package_id=rustls v0.23.44 target="build-script-build"}: cargo::core::compiler::fingerprint: fingerprint error for rustls v0.23.44/RunCustomBuild/TargetInner { ..: custom_build_target("build-script-build", "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rustls-0.23.44/build.rs", Edition2021) }
+   2.774873638s  INFO prepare_target{force=false package_id=rustls v0.23.44 target="build-script-build"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/rustls-d6252429c1ada04a/run-build-script-build-script-build`
 
 Caused by:
     No such file or directory (os error 2)
@@ -1359,8 +1355,8 @@ Stack backtrace:
   28: __libc_start_call_main
   29: __libc_start_main@GLIBC_2.17
   30: <unknown>
-   1.073303373s  INFO prepare_target{force=false package_id=rustls-webpki v0.103.15 target="webpki"}: cargo::core::compiler::fingerprint: fingerprint error for rustls-webpki v0.103.15/Check { test: false }/TargetInner { ..: lib_target("webpki", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rustls-webpki-0.103.15/src/lib.rs", Edition2021) }
-   1.073308832s  INFO prepare_target{force=false package_id=rustls-webpki v0.103.15 target="webpki"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/rustls-webpki-ee6583ca56ca7e02/lib-webpki`
+   2.775576844s  INFO prepare_target{force=false package_id=rustls-webpki v0.103.15 target="webpki"}: cargo::core::compiler::fingerprint: fingerprint error for rustls-webpki v0.103.15/Check { test: false }/TargetInner { ..: lib_target("webpki", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rustls-webpki-0.103.15/src/lib.rs", Edition2021) }
+   2.775590427s  INFO prepare_target{force=false package_id=rustls-webpki v0.103.15 target="webpki"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/rustls-webpki-ee6583ca56ca7e02/lib-webpki`
 
 Caused by:
     No such file or directory (os error 2)
@@ -1405,8 +1401,8 @@ Stack backtrace:
   27: __libc_start_call_main
   28: __libc_start_main@GLIBC_2.17
   29: <unknown>
-   1.073547495s  INFO prepare_target{force=false package_id=tokio-rustls v0.26.5 target="tokio_rustls"}: cargo::core::compiler::fingerprint: fingerprint error for tokio-rustls v0.26.5/Check { test: false }/TargetInner { ..: lib_target("tokio_rustls", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-rustls-0.26.5/src/lib.rs", Edition2021) }
-   1.073552704s  INFO prepare_target{force=false package_id=tokio-rustls v0.26.5 target="tokio_rustls"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/tokio-rustls-940d2302fec76ab9/lib-tokio_rustls`
+   2.776028259s  INFO prepare_target{force=false package_id=tokio-rustls v0.26.5 target="tokio_rustls"}: cargo::core::compiler::fingerprint: fingerprint error for tokio-rustls v0.26.5/Check { test: false }/TargetInner { ..: lib_target("tokio_rustls", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-rustls-0.26.5/src/lib.rs", Edition2021) }
+   2.776040801s  INFO prepare_target{force=false package_id=tokio-rustls v0.26.5 target="tokio_rustls"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/tokio-rustls-940d2302fec76ab9/lib-tokio_rustls`
 
 Caused by:
     No such file or directory (os error 2)
@@ -1450,8 +1446,8 @@ Stack backtrace:
   26: __libc_start_call_main
   27: __libc_start_main@GLIBC_2.17
   28: <unknown>
-   1.073758779s  INFO prepare_target{force=false package_id=rustls-platform-verifier v0.7.0 target="rustls_platform_verifier"}: cargo::core::compiler::fingerprint: fingerprint error for rustls-platform-verifier v0.7.0/Check { test: false }/TargetInner { ..: lib_target("rustls_platform_verifier", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rustls-platform-verifier-0.7.0/src/lib.rs", Edition2021) }
-   1.073764446s  INFO prepare_target{force=false package_id=rustls-platform-verifier v0.7.0 target="rustls_platform_verifier"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/rustls-platform-verifier-81e79c82a3c0eadc/lib-rustls_platform_verifier`
+   2.776331633s  INFO prepare_target{force=false package_id=rustls-platform-verifier v0.7.0 target="rustls_platform_verifier"}: cargo::core::compiler::fingerprint: fingerprint error for rustls-platform-verifier v0.7.0/Check { test: false }/TargetInner { ..: lib_target("rustls_platform_verifier", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rustls-platform-verifier-0.7.0/src/lib.rs", Edition2021) }
+   2.776339716s  INFO prepare_target{force=false package_id=rustls-platform-verifier v0.7.0 target="rustls_platform_verifier"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/rustls-platform-verifier-81e79c82a3c0eadc/lib-rustls_platform_verifier`
 
 Caused by:
     No such file or directory (os error 2)
@@ -1494,8 +1490,8 @@ Stack backtrace:
   25: __libc_start_call_main
   26: __libc_start_main@GLIBC_2.17
   27: <unknown>
-   1.074013153s  INFO prepare_target{force=false package_id=tower-http v0.6.11 target="tower_http"}: cargo::core::compiler::fingerprint: fingerprint error for tower-http v0.6.11/Check { test: false }/TargetInner { ..: lib_target("tower_http", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tower-http-0.6.11/src/lib.rs", Edition2018) }
-   1.074018237s  INFO prepare_target{force=false package_id=tower-http v0.6.11 target="tower_http"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/tower-http-7fc5a2e871505bf5/lib-tower_http`
+   2.776797298s  INFO prepare_target{force=false package_id=tower-http v0.6.11 target="tower_http"}: cargo::core::compiler::fingerprint: fingerprint error for tower-http v0.6.11/Check { test: false }/TargetInner { ..: lib_target("tower_http", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tower-http-0.6.11/src/lib.rs", Edition2018) }
+   2.776809590s  INFO prepare_target{force=false package_id=tower-http v0.6.11 target="tower_http"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/tower-http-7fc5a2e871505bf5/lib-tower_http`
 
 Caused by:
     No such file or directory (os error 2)
@@ -1538,8 +1534,8 @@ Stack backtrace:
   25: __libc_start_call_main
   26: __libc_start_main@GLIBC_2.17
   27: <unknown>
-   1.074336787s  INFO prepare_target{force=false package_id=url v2.5.8 target="url"}: cargo::core::compiler::fingerprint: fingerprint error for url v2.5.8/Check { test: false }/TargetInner { ..: lib_target("url", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/url-2.5.8/src/lib.rs", Edition2018) }
-   1.074341788s  INFO prepare_target{force=false package_id=url v2.5.8 target="url"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/url-ec3ce49ae0db73f2/lib-url`
+   2.777357755s  INFO prepare_target{force=false package_id=url v2.5.8 target="url"}: cargo::core::compiler::fingerprint: fingerprint error for url v2.5.8/Check { test: false }/TargetInner { ..: lib_target("url", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/url-2.5.8/src/lib.rs", Edition2018) }
+   2.777367713s  INFO prepare_target{force=false package_id=url v2.5.8 target="url"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/url-ec3ce49ae0db73f2/lib-url`
 
 Caused by:
     No such file or directory (os error 2)
@@ -1583,8 +1579,8 @@ Stack backtrace:
   26: __libc_start_call_main
   27: __libc_start_main@GLIBC_2.17
   28: <unknown>
-   1.074548529s  INFO prepare_target{force=false package_id=idna v1.1.0 target="idna"}: cargo::core::compiler::fingerprint: fingerprint error for idna v1.1.0/Check { test: false }/TargetInner { doctest: false, ..: lib_target("idna", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/idna-1.1.0/src/lib.rs", Edition2018) }
-   1.074553780s  INFO prepare_target{force=false package_id=idna v1.1.0 target="idna"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/idna-e9630be678bb38fe/lib-idna`
+   2.777840586s  INFO prepare_target{force=false package_id=idna v1.1.0 target="idna"}: cargo::core::compiler::fingerprint: fingerprint error for idna v1.1.0/Check { test: false }/TargetInner { doctest: false, ..: lib_target("idna", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/idna-1.1.0/src/lib.rs", Edition2018) }
+   2.777864211s  INFO prepare_target{force=false package_id=idna v1.1.0 target="idna"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/idna-e9630be678bb38fe/lib-idna`
 
 Caused by:
     No such file or directory (os error 2)
@@ -1629,8 +1625,8 @@ Stack backtrace:
   27: __libc_start_call_main
   28: __libc_start_main@GLIBC_2.17
   29: <unknown>
-   1.074758313s  INFO prepare_target{force=false package_id=idna_adapter v1.2.2 target="idna_adapter"}: cargo::core::compiler::fingerprint: fingerprint error for idna_adapter v1.2.2/Check { test: false }/TargetInner { ..: lib_target("idna_adapter", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/idna_adapter-1.2.2/src/lib.rs", Edition2024) }
-   1.074763772s  INFO prepare_target{force=false package_id=idna_adapter v1.2.2 target="idna_adapter"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/idna_adapter-8586e97bd77e12eb/lib-idna_adapter`
+   2.778207085s  INFO prepare_target{force=false package_id=idna_adapter v1.2.2 target="idna_adapter"}: cargo::core::compiler::fingerprint: fingerprint error for idna_adapter v1.2.2/Check { test: false }/TargetInner { ..: lib_target("idna_adapter", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/idna_adapter-1.2.2/src/lib.rs", Edition2024) }
+   2.778217002s  INFO prepare_target{force=false package_id=idna_adapter v1.2.2 target="idna_adapter"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/idna_adapter-8586e97bd77e12eb/lib-idna_adapter`
 
 Caused by:
     No such file or directory (os error 2)
@@ -1676,8 +1672,8 @@ Stack backtrace:
   28: __libc_start_call_main
   29: __libc_start_main@GLIBC_2.17
   30: <unknown>
-   1.074980348s  INFO prepare_target{force=false package_id=icu_normalizer v2.3.0 target="icu_normalizer"}: cargo::core::compiler::fingerprint: fingerprint error for icu_normalizer v2.3.0/Check { test: false }/TargetInner { ..: lib_target("icu_normalizer", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/icu_normalizer-2.3.0/src/lib.rs", Edition2024) }
-   1.074985766s  INFO prepare_target{force=false package_id=icu_normalizer v2.3.0 target="icu_normalizer"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/icu_normalizer-da00894e537dd978/lib-icu_normalizer`
+   2.778503459s  INFO prepare_target{force=false package_id=icu_normalizer v2.3.0 target="icu_normalizer"}: cargo::core::compiler::fingerprint: fingerprint error for icu_normalizer v2.3.0/Check { test: false }/TargetInner { ..: lib_target("icu_normalizer", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/icu_normalizer-2.3.0/src/lib.rs", Edition2024) }
+   2.778513084s  INFO prepare_target{force=false package_id=icu_normalizer v2.3.0 target="icu_normalizer"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/icu_normalizer-da00894e537dd978/lib-icu_normalizer`
 
 Caused by:
     No such file or directory (os error 2)
@@ -1724,8 +1720,8 @@ Stack backtrace:
   29: __libc_start_call_main
   30: __libc_start_main@GLIBC_2.17
   31: <unknown>
-   1.075214218s  INFO prepare_target{force=false package_id=icu_collections v2.3.0 target="icu_collections"}: cargo::core::compiler::fingerprint: fingerprint error for icu_collections v2.3.0/Check { test: false }/TargetInner { benched: false, ..: lib_target("icu_collections", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/icu_collections-2.3.0/src/lib.rs", Edition2024) }
-   1.075219969s  INFO prepare_target{force=false package_id=icu_collections v2.3.0 target="icu_collections"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/icu_collections-6b08d278b77145eb/lib-icu_collections`
+   2.778839249s  INFO prepare_target{force=false package_id=icu_collections v2.3.0 target="icu_collections"}: cargo::core::compiler::fingerprint: fingerprint error for icu_collections v2.3.0/Check { test: false }/TargetInner { benched: false, ..: lib_target("icu_collections", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/icu_collections-2.3.0/src/lib.rs", Edition2024) }
+   2.778849416s  INFO prepare_target{force=false package_id=icu_collections v2.3.0 target="icu_collections"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/icu_collections-6b08d278b77145eb/lib-icu_collections`
 
 Caused by:
     No such file or directory (os error 2)
@@ -1773,8 +1769,8 @@ Stack backtrace:
   30: __libc_start_call_main
   31: __libc_start_main@GLIBC_2.17
   32: <unknown>
-   1.075434170s  INFO prepare_target{force=false package_id=displaydoc v0.2.7 target="displaydoc"}: cargo::core::compiler::fingerprint: fingerprint error for displaydoc v0.2.7/Build/TargetInner { for_host: true, proc_macro: true, ..: lib_target("displaydoc", ["proc-macro"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/displaydoc-0.2.7/src/lib.rs", Edition2021) }
-   1.075439879s  INFO prepare_target{force=false package_id=displaydoc v0.2.7 target="displaydoc"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/displaydoc-60dd2a03a39f2a33/lib-displaydoc`
+   2.779144165s  INFO prepare_target{force=false package_id=displaydoc v0.2.7 target="displaydoc"}: cargo::core::compiler::fingerprint: fingerprint error for displaydoc v0.2.7/Build/TargetInner { for_host: true, proc_macro: true, ..: lib_target("displaydoc", ["proc-macro"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/displaydoc-0.2.7/src/lib.rs", Edition2021) }
+   2.779154498s  INFO prepare_target{force=false package_id=displaydoc v0.2.7 target="displaydoc"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/displaydoc-60dd2a03a39f2a33/lib-displaydoc`
 
 Caused by:
     No such file or directory (os error 2)
@@ -1823,8 +1819,8 @@ Stack backtrace:
   31: __libc_start_call_main
   32: __libc_start_main@GLIBC_2.17
   33: <unknown>
-   1.075634785s  INFO prepare_target{force=false package_id=potential_utf v0.1.6 target="potential_utf"}: cargo::core::compiler::fingerprint: fingerprint error for potential_utf v0.1.6/Check { test: false }/TargetInner { ..: lib_target("potential_utf", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/potential_utf-0.1.6/src/lib.rs", Edition2021) }
-   1.075640119s  INFO prepare_target{force=false package_id=potential_utf v0.1.6 target="potential_utf"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/potential_utf-1ba2b88a6255e623/lib-potential_utf`
+   2.779438456s  INFO prepare_target{force=false package_id=potential_utf v0.1.6 target="potential_utf"}: cargo::core::compiler::fingerprint: fingerprint error for potential_utf v0.1.6/Check { test: false }/TargetInner { ..: lib_target("potential_utf", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/potential_utf-0.1.6/src/lib.rs", Edition2021) }
+   2.779447956s  INFO prepare_target{force=false package_id=potential_utf v0.1.6 target="potential_utf"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/potential_utf-1ba2b88a6255e623/lib-potential_utf`
 
 Caused by:
     No such file or directory (os error 2)
@@ -1873,8 +1869,8 @@ Stack backtrace:
   31: __libc_start_call_main
   32: __libc_start_main@GLIBC_2.17
   33: <unknown>
-   1.075836609s  INFO prepare_target{force=false package_id=zerovec v0.11.8 target="zerovec"}: cargo::core::compiler::fingerprint: fingerprint error for zerovec v0.11.8/Check { test: false }/TargetInner { benched: false, ..: lib_target("zerovec", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/zerovec-0.11.8/src/lib.rs", Edition2021) }
-   1.075841777s  INFO prepare_target{force=false package_id=zerovec v0.11.8 target="zerovec"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/zerovec-dd0d5b403048216a/lib-zerovec`
+   2.779719996s  INFO prepare_target{force=false package_id=zerovec v0.11.8 target="zerovec"}: cargo::core::compiler::fingerprint: fingerprint error for zerovec v0.11.8/Check { test: false }/TargetInner { benched: false, ..: lib_target("zerovec", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/zerovec-0.11.8/src/lib.rs", Edition2021) }
+   2.779729788s  INFO prepare_target{force=false package_id=zerovec v0.11.8 target="zerovec"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/zerovec-dd0d5b403048216a/lib-zerovec`
 
 Caused by:
     No such file or directory (os error 2)
@@ -1924,8 +1920,8 @@ Stack backtrace:
   32: __libc_start_call_main
   33: __libc_start_main@GLIBC_2.17
   34: <unknown>
-   1.076054727s  INFO prepare_target{force=false package_id=yoke v0.8.3 target="yoke"}: cargo::core::compiler::fingerprint: fingerprint error for yoke v0.8.3/Check { test: false }/TargetInner { ..: lib_target("yoke", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/yoke-0.8.3/src/lib.rs", Edition2021) }
-   1.076059936s  INFO prepare_target{force=false package_id=yoke v0.8.3 target="yoke"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/yoke-69331dd5894b4d35/lib-yoke`
+   2.780024412s  INFO prepare_target{force=false package_id=yoke v0.8.3 target="yoke"}: cargo::core::compiler::fingerprint: fingerprint error for yoke v0.8.3/Check { test: false }/TargetInner { ..: lib_target("yoke", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/yoke-0.8.3/src/lib.rs", Edition2021) }
+   2.780031995s  INFO prepare_target{force=false package_id=yoke v0.8.3 target="yoke"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/yoke-69331dd5894b4d35/lib-yoke`
 
 Caused by:
     No such file or directory (os error 2)
@@ -1976,8 +1972,8 @@ Stack backtrace:
   33: __libc_start_call_main
   34: __libc_start_main@GLIBC_2.17
   35: <unknown>
-   1.076289181s  INFO prepare_target{force=false package_id=yoke-derive v0.8.2 target="yoke_derive"}: cargo::core::compiler::fingerprint: fingerprint error for yoke-derive v0.8.2/Build/TargetInner { for_host: true, proc_macro: true, ..: lib_target("yoke_derive", ["proc-macro"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/yoke-derive-0.8.2/src/lib.rs", Edition2021) }
-   1.076294974s  INFO prepare_target{force=false package_id=yoke-derive v0.8.2 target="yoke_derive"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/yoke-derive-079734e3a030ee58/lib-yoke_derive`
+   2.780432160s  INFO prepare_target{force=false package_id=yoke-derive v0.8.2 target="yoke_derive"}: cargo::core::compiler::fingerprint: fingerprint error for yoke-derive v0.8.2/Build/TargetInner { for_host: true, proc_macro: true, ..: lib_target("yoke_derive", ["proc-macro"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/yoke-derive-0.8.2/src/lib.rs", Edition2021) }
+   2.780441910s  INFO prepare_target{force=false package_id=yoke-derive v0.8.2 target="yoke_derive"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/yoke-derive-079734e3a030ee58/lib-yoke_derive`
 
 Caused by:
     No such file or directory (os error 2)
@@ -2029,8 +2025,8 @@ Stack backtrace:
   34: __libc_start_call_main
   35: __libc_start_main@GLIBC_2.17
   36: <unknown>
-   1.076502215s  INFO prepare_target{force=false package_id=synstructure v0.13.2 target="synstructure"}: cargo::core::compiler::fingerprint: fingerprint error for synstructure v0.13.2/Build/TargetInner { ..: lib_target("synstructure", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/synstructure-0.13.2/src/lib.rs", Edition2018) }
-   1.076507007s  INFO prepare_target{force=false package_id=synstructure v0.13.2 target="synstructure"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/synstructure-e07ddcd2d1e82d0c/lib-synstructure`
+   2.780724743s  INFO prepare_target{force=false package_id=synstructure v0.13.2 target="synstructure"}: cargo::core::compiler::fingerprint: fingerprint error for synstructure v0.13.2/Build/TargetInner { ..: lib_target("synstructure", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/synstructure-0.13.2/src/lib.rs", Edition2018) }
+   2.780734159s  INFO prepare_target{force=false package_id=synstructure v0.13.2 target="synstructure"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/synstructure-e07ddcd2d1e82d0c/lib-synstructure`
 
 Caused by:
     No such file or directory (os error 2)
@@ -2083,8 +2079,8 @@ Stack backtrace:
   35: __libc_start_call_main
   36: __libc_start_main@GLIBC_2.17
   37: <unknown>
-   1.076675867s  INFO prepare_target{force=false package_id=zerofrom v0.1.8 target="zerofrom"}: cargo::core::compiler::fingerprint: fingerprint error for zerofrom v0.1.8/Check { test: false }/TargetInner { ..: lib_target("zerofrom", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/zerofrom-0.1.8/src/lib.rs", Edition2021) }
-   1.076680285s  INFO prepare_target{force=false package_id=zerofrom v0.1.8 target="zerofrom"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/zerofrom-c9a073146e38e831/lib-zerofrom`
+   2.781020992s  INFO prepare_target{force=false package_id=zerofrom v0.1.8 target="zerofrom"}: cargo::core::compiler::fingerprint: fingerprint error for zerofrom v0.1.8/Check { test: false }/TargetInner { ..: lib_target("zerofrom", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/zerofrom-0.1.8/src/lib.rs", Edition2021) }
+   2.781030117s  INFO prepare_target{force=false package_id=zerofrom v0.1.8 target="zerofrom"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/zerofrom-c9a073146e38e831/lib-zerofrom`
 
 Caused by:
     No such file or directory (os error 2)
@@ -2136,8 +2132,8 @@ Stack backtrace:
   34: __libc_start_call_main
   35: __libc_start_main@GLIBC_2.17
   36: <unknown>
-   1.076850729s  INFO prepare_target{force=false package_id=zerofrom-derive v0.1.7 target="zerofrom_derive"}: cargo::core::compiler::fingerprint: fingerprint error for zerofrom-derive v0.1.7/Build/TargetInner { for_host: true, proc_macro: true, ..: lib_target("zerofrom_derive", ["proc-macro"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/zerofrom-derive-0.1.7/src/lib.rs", Edition2021) }
-   1.076855438s  INFO prepare_target{force=false package_id=zerofrom-derive v0.1.7 target="zerofrom_derive"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/zerofrom-derive-4e73ce1cee2ddb40/lib-zerofrom_derive`
+   2.781295241s  INFO prepare_target{force=false package_id=zerofrom-derive v0.1.7 target="zerofrom_derive"}: cargo::core::compiler::fingerprint: fingerprint error for zerofrom-derive v0.1.7/Build/TargetInner { for_host: true, proc_macro: true, ..: lib_target("zerofrom_derive", ["proc-macro"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/zerofrom-derive-0.1.7/src/lib.rs", Edition2021) }
+   2.781305074s  INFO prepare_target{force=false package_id=zerofrom-derive v0.1.7 target="zerofrom_derive"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/zerofrom-derive-4e73ce1cee2ddb40/lib-zerofrom_derive`
 
 Caused by:
     No such file or directory (os error 2)
@@ -2190,8 +2186,8 @@ Stack backtrace:
   35: __libc_start_call_main
   36: __libc_start_main@GLIBC_2.17
   37: <unknown>
-   1.077046968s  INFO prepare_target{force=false package_id=zerovec-derive v0.11.6 target="zerovec_derive"}: cargo::core::compiler::fingerprint: fingerprint error for zerovec-derive v0.11.6/Build/TargetInner { for_host: true, proc_macro: true, ..: lib_target("zerovec_derive", ["proc-macro"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/zerovec-derive-0.11.6/src/lib.rs", Edition2021) }
-   1.077051969s  INFO prepare_target{force=false package_id=zerovec-derive v0.11.6 target="zerovec_derive"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/zerovec-derive-70bccd9cb977232d/lib-zerovec_derive`
+   2.781583740s  INFO prepare_target{force=false package_id=zerovec-derive v0.11.6 target="zerovec_derive"}: cargo::core::compiler::fingerprint: fingerprint error for zerovec-derive v0.11.6/Build/TargetInner { for_host: true, proc_macro: true, ..: lib_target("zerovec_derive", ["proc-macro"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/zerovec-derive-0.11.6/src/lib.rs", Edition2021) }
+   2.781593240s  INFO prepare_target{force=false package_id=zerovec-derive v0.11.6 target="zerovec_derive"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/zerovec-derive-70bccd9cb977232d/lib-zerovec_derive`
 
 Caused by:
     No such file or directory (os error 2)
@@ -2242,8 +2238,8 @@ Stack backtrace:
   33: __libc_start_call_main
   34: __libc_start_main@GLIBC_2.17
   35: <unknown>
-   1.077354309s  INFO prepare_target{force=false package_id=icu_provider v2.3.1 target="icu_provider"}: cargo::core::compiler::fingerprint: fingerprint error for icu_provider v2.3.1/Check { test: false }/TargetInner { benched: false, ..: lib_target("icu_provider", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/icu_provider-2.3.1/src/lib.rs", Edition2024) }
-   1.077359476s  INFO prepare_target{force=false package_id=icu_provider v2.3.1 target="icu_provider"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/icu_provider-5e1140a4c1eedf34/lib-icu_provider`
+   2.782258404s  INFO prepare_target{force=false package_id=icu_provider v2.3.1 target="icu_provider"}: cargo::core::compiler::fingerprint: fingerprint error for icu_provider v2.3.1/Check { test: false }/TargetInner { benched: false, ..: lib_target("icu_provider", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/icu_provider-2.3.1/src/lib.rs", Edition2024) }
+   2.782268571s  INFO prepare_target{force=false package_id=icu_provider v2.3.1 target="icu_provider"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/icu_provider-5e1140a4c1eedf34/lib-icu_provider`
 
 Caused by:
     No such file or directory (os error 2)
@@ -2291,8 +2287,8 @@ Stack backtrace:
   30: __libc_start_call_main
   31: __libc_start_main@GLIBC_2.17
   32: <unknown>
-   1.077552257s  INFO prepare_target{force=false package_id=icu_locale_core v2.3.0 target="icu_locale_core"}: cargo::core::compiler::fingerprint: fingerprint error for icu_locale_core v2.3.0/Check { test: false }/TargetInner { benched: false, ..: lib_target("icu_locale_core", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/icu_locale_core-2.3.0/src/lib.rs", Edition2024) }
-   1.077557132s  INFO prepare_target{force=false package_id=icu_locale_core v2.3.0 target="icu_locale_core"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/icu_locale_core-ef156612eb12c644/lib-icu_locale_core`
+   2.782582986s  INFO prepare_target{force=false package_id=icu_locale_core v2.3.0 target="icu_locale_core"}: cargo::core::compiler::fingerprint: fingerprint error for icu_locale_core v2.3.0/Check { test: false }/TargetInner { benched: false, ..: lib_target("icu_locale_core", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/icu_locale_core-2.3.0/src/lib.rs", Edition2024) }
+   2.782594153s  INFO prepare_target{force=false package_id=icu_locale_core v2.3.0 target="icu_locale_core"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/icu_locale_core-ef156612eb12c644/lib-icu_locale_core`
 
 Caused by:
     No such file or directory (os error 2)
@@ -2341,8 +2337,8 @@ Stack backtrace:
   31: __libc_start_call_main
   32: __libc_start_main@GLIBC_2.17
   33: <unknown>
-   1.077781293s  INFO prepare_target{force=false package_id=tinystr v0.8.4 target="tinystr"}: cargo::core::compiler::fingerprint: fingerprint error for tinystr v0.8.4/Check { test: false }/TargetInner { benched: false, ..: lib_target("tinystr", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tinystr-0.8.4/src/lib.rs", Edition2021) }
-   1.077785877s  INFO prepare_target{force=false package_id=tinystr v0.8.4 target="tinystr"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/tinystr-11acd19c3c9f3d3e/lib-tinystr`
+   2.782978693s  INFO prepare_target{force=false package_id=tinystr v0.8.4 target="tinystr"}: cargo::core::compiler::fingerprint: fingerprint error for tinystr v0.8.4/Check { test: false }/TargetInner { benched: false, ..: lib_target("tinystr", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tinystr-0.8.4/src/lib.rs", Edition2021) }
+   2.782988818s  INFO prepare_target{force=false package_id=tinystr v0.8.4 target="tinystr"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/tinystr-11acd19c3c9f3d3e/lib-tinystr`
 
 Caused by:
     No such file or directory (os error 2)
@@ -2392,8 +2388,8 @@ Stack backtrace:
   32: __libc_start_call_main
   33: __libc_start_main@GLIBC_2.17
   34: <unknown>
-   1.077996952s  INFO prepare_target{force=false package_id=zerotrie v0.2.5 target="zerotrie"}: cargo::core::compiler::fingerprint: fingerprint error for zerotrie v0.2.5/Check { test: false }/TargetInner { benched: false, ..: lib_target("zerotrie", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/zerotrie-0.2.5/src/lib.rs", Edition2021) }
-   1.078001453s  INFO prepare_target{force=false package_id=zerotrie v0.2.5 target="zerotrie"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/zerotrie-8e74d9307e66a4e9/lib-zerotrie`
+   2.783356484s  INFO prepare_target{force=false package_id=zerotrie v0.2.5 target="zerotrie"}: cargo::core::compiler::fingerprint: fingerprint error for zerotrie v0.2.5/Check { test: false }/TargetInner { benched: false, ..: lib_target("zerotrie", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/zerotrie-0.2.5/src/lib.rs", Edition2021) }
+   2.783365859s  INFO prepare_target{force=false package_id=zerotrie v0.2.5 target="zerotrie"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/zerotrie-8e74d9307e66a4e9/lib-zerotrie`
 
 Caused by:
     No such file or directory (os error 2)
@@ -2442,8 +2438,8 @@ Stack backtrace:
   31: __libc_start_call_main
   32: __libc_start_main@GLIBC_2.17
   33: <unknown>
-   1.078184190s  INFO prepare_target{force=false package_id=icu_properties v2.3.0 target="icu_properties"}: cargo::core::compiler::fingerprint: fingerprint error for icu_properties v2.3.0/Check { test: false }/TargetInner { ..: lib_target("icu_properties", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/icu_properties-2.3.0/src/lib.rs", Edition2024) }
-   1.078188733s  INFO prepare_target{force=false package_id=icu_properties v2.3.0 target="icu_properties"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/icu_properties-8f328510dfbdbb2f/lib-icu_properties`
+   2.783660024s  INFO prepare_target{force=false package_id=icu_properties v2.3.0 target="icu_properties"}: cargo::core::compiler::fingerprint: fingerprint error for icu_properties v2.3.0/Check { test: false }/TargetInner { ..: lib_target("icu_properties", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/icu_properties-2.3.0/src/lib.rs", Edition2024) }
+   2.783669899s  INFO prepare_target{force=false package_id=icu_properties v2.3.0 target="icu_properties"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/icu_properties-8f328510dfbdbb2f/lib-icu_properties`
 
 Caused by:
     No such file or directory (os error 2)
@@ -2490,8 +2486,8 @@ Stack backtrace:
   29: __libc_start_call_main
   30: __libc_start_main@GLIBC_2.17
   31: <unknown>
-   1.078492906s  INFO prepare_target{force=false package_id=thiserror v2.0.20 target="thiserror"}: cargo::core::compiler::fingerprint: fingerprint error for thiserror v2.0.20/Check { test: false }/TargetInner { ..: lib_target("thiserror", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.20/src/lib.rs", Edition2021) }
-   1.078497282s  INFO prepare_target{force=false package_id=thiserror v2.0.20 target="thiserror"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/thiserror-6f6750febce803e4/lib-thiserror`
+   2.784234272s  INFO prepare_target{force=false package_id=thiserror v2.0.20 target="thiserror"}: cargo::core::compiler::fingerprint: fingerprint error for thiserror v2.0.20/Check { test: false }/TargetInner { ..: lib_target("thiserror", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.20/src/lib.rs", Edition2021) }
+   2.784243939s  INFO prepare_target{force=false package_id=thiserror v2.0.20 target="thiserror"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/thiserror-6f6750febce803e4/lib-thiserror`
 
 Caused by:
     No such file or directory (os error 2)
@@ -2533,8 +2529,8 @@ Stack backtrace:
   24: __libc_start_call_main
   25: __libc_start_main@GLIBC_2.17
   26: <unknown>
-   1.078756740s  INFO prepare_target{force=false package_id=thiserror-impl v2.0.20 target="thiserror_impl"}: cargo::core::compiler::fingerprint: fingerprint error for thiserror-impl v2.0.20/Build/TargetInner { for_host: true, proc_macro: true, ..: lib_target("thiserror_impl", ["proc-macro"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-impl-2.0.20/src/lib.rs", Edition2021) }
-   1.078761491s  INFO prepare_target{force=false package_id=thiserror-impl v2.0.20 target="thiserror_impl"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/thiserror-impl-55a8307793f7ad67/lib-thiserror_impl`
+   2.784923353s  INFO prepare_target{force=false package_id=thiserror-impl v2.0.20 target="thiserror_impl"}: cargo::core::compiler::fingerprint: fingerprint error for thiserror-impl v2.0.20/Build/TargetInner { for_host: true, proc_macro: true, ..: lib_target("thiserror_impl", ["proc-macro"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-impl-2.0.20/src/lib.rs", Edition2021) }
+   2.784933395s  INFO prepare_target{force=false package_id=thiserror-impl v2.0.20 target="thiserror_impl"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/thiserror-impl-55a8307793f7ad67/lib-thiserror_impl`
 
 Caused by:
     No such file or directory (os error 2)
@@ -2577,8 +2573,8 @@ Stack backtrace:
   25: __libc_start_call_main
   26: __libc_start_main@GLIBC_2.17
   27: <unknown>
-   1.078908389s  INFO prepare_target{force=false package_id=tower-http v0.7.1 target="tower_http"}: cargo::core::compiler::fingerprint: fingerprint error for tower-http v0.7.1/Check { test: false }/TargetInner { ..: lib_target("tower_http", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tower-http-0.7.1/src/lib.rs", Edition2018) }
-   1.078912473s  INFO prepare_target{force=false package_id=tower-http v0.7.1 target="tower_http"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/tower-http-5eb0bdd4e91e5484/lib-tower_http`
+   2.785190019s  INFO prepare_target{force=false package_id=tower-http v0.7.1 target="tower_http"}: cargo::core::compiler::fingerprint: fingerprint error for tower-http v0.7.1/Check { test: false }/TargetInner { ..: lib_target("tower_http", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tower-http-0.7.1/src/lib.rs", Edition2018) }
+   2.785199394s  INFO prepare_target{force=false package_id=tower-http v0.7.1 target="tower_http"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/tower-http-5eb0bdd4e91e5484/lib-tower_http`
 
 Caused by:
     No such file or directory (os error 2)
@@ -2620,8 +2616,8 @@ Stack backtrace:
   24: __libc_start_call_main
   25: __libc_start_main@GLIBC_2.17
   26: <unknown>
-   1.079098211s  INFO prepare_target{force=false package_id=tracing-subscriber v0.3.23 target="tracing_subscriber"}: cargo::core::compiler::fingerprint: fingerprint error for tracing-subscriber v0.3.23/Check { test: false }/TargetInner { ..: lib_target("tracing_subscriber", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tracing-subscriber-0.3.23/src/lib.rs", Edition2018) }
-   1.079102795s  INFO prepare_target{force=false package_id=tracing-subscriber v0.3.23 target="tracing_subscriber"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/tracing-subscriber-0475b7796445b41c/lib-tracing_subscriber`
+   2.785520393s  INFO prepare_target{force=false package_id=tracing-subscriber v0.3.23 target="tracing_subscriber"}: cargo::core::compiler::fingerprint: fingerprint error for tracing-subscriber v0.3.23/Check { test: false }/TargetInner { ..: lib_target("tracing_subscriber", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tracing-subscriber-0.3.23/src/lib.rs", Edition2018) }
+   2.785530684s  INFO prepare_target{force=false package_id=tracing-subscriber v0.3.23 target="tracing_subscriber"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/tracing-subscriber-0475b7796445b41c/lib-tracing_subscriber`
 
 Caused by:
     No such file or directory (os error 2)
@@ -2663,8 +2659,8 @@ Stack backtrace:
   24: __libc_start_call_main
   25: __libc_start_main@GLIBC_2.17
   26: <unknown>
-   1.079514527s  INFO prepare_target{force=false package_id=tracing-log v0.2.0 target="tracing_log"}: cargo::core::compiler::fingerprint: fingerprint error for tracing-log v0.2.0/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("tracing_log", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tracing-log-0.2.0/src/lib.rs", Edition2018) }
-   1.079519111s  INFO prepare_target{force=false package_id=tracing-log v0.2.0 target="tracing_log"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/tracing-log-cdcbfbf11f305464/lib-tracing_log`
+   2.786426140s  INFO prepare_target{force=false package_id=tracing-log v0.2.0 target="tracing_log"}: cargo::core::compiler::fingerprint: fingerprint error for tracing-log v0.2.0/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("tracing_log", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tracing-log-0.2.0/src/lib.rs", Edition2018) }
+   2.786436806s  INFO prepare_target{force=false package_id=tracing-log v0.2.0 target="tracing_log"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/tracing-log-cdcbfbf11f305464/lib-tracing_log`
 
 Caused by:
     No such file or directory (os error 2)
@@ -2707,8 +2703,8 @@ Stack backtrace:
   25: __libc_start_call_main
   26: __libc_start_main@GLIBC_2.17
   27: <unknown>
-   1.079661175s  INFO prepare_target{force=false package_id=uuid v1.26.1 target="uuid"}: cargo::core::compiler::fingerprint: fingerprint error for uuid v1.26.1/Check { test: false }/TargetInner { ..: lib_target("uuid", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/uuid-1.26.1/src/lib.rs", Edition2021) }
-   1.079665384s  INFO prepare_target{force=false package_id=uuid v1.26.1 target="uuid"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/uuid-8720ed4b2df3e434/lib-uuid`
+   2.786665555s  INFO prepare_target{force=false package_id=uuid v1.26.1 target="uuid"}: cargo::core::compiler::fingerprint: fingerprint error for uuid v1.26.1/Check { test: false }/TargetInner { ..: lib_target("uuid", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/uuid-1.26.1/src/lib.rs", Edition2021) }
+   2.786675139s  INFO prepare_target{force=false package_id=uuid v1.26.1 target="uuid"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/uuid-8720ed4b2df3e434/lib-uuid`
 
 Caused by:
     No such file or directory (os error 2)
@@ -2750,8 +2746,8 @@ Stack backtrace:
   24: __libc_start_call_main
   25: __libc_start_main@GLIBC_2.17
   26: <unknown>
-   1.079825410s  INFO prepare_target{force=false package_id=getrandom v0.4.3 target="getrandom"}: cargo::core::compiler::fingerprint: fingerprint error for getrandom v0.4.3/Check { test: false }/TargetInner { ..: lib_target("getrandom", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/getrandom-0.4.3/src/lib.rs", Edition2024) }
-   1.079830285s  INFO prepare_target{force=false package_id=getrandom v0.4.3 target="getrandom"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/getrandom-626da5117af11e58/lib-getrandom`
+   2.786934013s  INFO prepare_target{force=false package_id=getrandom v0.4.3 target="getrandom"}: cargo::core::compiler::fingerprint: fingerprint error for getrandom v0.4.3/Check { test: false }/TargetInner { ..: lib_target("getrandom", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/getrandom-0.4.3/src/lib.rs", Edition2024) }
+   2.786945471s  INFO prepare_target{force=false package_id=getrandom v0.4.3 target="getrandom"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/getrandom-626da5117af11e58/lib-getrandom`
 
 Caused by:
     No such file or directory (os error 2)
@@ -2794,8 +2790,8 @@ Stack backtrace:
   25: __libc_start_call_main
   26: __libc_start_main@GLIBC_2.17
   27: <unknown>
-   1.080135751s  INFO prepare_target{force=false package_id=benchmark_serializer v0.1.0 (/home/wizard49/Projects/fastfusion/benchmark_serializer) target="benchmark_serializer"}: cargo::core::compiler::fingerprint: fingerprint error for benchmark_serializer v0.1.0 (/home/wizard49/Projects/fastfusion/benchmark_serializer)/Check { test: true }/TargetInner { name: "benchmark_serializer", doc: true, ..: with_path("/home/wizard49/Projects/fastfusion/benchmark_serializer/src/main.rs", Edition2024) }
-   1.080141877s  INFO prepare_target{force=false package_id=benchmark_serializer v0.1.0 (/home/wizard49/Projects/fastfusion/benchmark_serializer) target="benchmark_serializer"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/benchmark_serializer-b2eca394719a1dc1/test-bin-benchmark_serializer`
+   2.787533969s  INFO prepare_target{force=false package_id=benchmark_serializer v0.1.0 (/home/wizard49/Projects/fastfusion/benchmark_serializer) target="benchmark_serializer"}: cargo::core::compiler::fingerprint: fingerprint error for benchmark_serializer v0.1.0 (/home/wizard49/Projects/fastfusion/benchmark_serializer)/Check { test: true }/TargetInner { name: "benchmark_serializer", doc: true, ..: with_path("/home/wizard49/Projects/fastfusion/benchmark_serializer/src/main.rs", Edition2024) }
+   2.787547011s  INFO prepare_target{force=false package_id=benchmark_serializer v0.1.0 (/home/wizard49/Projects/fastfusion/benchmark_serializer) target="benchmark_serializer"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/benchmark_serializer-b2eca394719a1dc1/test-bin-benchmark_serializer`
 
 Caused by:
     No such file or directory (os error 2)
@@ -2842,9 +2838,9 @@ Stack backtrace:
    Compiling aws-lc-sys v0.45.0
     Checking sync_wrapper v1.0.2
     Checking getrandom v0.4.3
-error: could not compile `getrandom` (lib) due to 1 previous error
-warning: build failed, waiting for other jobs to finish...
 error: could not compile `tracing-core` (lib) due to 1 previous error
+warning: build failed, waiting for other jobs to finish...
+error: could not compile `getrandom` (lib) due to 1 previous error
 error: could not compile `sync_wrapper` (lib) due to 2 previous errors
 error: could not compile `syn` (lib) due to 2 previous errors
 error: could not compile `syn` (lib) due to 2 previous errors
