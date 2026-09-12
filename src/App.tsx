@@ -257,9 +257,14 @@ export default function App() {
 
         <div className="canvas-world" style={{ transform: `translate(${viewport.x}px, ${viewport.y}px) scale(${viewport.scale})` }}>
           <svg className="connections" width="2400" height="1000" aria-hidden="true">
+            <defs>
+              <marker id="connection-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+                <path d="M1 1L7 4L1 7Z" fill="#5577a6" />
+              </marker>
+            </defs>
             {connections.map(({ id, from, to }) => {
               const x1 = from.x + NODE_WIDTH; const y1 = from.y + 116; const x2 = to.x - 18; const y2 = to.y + 116;
-              return <path key={id} d={`M ${x1} ${y1} C ${x1 + 70} ${y1}, ${x2 - 70} ${y2}, ${x2} ${y2}`} />;
+              return <path key={id} d={`M ${x1} ${y1} C ${x1 + 70} ${y1}, ${x2 - 70} ${y2}, ${x2} ${y2}`} markerEnd="url(#connection-arrow)" />;
             })}
           </svg>
 
@@ -319,15 +324,6 @@ export default function App() {
             );
           })}
         </div>
-
-        {nodes.length > 0 && (
-          <div className="canvas-controls" data-control>
-            <button type="button" onClick={() => zoom(0.1)} aria-label="放大画布">IN</button>
-            <span>{Math.round(viewport.scale * 100)}%</span>
-            <button type="button" onClick={() => zoom(-0.1)} aria-label="缩小画布">OUT</button>
-            <button type="button" onClick={() => setViewport(INITIAL_VIEWPORT)} aria-label="重置画布">RESET</button>
-          </div>
-        )}
       </div>
 
       <section className={`command-dock ${phase !== 'idle' ? 'expanded' : ''}`} aria-label="Prompt command line" data-control>

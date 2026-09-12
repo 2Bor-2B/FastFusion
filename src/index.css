@@ -523,51 +523,6 @@ input:focus-visible + span {
   letter-spacing: .05em;
 }
 
-.canvas-controls {
-  position: absolute;
-  z-index: 18;
-  top: 90px;
-  right: 32px;
-  display: flex;
-  align-items: center;
-  gap: 3px;
-  padding: 4px;
-  border: 1px solid var(--line);
-  border-radius: 9px;
-  color: #94a8c2;
-  background: #172232;
-}
-
-.canvas-controls button {
-  min-width: 38px;
-  height: 32px;
-  padding: 0 9px;
-  border: 0;
-  border-radius: 5px;
-  color: #a7b9cf;
-  background: transparent;
-  font-size: 10px;
-  font-weight: 600;
-}
-
-.canvas-controls button:last-child {
-  min-width: 54px;
-  border-left: 1px solid var(--line);
-  border-radius: 0 5px 5px 0;
-}
-
-.canvas-controls button:hover {
-  color: white;
-  background: #24344a;
-}
-
-.canvas-controls > span {
-  width: 45px;
-  color: #8396af;
-  font-size: 11px;
-  text-align: center;
-}
-
 .command-dock {
   position: absolute;
   z-index: 30;
@@ -1001,20 +956,6 @@ input:focus-visible + span {
 
   .node-result > p {
     -webkit-line-clamp: 2;
-  }
-
-  .canvas-controls {
-    top: 72px;
-    right: 18px;
-  }
-
-  .canvas-controls button {
-    min-width: 34px;
-    padding: 0 7px;
-  }
-
-  .canvas-controls button:last-child {
-    min-width: 50px;
   }
 
   .command-dock {
