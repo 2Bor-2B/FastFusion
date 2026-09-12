@@ -53,11 +53,11 @@ export async function runMockAgents(
 
   return {
     winnerId,
-    summary: `针对“${prompt}”，多个 Agent 的答案在目标拆解上基本一致。最佳路径优先建立可验证的最小闭环，再根据实时反馈逐步扩展。`,
+    summary: `For “${prompt},” the agents broadly agree on how to break down the objective. The strongest approach starts with the smallest verifiable loop, then expands from live feedback.`,
     insights: [
-      '先确认目标、约束和成功标准，避免过早优化。',
-      '将复杂任务拆分为可独立验证的阶段，并保留失败回退。',
-      '优先使用可观察的数据决定下一步，而不是依赖单次生成。',
+      'Confirm the objective, constraints, and success criteria before optimizing.',
+      'Split complex work into independently verifiable stages with a fallback path.',
+      'Use observable evidence to choose the next step instead of relying on one generation.',
     ],
     raw: {
       request_id: `req_${Date.now().toString(36)}`,

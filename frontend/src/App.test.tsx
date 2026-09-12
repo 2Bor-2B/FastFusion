@@ -11,16 +11,17 @@ describe('TraceLab Agent Canvas', () => {
     vi.useFakeTimers();
     Object.defineProperty(URL, 'createObjectURL', { configurable: true, value: vi.fn(() => 'blob:skills') });
     Object.defineProperty(URL, 'revokeObjectURL', { configurable: true, value: vi.fn() });
+    Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText: vi.fn().mockResolvedValue(undefined) } });
   });
 
   afterEach(() => vi.useRealTimers());
 
-  it('从命令栏提交问题并完成 Agent 评分与总结', async () => {
+  it('submits a question and completes agent scoring and synthesis', async () => {
     render(<App />);
     expect(screen.queryByText('LIVE BENCHMARK')).not.toBeInTheDocument();
-    const input = screen.getByLabelText('输入问题');
-    fireEvent.change(input, { target: { value: '怎样设计一个可靠的 AI Agent？' } });
-    fireEvent.click(screen.getByLabelText('提交问题'));
+    const input = screen.getByLabelText('Question input');
+    fireEvent.change(input, { target: { value: 'How should I design a reliable AI agent?' } });
+    fireEvent.click(screen.getByLabelText('Submit question'));
     expect(screen.getByText('LIVE BENCHMARK')).toBeInTheDocument();
     expect(screen.getByText('COMPARING AGENTS')).toBeInTheDocument();
     await finishAnalysis();
@@ -29,20 +30,20 @@ describe('TraceLab Agent Canvas', () => {
     expect(screen.getAllByText('92', { exact: true })).toHaveLength(2);
   });
 
-  it('允许用户收起和重新展开 Benchmark，同时保留运行状态', async () => {
+  it('collapses and expands the benchmark without losing its state', async () => {
     render(<App />);
-    expect(screen.queryByRole('button', { name: '收起 Benchmark' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Collapse Benchmark' })).not.toBeInTheDocument();
 
-    fireEvent.change(screen.getByLabelText('输入问题'), { target: { value: '测试 Benchmark 折叠' } });
-    fireEvent.click(screen.getByLabelText('提交问题'));
+    fireEvent.change(screen.getByLabelText('Question input'), { target: { value: 'Test benchmark collapse' } });
+    fireEvent.click(screen.getByLabelText('Submit question'));
 
-    const collapseButton = screen.getByRole('button', { name: '收起 Benchmark' });
-    const details = screen.getByRole('region', { name: 'Agent Benchmark 详情' });
+    const collapseButton = screen.getByRole('button', { name: 'Collapse Benchmark' });
+    const details = screen.getByRole('region', { name: 'Agent Benchmark details' });
     expect(collapseButton).toHaveAttribute('aria-expanded', 'true');
     expect(details).not.toHaveAttribute('hidden');
 
     fireEvent.click(collapseButton);
-    expect(screen.getByRole('button', { name: '展开 Benchmark' })).toHaveAttribute('aria-expanded', 'false');
+    expect(screen.getByRole('button', { name: 'Expand Benchmark' })).toHaveAttribute('aria-expanded', 'false');
     expect(details).toHaveAttribute('hidden');
     expect(screen.getByText('EVALUATING')).toBeInTheDocument();
 
@@ -50,35 +51,35 @@ describe('TraceLab Agent Canvas', () => {
     expect(details).toHaveAttribute('hidden');
     expect(screen.getByText('WINNER SELECTED')).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole('button', { name: '展开 Benchmark' }));
-    expect(screen.getByRole('button', { name: '收起 Benchmark' })).toHaveAttribute('aria-expanded', 'true');
+    fireEvent.click(screen.getByRole('button', { name: 'Expand Benchmark' }));
+    expect(screen.getByRole('button', { name: 'Collapse Benchmark' })).toHaveAttribute('aria-expanded', 'true');
     expect(details).not.toHaveAttribute('hidden');
   });
 
-  it('提交新的追问时会重新展开 Benchmark', async () => {
+  it('reopens the benchmark when a follow-up is submitted', async () => {
     render(<App />);
-    fireEvent.change(screen.getByLabelText('输入问题'), { target: { value: '第一轮问题' } });
-    fireEvent.click(screen.getByLabelText('提交问题'));
+    fireEvent.change(screen.getByLabelText('Question input'), { target: { value: 'First question' } });
+    fireEvent.click(screen.getByLabelText('Submit question'));
     await finishAnalysis();
-    fireEvent.click(screen.getByRole('button', { name: '收起 Benchmark' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Collapse Benchmark' }));
 
-    fireEvent.change(screen.getByLabelText('输入问题'), { target: { value: '继续追问' } });
-    fireEvent.click(screen.getByLabelText('提交问题'));
+    fireEvent.change(screen.getByLabelText('Question input'), { target: { value: 'Follow-up question' } });
+    fireEvent.click(screen.getByLabelText('Submit question'));
 
-    expect(screen.getByRole('button', { name: '收起 Benchmark' })).toHaveAttribute('aria-expanded', 'true');
-    expect(screen.getByRole('region', { name: 'Agent Benchmark 详情' })).not.toHaveAttribute('hidden');
+    expect(screen.getByRole('button', { name: 'Collapse Benchmark' })).toHaveAttribute('aria-expanded', 'true');
+    expect(screen.getByRole('region', { name: 'Agent Benchmark details' })).not.toHaveAttribute('hidden');
   });
 
-  it('展开原始 JSON、选择节点并导出 Markdown Skills', async () => {
+  it('opens raw JSON, selects a node, and exports Markdown skills', async () => {
     const anchorClick = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => undefined);
     render(<App />);
-    fireEvent.change(screen.getByLabelText('输入问题'), { target: { value: '优化团队协作流程' } });
-    fireEvent.click(screen.getByLabelText('提交问题'));
+    fireEvent.change(screen.getByLabelText('Question input'), { target: { value: 'Improve team collaboration' } });
+    fireEvent.click(screen.getByLabelText('Submit question'));
     await finishAnalysis();
-    fireEvent.click(screen.getByLabelText('展开原始 JSON'));
+    fireEvent.click(screen.getByLabelText('Open raw JSON for node 1'));
     expect(screen.getByText('PAYLOAD')).toBeInTheDocument();
     expect(screen.getByText(/selected_agent/)).toBeInTheDocument();
-    fireEvent.click(screen.getByLabelText('选择节点 1'));
+    fireEvent.click(screen.getByLabelText('Select node 1'));
     expect(screen.getByRole('button', { name: 'Export Skills' })).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Export Skills' }));
     expect(URL.createObjectURL).toHaveBeenCalledOnce();
@@ -86,31 +87,49 @@ describe('TraceLab Agent Canvas', () => {
     anchorClick.mockRestore();
   });
 
-  it('连续追问会在画布中保留原节点并创建连接节点', async () => {
-    const { container } = render(<App />);
-    fireEvent.change(screen.getByLabelText('输入问题'), { target: { value: '制定第一版方案' } });
-    fireEvent.click(screen.getByLabelText('提交问题'));
+  it('copies summary and raw JSON content from their node headers', async () => {
+    render(<App />);
+    fireEvent.change(screen.getByLabelText('Question input'), { target: { value: 'Create a launch plan' } });
+    fireEvent.click(screen.getByLabelText('Submit question'));
     await finishAnalysis();
-    fireEvent.change(screen.getByLabelText('输入问题'), { target: { value: '如果时间只有一天呢？' } });
-    fireEvent.click(screen.getByLabelText('提交问题'));
+
+    fireEvent.click(screen.getByLabelText('Copy summary for node 1'));
+    await act(async () => { await Promise.resolve(); });
+    expect(navigator.clipboard.writeText).toHaveBeenLastCalledWith(expect.stringContaining('Question: Create a launch plan'));
+    expect(screen.getByLabelText('Copy summary for node 1')).toHaveTextContent('COPIED');
+
+    fireEvent.click(screen.getByLabelText('Open raw JSON for node 1'));
+    fireEvent.click(screen.getByLabelText('Copy raw JSON for node 1'));
+    await act(async () => { await Promise.resolve(); });
+    expect(navigator.clipboard.writeText).toHaveBeenLastCalledWith(expect.stringContaining('"selected_agent": "atlas"'));
+    expect(screen.getByLabelText('Copy raw JSON for node 1')).toHaveTextContent('COPIED');
+  });
+
+  it('keeps prior nodes and connects follow-up questions', async () => {
+    const { container } = render(<App />);
+    fireEvent.change(screen.getByLabelText('Question input'), { target: { value: 'Draft the first plan' } });
+    fireEvent.click(screen.getByLabelText('Submit question'));
+    await finishAnalysis();
+    fireEvent.change(screen.getByLabelText('Question input'), { target: { value: 'What if we only have one day?' } });
+    fireEvent.click(screen.getByLabelText('Submit question'));
     expect(container.querySelectorAll('.node-stack')).toHaveLength(2);
     expect(screen.getByText('FOLLOW-UP SYNTHESIS')).toBeInTheDocument();
     await finishAnalysis();
     expect(screen.getAllByText('SYNTHESIS COMPLETE')).toHaveLength(2);
   });
 
-  it('始终按节点编号顺序连接箭头', async () => {
+  it('always connects arrows in node-number order', async () => {
     const { container } = render(<App />);
 
-    for (const question of ['节点一', '节点二']) {
-      fireEvent.change(screen.getByLabelText('输入问题'), { target: { value: question } });
-      fireEvent.click(screen.getByLabelText('提交问题'));
+    for (const question of ['Node one', 'Node two']) {
+      fireEvent.change(screen.getByLabelText('Question input'), { target: { value: question } });
+      fireEvent.click(screen.getByLabelText('Submit question'));
       await finishAnalysis();
     }
 
     fireEvent.click(container.querySelectorAll<HTMLElement>('.node-stack')[0]);
-    fireEvent.change(screen.getByLabelText('输入问题'), { target: { value: '节点三' } });
-    fireEvent.click(screen.getByLabelText('提交问题'));
+    fireEvent.change(screen.getByLabelText('Question input'), { target: { value: 'Node three' } });
+    fireEvent.click(screen.getByLabelText('Submit question'));
 
     const paths = container.querySelectorAll<SVGPathElement>('.connections > path');
     expect(paths).toHaveLength(2);
@@ -118,13 +137,13 @@ describe('TraceLab Agent Canvas', () => {
     expect(paths[1].getAttribute('d')).toMatch(/^M 1100 361/);
   });
 
-  it('拖动选中节点时会更新位置并保持连接线同步', async () => {
+  it('updates a selected node position and its connection while dragging', async () => {
     const { container } = render(<App />);
-    fireEvent.change(screen.getByLabelText('输入问题'), { target: { value: '创建父节点' } });
-    fireEvent.click(screen.getByLabelText('提交问题'));
+    fireEvent.change(screen.getByLabelText('Question input'), { target: { value: 'Create parent node' } });
+    fireEvent.click(screen.getByLabelText('Submit question'));
     await finishAnalysis();
-    fireEvent.change(screen.getByLabelText('输入问题'), { target: { value: '创建子节点' } });
-    fireEvent.click(screen.getByLabelText('提交问题'));
+    fireEvent.change(screen.getByLabelText('Question input'), { target: { value: 'Create child node' } });
+    fireEvent.click(screen.getByLabelText('Submit question'));
 
     const nodes = container.querySelectorAll<HTMLElement>('.node-stack');
     const child = nodes[1];
@@ -143,11 +162,11 @@ describe('TraceLab Agent Canvas', () => {
     expect(child).not.toHaveClass('dragging');
   });
 
-  it('滚轮缩放时保持鼠标下方的世界坐标不移动', () => {
+  it('keeps the world coordinate beneath the pointer fixed while zooming', () => {
     const { container } = render(<App />);
-    fireEvent.change(screen.getByLabelText('输入问题'), { target: { value: '测试缩放锚点' } });
-    fireEvent.click(screen.getByLabelText('提交问题'));
-    const canvas = screen.getByLabelText('Agent 思考路径画布');
+    fireEvent.change(screen.getByLabelText('Question input'), { target: { value: 'Test zoom anchor' } });
+    fireEvent.click(screen.getByLabelText('Submit question'));
+    const canvas = screen.getByLabelText('Agent reasoning canvas');
     Object.defineProperty(canvas, 'getBoundingClientRect', {
       configurable: true,
       value: () => ({ left: 10, top: 20, width: 1000, height: 700, right: 1010, bottom: 720, x: 10, y: 20, toJSON: () => ({}) }),
@@ -165,11 +184,11 @@ describe('TraceLab Agent Canvas', () => {
     expect(y + worldY * scale).toBeCloseTo(300);
   });
 
-  it('允许缩小到更远的全画布视角', () => {
+  it('allows zooming out to a full-canvas view', () => {
     const { container } = render(<App />);
-    fireEvent.change(screen.getByLabelText('输入问题'), { target: { value: '测试全画布视角' } });
-    fireEvent.click(screen.getByLabelText('提交问题'));
-    const canvas = screen.getByLabelText('Agent 思考路径画布');
+    fireEvent.change(screen.getByLabelText('Question input'), { target: { value: 'Test full canvas view' } });
+    fireEvent.click(screen.getByLabelText('Submit question'));
+    const canvas = screen.getByLabelText('Agent reasoning canvas');
 
     for (let index = 0; index < 10; index += 1) {
       fireEvent.wheel(canvas, { deltaY: 100, clientX: 400, clientY: 300, ctrlKey: true });
@@ -180,11 +199,11 @@ describe('TraceLab Agent Canvas', () => {
     expect(values[2]).toBeCloseTo(0.25);
   });
 
-  it('触控板双指滑动只平移画布而不改变缩放比例', () => {
+  it('pans without zooming on a two-finger trackpad gesture', () => {
     const { container } = render(<App />);
-    fireEvent.change(screen.getByLabelText('输入问题'), { target: { value: '测试触控板平移' } });
-    fireEvent.click(screen.getByLabelText('提交问题'));
-    const canvas = screen.getByLabelText('Agent 思考路径画布');
+    fireEvent.change(screen.getByLabelText('Question input'), { target: { value: 'Test trackpad panning' } });
+    fireEvent.click(screen.getByLabelText('Submit question'));
+    const canvas = screen.getByLabelText('Agent reasoning canvas');
 
     fireEvent.wheel(canvas, { deltaX: 24, deltaY: 36, deltaMode: 0 });
     const transform = (container.querySelector('.canvas-world') as HTMLElement).style.transform;
@@ -195,14 +214,14 @@ describe('TraceLab Agent Canvas', () => {
     expect(values[2]).toBeCloseTo(1);
   });
 
-  it('鼠标悬停 JSON 文档时滚轮交给文档自身而不平移画布', async () => {
+  it('leaves wheel scrolling to the JSON document under the pointer', async () => {
     const { container } = render(<App />);
-    fireEvent.change(screen.getByLabelText('输入问题'), { target: { value: '测试 JSON 文档滚动' } });
-    fireEvent.click(screen.getByLabelText('提交问题'));
+    fireEvent.change(screen.getByLabelText('Question input'), { target: { value: 'Test JSON scrolling' } });
+    fireEvent.click(screen.getByLabelText('Submit question'));
     await finishAnalysis();
-    fireEvent.click(screen.getByLabelText('展开原始 JSON'));
+    fireEvent.click(screen.getByLabelText('Open raw JSON for node 1'));
 
-    const jsonDocument = screen.getByLabelText('节点 1 原始 JSON 文档');
+    const jsonDocument = screen.getByLabelText('Raw JSON document for node 1');
     const world = container.querySelector('.canvas-world') as HTMLElement;
     const transformBefore = world.style.transform;
     const wheelEvent = new WheelEvent('wheel', {

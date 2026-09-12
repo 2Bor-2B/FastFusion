@@ -41,6 +41,14 @@ function statusLabel(status: AgentRun['status']) {
   return 'QUEUED';
 }
 
+function summaryText(node: ThoughtNode) {
+  return [
+    `Question: ${node.prompt}`,
+    node.summary ? `Summary:\n${node.summary}` : '',
+    node.insights?.length ? `Key points:\n${node.insights.map((insight, index) => `${index + 1}. ${insight}`).join('\n')}` : '',
+  ].filter(Boolean).join('\n\n');
+}
+
 export default function App() {
   const [prompt, setPrompt] = useState('');
   const [phase, setPhase] = useState<Phase>('idle');
@@ -52,6 +60,7 @@ export default function App() {
   const [selectedNodes, setSelectedNodes] = useState<Set<string>>(new Set());
   const [viewport, setViewport] = useState<Viewport>(INITIAL_VIEWPORT);
   const [draggingNodeId, setDraggingNodeId] = useState<string>();
+  const [copiedTarget, setCopiedTarget] = useState<string>();
   const [exported, setExported] = useState(false);
   const [isBenchmarkExpanded, setIsBenchmarkExpanded] = useState(false);
   const canvasRef = useRef<HTMLDivElement | null>(null);
@@ -133,6 +142,35 @@ export default function App() {
       if (next.has(id)) next.delete(id); else next.add(id);
       return next;
     });
+  }
+
+  async function copyText(content: string, target: string) {
+    if (!content.trim()) return;
+
+    let copied = false;
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(content);
+        copied = true;
+      }
+    } catch {
+      copied = false;
+    }
+
+    if (!copied) {
+      const textarea = document.createElement('textarea');
+      textarea.value = content;
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.select();
+      copied = document.execCommand?.('copy') ?? false;
+      textarea.remove();
+    }
+
+    if (!copied) return;
+    setCopiedTarget(target);
+    window.setTimeout(() => setCopiedTarget((current) => current === target ? undefined : current), 1600);
   }
 
   function exportSkills() {
@@ -306,7 +344,7 @@ export default function App() {
       <div
         ref={canvasRef}
         className={`canvas ${nodes.length ? 'has-nodes' : ''}`}
-        aria-label="Agent 思考路径画布"
+        aria-label="Agent reasoning canvas"
         onPointerDown={beginPan}
         onPointerMove={movePan}
         onPointerUp={stopPan}
@@ -348,17 +386,41 @@ export default function App() {
                 onPointerCancel={stopNodeDrag}
                 onLostPointerCapture={stopNodeDrag}
               >
-                <section className="raw-layer" aria-label={`原始数据 ${index + 1}`}>
+                <section className="raw-layer" aria-label={`Raw data for node ${index + 1}`}>
                   {!expanded ? (
-                    <button className="raw-peek" type="button" onClick={(event) => { event.stopPropagation(); toggleExpanded(node.id); }} disabled={!node.raw} aria-label="展开原始 JSON">
-                      <span>RAW RESPONSE</span><span>OPEN</span>
-                    </button>
+                    <div className="raw-peek">
+                      <button className="raw-open" type="button" onClick={(event) => { event.stopPropagation(); toggleExpanded(node.id); }} disabled={!node.raw} aria-label={`Open raw JSON for node ${index + 1}`}>
+                        <span>RAW RESPONSE</span><span>OPEN</span>
+                      </button>
+                      <button
+                        className={`copy-button raw-copy ${copiedTarget === `raw-${node.id}` ? 'is-copied' : ''}`}
+                        type="button"
+                        disabled={!node.raw}
+                        aria-label={`Copy raw JSON for node ${index + 1}`}
+                        onClick={(event) => { event.stopPropagation(); void copyText(JSON.stringify(node.raw, null, 2), `raw-${node.id}`); }}
+                      >
+                        {copiedTarget === `raw-${node.id}` ? 'COPIED' : 'COPY'}
+                      </button>
+                    </div>
                   ) : (
                     <div className="raw-content">
-                      <header><span>RAW RESPONSE</span><span>JSON</span></header>
+                      <header>
+                        <span>RAW RESPONSE</span>
+                        <div className="raw-header-actions">
+                          <span>JSON</span>
+                          <button
+                            className={`copy-button ${copiedTarget === `raw-${node.id}` ? 'is-copied' : ''}`}
+                            type="button"
+                            aria-label={`Copy raw JSON for node ${index + 1}`}
+                            onClick={(event) => { event.stopPropagation(); void copyText(JSON.stringify(node.raw, null, 2), `raw-${node.id}`); }}
+                          >
+                            {copiedTarget === `raw-${node.id}` ? 'COPIED' : 'COPY'}
+                          </button>
+                        </div>
+                      </header>
                       <label>PROMPT</label><p>{node.prompt}</p>
-                      <label>PAYLOAD</label><pre data-json-scroll tabIndex={0} style={{ overscrollBehavior: 'contain' }} aria-label={`节点 ${index + 1} 原始 JSON 文档`}>{JSON.stringify(node.raw, null, 2)}</pre>
-                      <button type="button" onClick={(event) => { event.stopPropagation(); toggleExpanded(node.id); }} aria-label="收起原始 JSON">Return to summary</button>
+                      <label>PAYLOAD</label><pre data-json-scroll tabIndex={0} style={{ overscrollBehavior: 'contain' }} aria-label={`Raw JSON document for node ${index + 1}`}>{JSON.stringify(node.raw, null, 2)}</pre>
+                      <button className="raw-return" type="button" onClick={(event) => { event.stopPropagation(); toggleExpanded(node.id); }} aria-label={`Close raw JSON for node ${index + 1}`}>Return to summary</button>
                     </div>
                   )}
                 </section>
@@ -366,11 +428,22 @@ export default function App() {
                 <section className="thought-card">
                   <header className="node-header">
                     <span className="node-index">{String(index + 1).padStart(2, '0')}</span>
-                    <div><strong>{node.parentId ? 'FOLLOW-UP SYNTHESIS' : 'PRIMARY SYNTHESIS'}</strong></div>
-                    <label className="node-check" onClick={(event) => event.stopPropagation()}>
-                      <input type="checkbox" checked={selected} onChange={() => toggleSelected(node.id)} aria-label={`选择节点 ${index + 1}`} />
-                      <span>{selected ? 'SELECTED' : 'SELECT'}</span>
-                    </label>
+                    <div className="node-title"><strong>{node.parentId ? 'FOLLOW-UP SYNTHESIS' : 'PRIMARY SYNTHESIS'}</strong></div>
+                    <div className="node-actions">
+                      <label className="node-check" onClick={(event) => event.stopPropagation()}>
+                        <input type="checkbox" checked={selected} onChange={() => toggleSelected(node.id)} aria-label={`Select node ${index + 1}`} />
+                        <span>{selected ? 'SELECTED' : 'SELECT'}</span>
+                      </label>
+                      <button
+                        className={`copy-button ${copiedTarget === `summary-${node.id}` ? 'is-copied' : ''}`}
+                        type="button"
+                        disabled={node.status !== 'complete'}
+                        aria-label={`Copy summary for node ${index + 1}`}
+                        onClick={(event) => { event.stopPropagation(); void copyText(summaryText(node), `summary-${node.id}`); }}
+                      >
+                        {copiedTarget === `summary-${node.id}` ? 'COPIED' : 'COPY'}
+                      </button>
+                    </div>
                   </header>
 
                   {node.status !== 'complete' ? (
@@ -408,14 +481,14 @@ export default function App() {
                   onClick={() => setIsBenchmarkExpanded((current) => !current)}
                   aria-expanded={isBenchmarkExpanded}
                   aria-controls="benchmark-details"
-                  aria-label={isBenchmarkExpanded ? '收起 Benchmark' : '展开 Benchmark'}
-                  title={isBenchmarkExpanded ? '收起 Benchmark' : '展开 Benchmark'}
+                  aria-label={isBenchmarkExpanded ? 'Collapse Benchmark' : 'Expand Benchmark'}
+                  title={isBenchmarkExpanded ? 'Collapse Benchmark' : 'Expand Benchmark'}
                 >
                   {isBenchmarkExpanded ? 'HIDE' : 'SHOW'}
                 </button>
               </div>
             </header>
-            <div id="benchmark-details" className="benchmark-details" role="region" aria-label="Agent Benchmark 详情" aria-busy={isProcessing} hidden={!isBenchmarkExpanded}>
+            <div id="benchmark-details" className="benchmark-details" role="region" aria-label="Agent Benchmark details" aria-busy={isProcessing} hidden={!isBenchmarkExpanded}>
               <div className="agent-grid">
                 {agents.map((agent) => {
                   const winner = winnerId === agent.id;
@@ -441,10 +514,10 @@ export default function App() {
               if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); void submitPrompt(); }
             }}
             placeholder={nodes.length ? 'Ask a follow-up to extend this trace' : 'Ask anything. We’ll compare the agents'}
-            aria-label="输入问题"
+            aria-label="Question input"
             disabled={isProcessing}
           />
-          <div className="prompt-meta"><span>{isProcessing ? 'Agents busy' : 'Run benchmark'}</span><button type="submit" disabled={!prompt.trim() || isProcessing} aria-label="提交问题">{isProcessing ? 'WAIT' : 'RUN'}</button></div>
+          <div className="prompt-meta"><span>{isProcessing ? 'Agents busy' : 'Run benchmark'}</span><button type="submit" disabled={!prompt.trim() || isProcessing} aria-label="Submit question">{isProcessing ? 'WAIT' : 'RUN'}</button></div>
         </form>
       </section>
     </main>

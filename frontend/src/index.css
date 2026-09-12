@@ -257,8 +257,18 @@ input:focus-visible + span {
   height: 100%;
   display: flex;
   align-items: center;
+  gap: 8px;
+  padding: 0 8px 0 0;
+}
+
+.raw-open {
+  min-width: 0;
+  height: 100%;
+  flex: 1;
+  display: flex;
+  align-items: center;
   justify-content: space-between;
-  padding: 0 18px;
+  padding: 0 10px 0 18px;
   background: transparent;
   color: #667c99;
   font-size: 11px;
@@ -266,13 +276,45 @@ input:focus-visible + span {
   letter-spacing: .08em;
 }
 
-.raw-peek:hover:not(:disabled) {
+.raw-open:hover:not(:disabled) {
   color: #355685;
   background: #e3edf9;
 }
 
-.raw-peek:disabled {
+.raw-open:disabled,
+.raw-copy:disabled {
   cursor: wait;
+}
+
+.copy-button {
+  min-width: 50px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  padding: 0 8px;
+  border: 1px solid #b9cce5;
+  border-radius: 6px;
+  color: #436b9f;
+  background: #ffffff;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .06em;
+}
+
+.copy-button:hover:not(:disabled) {
+  border-color: #7fa7dc;
+  color: #245fae;
+  background: #edf5ff;
+}
+
+.copy-button.is-copied {
+  border-color: var(--blue);
+  color: #ffffff;
+  background: var(--blue);
+}
+
+.raw-copy {
+  flex: 0 0 auto;
 }
 
 .node-stack.raw-expanded {
@@ -315,6 +357,17 @@ input:focus-visible + span {
   letter-spacing: .08em;
 }
 
+.raw-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.raw-content header .copy-button {
+  height: 26px;
+  margin: 0;
+}
+
 .raw-content label {
   margin: 2px 0 7px;
   color: #68768a;
@@ -354,7 +407,7 @@ input:focus-visible + span {
   cursor: text;
 }
 
-.raw-content button {
+.raw-return {
   height: 34px;
   flex: 0 0 auto;
   margin-top: 10px;
@@ -366,7 +419,7 @@ input:focus-visible + span {
   font-weight: 600;
 }
 
-.raw-content button:hover {
+.raw-return:hover {
   border-color: #a9c3e6;
   background: #cfdef2;
 }
@@ -405,12 +458,18 @@ input:focus-visible + span {
   text-align: center;
 }
 
-.node-header > div strong {
+.node-title strong {
   display: block;
   color: #53657d;
   font-size: 11px;
   font-weight: 600;
   letter-spacing: .13em;
+}
+
+.node-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .node-check {
@@ -891,7 +950,7 @@ input:focus-visible + span {
 .export-cluster {
   position: absolute;
   z-index: 40;
-  top: 88px;
+  top: 26px;
   right: 32px;
   min-height: 42px;
   display: flex;
@@ -970,6 +1029,11 @@ input:focus-visible + span {
 
   .command-dock {
     bottom: 30px;
+  }
+
+  .export-cluster {
+    top: 30px;
+    right: 40px;
   }
 }
 
@@ -1108,7 +1172,7 @@ input:focus-visible + span {
   }
 
   .export-cluster {
-    top: 78px;
+    top: 19px;
     right: 18px;
   }
 
