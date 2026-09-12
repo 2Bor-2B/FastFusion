@@ -1,6 +1,5 @@
-    Blocking waiting for file lock on build directory
-   0.137465730s  INFO prepare_target{force=false package_id=benchmark_serializer v0.1.0 (/home/wizard49/Projects/fastfusion/benchmark_serializer) target="benchmark_serializer"}: cargo::core::compiler::fingerprint: fingerprint error for benchmark_serializer v0.1.0 (/home/wizard49/Projects/fastfusion/benchmark_serializer)/Check { test: false }/TargetInner { name: "benchmark_serializer", doc: true, ..: with_path("/home/wizard49/Projects/fastfusion/benchmark_serializer/src/main.rs", Edition2024) }
-   0.137495611s  INFO prepare_target{force=false package_id=benchmark_serializer v0.1.0 (/home/wizard49/Projects/fastfusion/benchmark_serializer) target="benchmark_serializer"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/benchmark_serializer-0ce5406df094588f/bin-benchmark_serializer`
+   0.074190592s  INFO prepare_target{force=false package_id=benchmark_serializer v0.1.0 (/home/wizard49/Projects/fastfusion/benchmark_serializer) target="benchmark_serializer"}: cargo::core::compiler::fingerprint: fingerprint error for benchmark_serializer v0.1.0 (/home/wizard49/Projects/fastfusion/benchmark_serializer)/Check { test: false }/TargetInner { name: "benchmark_serializer", doc: true, ..: with_path("/home/wizard49/Projects/fastfusion/benchmark_serializer/src/main.rs", Edition2024) }
+   0.074205801s  INFO prepare_target{force=false package_id=benchmark_serializer v0.1.0 (/home/wizard49/Projects/fastfusion/benchmark_serializer) target="benchmark_serializer"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/benchmark_serializer-2873bf615a4ac5a1/bin-benchmark_serializer`
 
 Caused by:
     No such file or directory (os error 2)
@@ -41,8 +40,187 @@ Stack backtrace:
   23: __libc_start_call_main
   24: __libc_start_main@GLIBC_2.17
   25: <unknown>
-   0.198656913s  INFO prepare_target{force=false package_id=benchmark_serializer v0.1.0 (/home/wizard49/Projects/fastfusion/benchmark_serializer) target="benchmark_serializer"}: cargo::core::compiler::fingerprint: fingerprint error for benchmark_serializer v0.1.0 (/home/wizard49/Projects/fastfusion/benchmark_serializer)/Check { test: true }/TargetInner { name: "benchmark_serializer", doc: true, ..: with_path("/home/wizard49/Projects/fastfusion/benchmark_serializer/src/main.rs", Edition2024) }
-   0.198675958s  INFO prepare_target{force=false package_id=benchmark_serializer v0.1.0 (/home/wizard49/Projects/fastfusion/benchmark_serializer) target="benchmark_serializer"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/benchmark_serializer-8de27b311b5295cf/test-bin-benchmark_serializer`
+   0.093319605s  INFO prepare_target{force=false package_id=request v0.0.8 target="request"}: cargo::core::compiler::fingerprint: fingerprint error for request v0.0.8/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("request", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/request-0.0.8/src/lib.rs", Edition2015) }
+   0.093329314s  INFO prepare_target{force=false package_id=request v0.0.8 target="request"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/request-f8285eafa2b5346e/lib-request`
+
+Caused by:
+    No such file or directory (os error 2)
+
+Stack backtrace:
+   0: cargo_util::paths::read_bytes
+   1: cargo_util::paths::read
+   2: cargo::core::compiler::fingerprint::_compare_old_fingerprint
+   3: cargo::core::compiler::fingerprint::prepare_target
+   4: cargo::core::compiler::compile
+   5: cargo::core::compiler::compile
+   6: <cargo::core::compiler::build_runner::BuildRunner>::compile
+   7: cargo::ops::cargo_compile::compile_with_exec
+   8: cargo::ops::cargo_compile::compile
+   9: cargo::commands::check::exec
+  10: <cargo::cli::Exec>::exec
+  11: cargo::main
+  12: std::sys::backtrace::__rust_begin_short_backtrace::<fn(), ()>
+  13: std::rt::lang_start::<()>::{closure#0}
+  14: <&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe as core::ops::function::FnOnce<()>>::call_once
+             at /rustc/88d9e12ae178fab0fb5cc050a94da85685d449ea/library/core/src/ops/function.rs:287:21
+  15: std::panicking::catch_unwind::do_call::<&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe, i32>
+             at /rustc/88d9e12ae178fab0fb5cc050a94da85685d449ea/library/std/src/panicking.rs:576:43
+  16: std::panicking::catch_unwind::<i32, &dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe>
+             at /rustc/88d9e12ae178fab0fb5cc050a94da85685d449ea/library/std/src/panicking.rs:544:19
+  17: std::panic::catch_unwind::<&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe, i32>
+             at /rustc/88d9e12ae178fab0fb5cc050a94da85685d449ea/library/std/src/panic.rs:359:14
+  18: std::rt::lang_start_internal::{closure#0}
+             at /rustc/88d9e12ae178fab0fb5cc050a94da85685d449ea/library/std/src/rt.rs:175:24
+  19: std::panicking::catch_unwind::do_call::<std::rt::lang_start_internal::{closure#0}, isize>
+             at /rustc/88d9e12ae178fab0fb5cc050a94da85685d449ea/library/std/src/panicking.rs:576:43
+  20: std::panicking::catch_unwind::<isize, std::rt::lang_start_internal::{closure#0}>
+             at /rustc/88d9e12ae178fab0fb5cc050a94da85685d449ea/library/std/src/panicking.rs:544:19
+  21: std::panic::catch_unwind::<std::rt::lang_start_internal::{closure#0}, isize>
+             at /rustc/88d9e12ae178fab0fb5cc050a94da85685d449ea/library/std/src/panic.rs:359:14
+  22: std::rt::lang_start_internal
+             at /rustc/88d9e12ae178fab0fb5cc050a94da85685d449ea/library/std/src/rt.rs:171:5
+  23: main
+  24: __libc_start_call_main
+  25: __libc_start_main@GLIBC_2.17
+  26: <unknown>
+   0.093452693s  INFO prepare_target{force=false package_id=openssl v0.6.7 target="openssl"}: cargo::core::compiler::fingerprint: fingerprint error for openssl v0.6.7/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("openssl", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/openssl-0.6.7/src/lib.rs", Edition2015) }
+   0.093456110s  INFO prepare_target{force=false package_id=openssl v0.6.7 target="openssl"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/openssl-cedbff56eca920f5/lib-openssl`
+
+Caused by:
+    No such file or directory (os error 2)
+
+Stack backtrace:
+   0: cargo_util::paths::read_bytes
+   1: cargo_util::paths::read
+   2: cargo::core::compiler::fingerprint::_compare_old_fingerprint
+   3: cargo::core::compiler::fingerprint::prepare_target
+   4: cargo::core::compiler::compile
+   5: cargo::core::compiler::compile
+   6: cargo::core::compiler::compile
+   7: <cargo::core::compiler::build_runner::BuildRunner>::compile
+   8: cargo::ops::cargo_compile::compile_with_exec
+   9: cargo::ops::cargo_compile::compile
+  10: cargo::commands::check::exec
+  11: <cargo::cli::Exec>::exec
+  12: cargo::main
+  13: std::sys::backtrace::__rust_begin_short_backtrace::<fn(), ()>
+  14: std::rt::lang_start::<()>::{closure#0}
+  15: <&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe as core::ops::function::FnOnce<()>>::call_once
+             at /rustc/88d9e12ae178fab0fb5cc050a94da85685d449ea/library/core/src/ops/function.rs:287:21
+  16: std::panicking::catch_unwind::do_call::<&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe, i32>
+             at /rustc/88d9e12ae178fab0fb5cc050a94da85685d449ea/library/std/src/panicking.rs:576:43
+  17: std::panicking::catch_unwind::<i32, &dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe>
+             at /rustc/88d9e12ae178fab0fb5cc050a94da85685d449ea/library/std/src/panicking.rs:544:19
+  18: std::panic::catch_unwind::<&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe, i32>
+             at /rustc/88d9e12ae178fab0fb5cc050a94da85685d449ea/library/std/src/panic.rs:359:14
+  19: std::rt::lang_start_internal::{closure#0}
+             at /rustc/88d9e12ae178fab0fb5cc050a94da85685d449ea/library/std/src/rt.rs:175:24
+  20: std::panicking::catch_unwind::do_call::<std::rt::lang_start_internal::{closure#0}, isize>
+             at /rustc/88d9e12ae178fab0fb5cc050a94da85685d449ea/library/std/src/panicking.rs:576:43
+  21: std::panicking::catch_unwind::<isize, std::rt::lang_start_internal::{closure#0}>
+             at /rustc/88d9e12ae178fab0fb5cc050a94da85685d449ea/library/std/src/panicking.rs:544:19
+  22: std::panic::catch_unwind::<std::rt::lang_start_internal::{closure#0}, isize>
+             at /rustc/88d9e12ae178fab0fb5cc050a94da85685d449ea/library/std/src/panic.rs:359:14
+  23: std::rt::lang_start_internal
+             at /rustc/88d9e12ae178fab0fb5cc050a94da85685d449ea/library/std/src/rt.rs:171:5
+  24: main
+  25: __libc_start_call_main
+  26: __libc_start_main@GLIBC_2.17
+  27: <unknown>
+   0.093592865s  INFO prepare_target{force=false package_id=openssl-sys v0.6.7 target="openssl_sys"}: cargo::core::compiler::fingerprint: fingerprint error for openssl-sys v0.6.7/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("openssl_sys", ["lib"], "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/openssl-sys-0.6.7/src/lib.rs", Edition2015) }
+   0.093596365s  INFO prepare_target{force=false package_id=openssl-sys v0.6.7 target="openssl_sys"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/openssl-sys-17f4997ece426bbe/lib-openssl_sys`
+
+Caused by:
+    No such file or directory (os error 2)
+
+Stack backtrace:
+   0: cargo_util::paths::read_bytes
+   1: cargo_util::paths::read
+   2: cargo::core::compiler::fingerprint::_compare_old_fingerprint
+   3: cargo::core::compiler::fingerprint::prepare_target
+   4: cargo::core::compiler::compile
+   5: cargo::core::compiler::compile
+   6: cargo::core::compiler::compile
+   7: cargo::core::compiler::compile
+   8: <cargo::core::compiler::build_runner::BuildRunner>::compile
+   9: cargo::ops::cargo_compile::compile_with_exec
+  10: cargo::ops::cargo_compile::compile
+  11: cargo::commands::check::exec
+  12: <cargo::cli::Exec>::exec
+  13: cargo::main
+  14: std::sys::backtrace::__rust_begin_short_backtrace::<fn(), ()>
+  15: std::rt::lang_start::<()>::{closure#0}
+  16: <&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe as core::ops::function::FnOnce<()>>::call_once
+             at /rustc/88d9e12ae178fab0fb5cc050a94da85685d449ea/library/core/src/ops/function.rs:287:21
+  17: std::panicking::catch_unwind::do_call::<&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe, i32>
+             at /rustc/88d9e12ae178fab0fb5cc050a94da85685d449ea/library/std/src/panicking.rs:576:43
+  18: std::panicking::catch_unwind::<i32, &dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe>
+             at /rustc/88d9e12ae178fab0fb5cc050a94da85685d449ea/library/std/src/panicking.rs:544:19
+  19: std::panic::catch_unwind::<&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe, i32>
+             at /rustc/88d9e12ae178fab0fb5cc050a94da85685d449ea/library/std/src/panic.rs:359:14
+  20: std::rt::lang_start_internal::{closure#0}
+             at /rustc/88d9e12ae178fab0fb5cc050a94da85685d449ea/library/std/src/rt.rs:175:24
+  21: std::panicking::catch_unwind::do_call::<std::rt::lang_start_internal::{closure#0}, isize>
+             at /rustc/88d9e12ae178fab0fb5cc050a94da85685d449ea/library/std/src/panicking.rs:576:43
+  22: std::panicking::catch_unwind::<isize, std::rt::lang_start_internal::{closure#0}>
+             at /rustc/88d9e12ae178fab0fb5cc050a94da85685d449ea/library/std/src/panicking.rs:544:19
+  23: std::panic::catch_unwind::<std::rt::lang_start_internal::{closure#0}, isize>
+             at /rustc/88d9e12ae178fab0fb5cc050a94da85685d449ea/library/std/src/panic.rs:359:14
+  24: std::rt::lang_start_internal
+             at /rustc/88d9e12ae178fab0fb5cc050a94da85685d449ea/library/std/src/rt.rs:171:5
+  25: main
+  26: __libc_start_call_main
+  27: __libc_start_main@GLIBC_2.17
+  28: <unknown>
+   0.093739912s  INFO prepare_target{force=false package_id=openssl-sys v0.6.7 target="build-script-build"}: cargo::core::compiler::fingerprint: fingerprint error for openssl-sys v0.6.7/RunCustomBuild/TargetInner { ..: custom_build_target("build-script-build", "/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/openssl-sys-0.6.7/build.rs", Edition2015) }
+   0.093743537s  INFO prepare_target{force=false package_id=openssl-sys v0.6.7 target="build-script-build"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/openssl-sys-a4874f5381b55d3c/run-build-script-build-script-build`
+
+Caused by:
+    No such file or directory (os error 2)
+
+Stack backtrace:
+   0: cargo_util::paths::read_bytes
+   1: cargo_util::paths::read
+   2: cargo::core::compiler::fingerprint::_compare_old_fingerprint
+   3: cargo::core::compiler::fingerprint::prepare_target
+   4: cargo::core::compiler::custom_build::build_work
+   5: cargo::core::compiler::compile
+   6: cargo::core::compiler::compile
+   7: cargo::core::compiler::compile
+   8: cargo::core::compiler::compile
+   9: cargo::core::compiler::compile
+  10: <cargo::core::compiler::build_runner::BuildRunner>::compile
+  11: cargo::ops::cargo_compile::compile_with_exec
+  12: cargo::ops::cargo_compile::compile
+  13: cargo::commands::check::exec
+  14: <cargo::cli::Exec>::exec
+  15: cargo::main
+  16: std::sys::backtrace::__rust_begin_short_backtrace::<fn(), ()>
+  17: std::rt::lang_start::<()>::{closure#0}
+  18: <&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe as core::ops::function::FnOnce<()>>::call_once
+             at /rustc/88d9e12ae178fab0fb5cc050a94da85685d449ea/library/core/src/ops/function.rs:287:21
+  19: std::panicking::catch_unwind::do_call::<&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe, i32>
+             at /rustc/88d9e12ae178fab0fb5cc050a94da85685d449ea/library/std/src/panicking.rs:576:43
+  20: std::panicking::catch_unwind::<i32, &dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe>
+             at /rustc/88d9e12ae178fab0fb5cc050a94da85685d449ea/library/std/src/panicking.rs:544:19
+  21: std::panic::catch_unwind::<&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe, i32>
+             at /rustc/88d9e12ae178fab0fb5cc050a94da85685d449ea/library/std/src/panic.rs:359:14
+  22: std::rt::lang_start_internal::{closure#0}
+             at /rustc/88d9e12ae178fab0fb5cc050a94da85685d449ea/library/std/src/rt.rs:175:24
+  23: std::panicking::catch_unwind::do_call::<std::rt::lang_start_internal::{closure#0}, isize>
+             at /rustc/88d9e12ae178fab0fb5cc050a94da85685d449ea/library/std/src/panicking.rs:576:43
+  24: std::panicking::catch_unwind::<isize, std::rt::lang_start_internal::{closure#0}>
+             at /rustc/88d9e12ae178fab0fb5cc050a94da85685d449ea/library/std/src/panicking.rs:544:19
+  25: std::panic::catch_unwind::<std::rt::lang_start_internal::{closure#0}, isize>
+             at /rustc/88d9e12ae178fab0fb5cc050a94da85685d449ea/library/std/src/panic.rs:359:14
+  26: std::rt::lang_start_internal
+             at /rustc/88d9e12ae178fab0fb5cc050a94da85685d449ea/library/std/src/rt.rs:171:5
+  27: main
+  28: __libc_start_call_main
+  29: __libc_start_main@GLIBC_2.17
+  30: <unknown>
+   0.094119425s  INFO prepare_target{force=false package_id=benchmark_serializer v0.1.0 (/home/wizard49/Projects/fastfusion/benchmark_serializer) target="benchmark_serializer"}: cargo::core::compiler::fingerprint: fingerprint error for benchmark_serializer v0.1.0 (/home/wizard49/Projects/fastfusion/benchmark_serializer)/Check { test: true }/TargetInner { name: "benchmark_serializer", doc: true, ..: with_path("/home/wizard49/Projects/fastfusion/benchmark_serializer/src/main.rs", Edition2024) }
+   0.094123759s  INFO prepare_target{force=false package_id=benchmark_serializer v0.1.0 (/home/wizard49/Projects/fastfusion/benchmark_serializer) target="benchmark_serializer"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/.fingerprint/benchmark_serializer-c11406ebfc5558f2/test-bin-benchmark_serializer`
 
 Caused by:
     No such file or directory (os error 2)
@@ -83,5 +261,98 @@ Stack backtrace:
   23: __libc_start_call_main
   24: __libc_start_main@GLIBC_2.17
   25: <unknown>
-    Checking benchmark_serializer v0.1.0 (/home/wizard49/Projects/fastfusion/benchmark_serializer)
-    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.38s
+   Compiling openssl-sys v0.6.7
+warning: openssl-sys@0.6.7: src/openssl_shim.c:1:10: fatal error: openssl/hmac.h: No such file or directory
+warning: openssl-sys@0.6.7:     1 | #include <openssl/hmac.h>
+warning: openssl-sys@0.6.7:       |          ^~~~~~~~~~~~~~~~
+warning: openssl-sys@0.6.7: compilation terminated.
+error: failed to run custom build command for `openssl-sys v0.6.7`
+note: To improve backtraces for build dependencies, set the CARGO_PROFILE_DEV_BUILD_OVERRIDE_DEBUG=true environment variable to enable debug information generation.
+
+Caused by:
+  process didn't exit successfully: `/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/build/openssl-sys-a7b5663e98991260/build-script-build` (exit status: 101)
+  --- stdout
+  cargo:rerun-if-env-changed=OPENSSL_NO_PKG_CONFIG
+  cargo:rerun-if-env-changed=PKG_CONFIG_aarch64-unknown-linux-gnu
+  cargo:rerun-if-env-changed=PKG_CONFIG_aarch64_unknown_linux_gnu
+  cargo:rerun-if-env-changed=HOST_PKG_CONFIG
+  cargo:rerun-if-env-changed=PKG_CONFIG
+  cargo:rerun-if-env-changed=OPENSSL_STATIC
+  cargo:rerun-if-env-changed=OPENSSL_DYNAMIC
+  cargo:rerun-if-env-changed=PKG_CONFIG_ALL_STATIC
+  cargo:rerun-if-env-changed=PKG_CONFIG_ALL_DYNAMIC
+  cargo:rerun-if-env-changed=PKG_CONFIG_PATH_aarch64-unknown-linux-gnu
+  cargo:rerun-if-env-changed=PKG_CONFIG_PATH_aarch64_unknown_linux_gnu
+  cargo:rerun-if-env-changed=HOST_PKG_CONFIG_PATH
+  cargo:rerun-if-env-changed=PKG_CONFIG_PATH
+  cargo:rerun-if-env-changed=PKG_CONFIG_LIBDIR_aarch64-unknown-linux-gnu
+  cargo:rerun-if-env-changed=PKG_CONFIG_LIBDIR_aarch64_unknown_linux_gnu
+  cargo:rerun-if-env-changed=HOST_PKG_CONFIG_LIBDIR
+  cargo:rerun-if-env-changed=PKG_CONFIG_LIBDIR
+  cargo:rerun-if-env-changed=PKG_CONFIG_SYSROOT_DIR_aarch64-unknown-linux-gnu
+  cargo:rerun-if-env-changed=PKG_CONFIG_SYSROOT_DIR_aarch64_unknown_linux_gnu
+  cargo:rerun-if-env-changed=HOST_PKG_CONFIG_SYSROOT_DIR
+  cargo:rerun-if-env-changed=PKG_CONFIG_SYSROOT_DIR
+  cargo:rerun-if-env-changed=OPENSSL_STATIC
+  cargo:rerun-if-env-changed=OPENSSL_DYNAMIC
+  cargo:rerun-if-env-changed=PKG_CONFIG_ALL_STATIC
+  cargo:rerun-if-env-changed=PKG_CONFIG_ALL_DYNAMIC
+  cargo:rerun-if-env-changed=PKG_CONFIG_PATH_aarch64-unknown-linux-gnu
+  cargo:rerun-if-env-changed=PKG_CONFIG_PATH_aarch64_unknown_linux_gnu
+  cargo:rerun-if-env-changed=HOST_PKG_CONFIG_PATH
+  cargo:rerun-if-env-changed=PKG_CONFIG_PATH
+  cargo:rerun-if-env-changed=PKG_CONFIG_LIBDIR_aarch64-unknown-linux-gnu
+  cargo:rerun-if-env-changed=PKG_CONFIG_LIBDIR_aarch64_unknown_linux_gnu
+  cargo:rerun-if-env-changed=HOST_PKG_CONFIG_LIBDIR
+  cargo:rerun-if-env-changed=PKG_CONFIG_LIBDIR
+  cargo:rerun-if-env-changed=PKG_CONFIG_SYSROOT_DIR_aarch64-unknown-linux-gnu
+  cargo:rerun-if-env-changed=PKG_CONFIG_SYSROOT_DIR_aarch64_unknown_linux_gnu
+  cargo:rerun-if-env-changed=HOST_PKG_CONFIG_SYSROOT_DIR
+  cargo:rerun-if-env-changed=PKG_CONFIG_SYSROOT_DIR
+  cargo:rustc-link-lib=dylib=ssl
+  cargo:rustc-link-lib=dylib=crypto
+  TARGET = Some("aarch64-unknown-linux-gnu")
+  OPT_LEVEL = Some("0")
+  TARGET = Some("aarch64-unknown-linux-gnu")
+  HOST = Some("aarch64-unknown-linux-gnu")
+  TARGET = Some("aarch64-unknown-linux-gnu")
+  TARGET = Some("aarch64-unknown-linux-gnu")
+  HOST = Some("aarch64-unknown-linux-gnu")
+  CC_aarch64-unknown-linux-gnu = None
+  CC_aarch64_unknown_linux_gnu = None
+  HOST_CC = None
+  CC = None
+  HOST = Some("aarch64-unknown-linux-gnu")
+  TARGET = Some("aarch64-unknown-linux-gnu")
+  HOST = Some("aarch64-unknown-linux-gnu")
+  CFLAGS_aarch64-unknown-linux-gnu = None
+  CFLAGS_aarch64_unknown_linux_gnu = None
+  HOST_CFLAGS = None
+  CFLAGS = None
+  DEBUG = Some("true")
+  running: "cc" "-O0" "-ffunction-sections" "-fdata-sections" "-fPIC" "-g" "-Wall" "-Wextra" "-o" "/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/build/openssl-sys-a4874f5381b55d3c/out/src/openssl_shim.o" "-c" "src/openssl_shim.c"
+  cargo:warning=src/openssl_shim.c:1:10: fatal error: openssl/hmac.h: No such file or directory
+  cargo:warning=    1 | #include <openssl/hmac.h>
+  cargo:warning=      |          ^~~~~~~~~~~~~~~~
+  cargo:warning=compilation terminated.
+  exit status: 1
+
+  --- stderr
+
+  thread 'main' (649082) panicked at /home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/gcc-0.3.55/src/lib.rs:1672:5:
+
+
+  Internal error occurred: Command "cc" "-O0" "-ffunction-sections" "-fdata-sections" "-fPIC" "-g" "-Wall" "-Wextra" "-o" "/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/build/openssl-sys-a4874f5381b55d3c/out/src/openssl_shim.o" "-c" "src/openssl_shim.c" with args "cc" did not execute successfully (status code exit status: 1).
+
+
+  stack backtrace:
+     0: __rustc::rust_begin_unwind
+               at /rustc/88d9e12ae178fab0fb5cc050a94da85685d449ea/library/std/src/panicking.rs:679:5
+     1: core::panicking::panic_fmt
+               at /rustc/88d9e12ae178fab0fb5cc050a94da85685d449ea/library/core/src/panicking.rs:80:14
+     2: gcc::fail
+     3: <gcc::Build>::compile
+     4: build_script_build::build_openssl_shim
+     5: build_script_build::main
+     6: <fn() as core::ops::function::FnOnce<()>>::call_once
+  note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.

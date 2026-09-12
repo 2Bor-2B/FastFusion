@@ -1,0 +1,7 @@
+/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/deps/dunce-1b7ee40a863865d8.d: /home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/dunce-1.0.5/src/lib.rs
+
+/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/deps/libdunce-1b7ee40a863865d8.rlib: /home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/dunce-1.0.5/src/lib.rs
+
+/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/deps/libdunce-1b7ee40a863865d8.rmeta: /home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/dunce-1.0.5/src/lib.rs
+
+/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/dunce-1.0.5/src/lib.rs:

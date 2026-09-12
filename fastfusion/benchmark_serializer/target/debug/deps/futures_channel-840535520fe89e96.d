@@ -1,0 +1,10 @@
+/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/deps/futures_channel-840535520fe89e96.d: /home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/futures-channel-0.3.34/src/lib.rs /home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/futures-channel-0.3.34/src/lock.rs /home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/futures-channel-0.3.34/src/mpsc/mod.rs /home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/futures-channel-0.3.34/src/mpsc/queue.rs /home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/futures-channel-0.3.34/src/mpsc/sink_impl.rs /home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/futures-channel-0.3.34/src/oneshot.rs
+
+/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/deps/libfutures_channel-840535520fe89e96.rmeta: /home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/futures-channel-0.3.34/src/lib.rs /home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/futures-channel-0.3.34/src/lock.rs /home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/futures-channel-0.3.34/src/mpsc/mod.rs /home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/futures-channel-0.3.34/src/mpsc/queue.rs /home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/futures-channel-0.3.34/src/mpsc/sink_impl.rs /home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/futures-channel-0.3.34/src/oneshot.rs
+
+/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/futures-channel-0.3.34/src/lib.rs:
+/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/futures-channel-0.3.34/src/lock.rs:
+/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/futures-channel-0.3.34/src/mpsc/mod.rs:
+/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/futures-channel-0.3.34/src/mpsc/queue.rs:
+/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/futures-channel-0.3.34/src/mpsc/sink_impl.rs:
+/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/futures-channel-0.3.34/src/oneshot.rs:
