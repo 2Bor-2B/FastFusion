@@ -36,5 +36,6 @@
       "expected_contains": "APPLES+ORANGES"
     }
   ],
-  "reasoning_effort": "high"
+  "reasoning_effort": "high",
+  "summary_model": "nex-agi/nex-n2.5-pro:free"
 }

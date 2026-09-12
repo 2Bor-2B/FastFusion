@@ -1,235 +1,320 @@
-import { act, fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import App from './App';
 
-async function finishAnalysis() {
+/** Runs the mock backend's timers to completion. */
+async function finishRun() {
   await act(async () => { await vi.runAllTimersAsync(); });
 }
 
-describe('TraceLab Agent Canvas', () => {
+async function ask(question: string) {
+  fireEvent.change(screen.getByLabelText('Your prompt'), { target: { value: question } });
+  fireEvent.click(screen.getByLabelText('Submit prompt'));
+}
+
+const openPanel = () => screen.queryByRole('button', { name: /Hide activity/ });
+
+describe('FastFusion thinking canvas', () => {
   beforeEach(() => {
+    // The canvas autosaves, so each test must start from an empty one.
+    localStorage.clear();
     vi.useFakeTimers();
     Object.defineProperty(URL, 'createObjectURL', { configurable: true, value: vi.fn(() => 'blob:skills') });
     Object.defineProperty(URL, 'revokeObjectURL', { configurable: true, value: vi.fn() });
+    window.HTMLElement.prototype.setPointerCapture = vi.fn();
+    window.HTMLElement.prototype.releasePointerCapture = vi.fn();
   });
 
   afterEach(() => vi.useRealTimers());
 
-  it('从命令栏提交问题并完成 Agent 评分与总结', async () => {
+  it('opens with only the command bar, then reveals the canvas chrome', async () => {
     render(<App />);
-    expect(screen.queryByText('LIVE BENCHMARK')).not.toBeInTheDocument();
-    const input = screen.getByLabelText('输入问题');
-    fireEvent.change(input, { target: { value: '怎样设计一个可靠的 AI Agent？' } });
-    fireEvent.click(screen.getByLabelText('提交问题'));
-    expect(screen.getByText('LIVE BENCHMARK')).toBeInTheDocument();
-    expect(screen.getByText('COMPARING AGENTS')).toBeInTheDocument();
-    await finishAnalysis();
-    expect(screen.getByText('WINNER')).toBeInTheDocument();
-    expect(screen.getByText('SYNTHESIS COMPLETE')).toBeInTheDocument();
-    expect(screen.getAllByText('92', { exact: true })).toHaveLength(2);
+    expect(screen.getByLabelText('Your prompt')).toHaveAttribute('placeholder', 'Write a message...');
+    expect(screen.queryByText('fastfusion')).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('Canvas zoom')).not.toBeInTheDocument();
+    // Only Load stays reachable on an empty canvas.
+    expect(screen.getByLabelText('Load canvas')).toBeInTheDocument();
+    expect(screen.queryByLabelText('Save canvas')).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('Clear canvas')).not.toBeInTheDocument();
+
+    await ask('Design an AI thinking canvas');
+
+    expect(screen.getByText('fastfusion')).toBeInTheDocument();
+    expect(screen.getByLabelText('Canvas zoom')).toBeInTheDocument();
+    expect(screen.getByLabelText('Clear canvas')).toBeInTheDocument();
+    expect(screen.getByLabelText('Save canvas')).toBeInTheDocument();
+    expect(screen.getByLabelText('Load canvas')).toBeInTheDocument();
+    expect(screen.getByText('Untitled canvas')).toBeInTheDocument();
+    // The stage label also appears in the screen-reader live region.
+    expect(screen.getAllByText('Exploring in parallel').length).toBeGreaterThan(0);
   });
 
-  it('允许用户收起和重新展开 Benchmark，同时保留运行状态', async () => {
-    render(<App />);
-    expect(screen.queryByRole('button', { name: '收起 Benchmark' })).not.toBeInTheDocument();
+  it('runs every model, ranks them, and renders the synthesis', async () => {
+    const { container } = render(<App />);
+    await ask('Design an AI thinking canvas');
 
-    fireEvent.change(screen.getByLabelText('输入问题'), { target: { value: '测试 Benchmark 折叠' } });
-    fireEvent.click(screen.getByLabelText('提交问题'));
+    expect(screen.getByLabelText('Stop exploration')).toBeInTheDocument();
+    await finishRun();
 
-    const collapseButton = screen.getByRole('button', { name: '收起 Benchmark' });
-    const details = screen.getByRole('region', { name: 'Agent Benchmark 详情' });
-    expect(collapseButton).toHaveAttribute('aria-expanded', 'true');
-    expect(details).not.toHaveAttribute('hidden');
+    expect(screen.getAllByText('Exploration complete').length).toBeGreaterThan(0);
+    expect(screen.getByText('Selected response')).toBeInTheDocument();
+    expect(screen.getByText('让系统替模型兜底')).toBeInTheDocument();
+    expect(container.querySelectorAll('.answer-points li')).toHaveLength(3);
 
-    fireEvent.click(collapseButton);
-    expect(screen.getByRole('button', { name: '展开 Benchmark' })).toHaveAttribute('aria-expanded', 'false');
-    expect(details).toHaveAttribute('hidden');
-    expect(screen.getByText('EVALUATING')).toBeInTheDocument();
-
-    await finishAnalysis();
-    expect(details).toHaveAttribute('hidden');
-    expect(screen.getByText('WINNER SELECTED')).toBeInTheDocument();
-
-    fireEvent.click(screen.getByRole('button', { name: '展开 Benchmark' }));
-    expect(screen.getByRole('button', { name: '收起 Benchmark' })).toHaveAttribute('aria-expanded', 'true');
-    expect(details).not.toHaveAttribute('hidden');
+    // The winner and its score are named in the block footer.
+    const footer = container.querySelector('.node-footer') as HTMLElement;
+    expect(within(footer).getByText('Nex Mini')).toBeInTheDocument();
+    expect(within(footer).getByText('92')).toBeInTheDocument();
+    expect(screen.getByLabelText('Submit prompt')).toBeInTheDocument();
   });
 
-  it('提交新的追问时会重新展开 Benchmark', async () => {
+  it('shows each model in the activity panel and marks the top score', async () => {
     render(<App />);
-    fireEvent.change(screen.getByLabelText('输入问题'), { target: { value: '第一轮问题' } });
-    fireEvent.click(screen.getByLabelText('提交问题'));
-    await finishAnalysis();
-    fireEvent.click(screen.getByRole('button', { name: '收起 Benchmark' }));
+    await ask('Design an AI thinking canvas');
+    await finishRun();
 
-    fireEvent.change(screen.getByLabelText('输入问题'), { target: { value: '继续追问' } });
-    fireEvent.click(screen.getByLabelText('提交问题'));
+    fireEvent.click(screen.getByRole('button', { name: /View activity/ }));
+    expect(screen.getByText('Model workspace')).toBeInTheDocument();
 
-    expect(screen.getByRole('button', { name: '收起 Benchmark' })).toHaveAttribute('aria-expanded', 'true');
-    expect(screen.getByRole('region', { name: 'Agent Benchmark 详情' })).not.toHaveAttribute('hidden');
+    const workspace = document.getElementById('agent-workspace')!;
+    const cards = workspace.querySelectorAll('.agent-card');
+    expect(cards).toHaveLength(3);
+    expect(within(cards[0] as HTMLElement).getByText('Top score')).toBeInTheDocument();
+    expect(within(cards[0] as HTMLElement).getByText('Nex Mini')).toBeInTheDocument();
+    expect(within(cards[1] as HTMLElement).getByText('Evaluated')).toBeInTheDocument();
+    expect(screen.getByText('Synthesis')).toBeInTheDocument();
   });
 
-  it('展开原始 JSON、选择节点并导出 Markdown Skills', async () => {
+  it('collapses and reopens the activity panel', async () => {
+    render(<App />);
+    await ask('Design an AI thinking canvas');
+    expect(openPanel()).toBeInTheDocument();
+
+    const workspace = document.getElementById('agent-workspace')!;
+    const reveal = workspace.parentElement!;
+    expect(reveal).toHaveClass('open');
+    expect(workspace).toHaveAttribute('aria-hidden', 'false');
+
+    fireEvent.click(screen.getByRole('button', { name: /Hide activity/ }));
+    expect(reveal).not.toHaveClass('open');
+    expect(workspace).toHaveAttribute('aria-hidden', 'true');
+
+    fireEvent.click(screen.getByRole('button', { name: /View activity/ }));
+    expect(reveal).toHaveClass('open');
+    expect(workspace).toHaveAttribute('aria-hidden', 'false');
+  });
+
+  it('slides the raw payload sheet over the card and back', async () => {
+    const { container } = render(<App />);
+    await ask('Design an AI thinking canvas');
+    await finishRun();
+
+    const stack = container.querySelector('.node-stack')!;
+    expect(stack).not.toHaveClass('raw-expanded');
+    expect(screen.getByLabelText('Open raw response')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByLabelText('Open raw response'));
+    expect(stack).toHaveClass('raw-expanded');
+    expect(screen.getByText('Prompt')).toBeInTheDocument();
+    expect(screen.getByText('Payload')).toBeInTheDocument();
+    expect(screen.getByText('Design an AI thinking canvas')).toBeInTheDocument();
+    expect(screen.getByLabelText('Block 1 raw JSON').textContent).toContain('selected_agent');
+
+    fireEvent.click(screen.getByLabelText('Close raw response'));
+    expect(stack).not.toHaveClass('raw-expanded');
+    expect(screen.queryByText('Payload')).not.toBeInTheDocument();
+  });
+
+  it('branches a follow-up from the selected node and connects the two', async () => {
+    const { container } = render(<App />);
+    await ask('Design an AI thinking canvas');
+    await finishRun();
+
+    expect(screen.getByRole('button', { name: /Continue from 01/ })).toBeInTheDocument();
+    await ask('What if I only had one day?');
+    await finishRun();
+
+    expect(container.querySelectorAll('.node-stack')).toHaveLength(2);
+    expect(container.querySelectorAll('.connections path[marker-end]')).toHaveLength(1);
+    expect(screen.getByText('Block 1')).toBeInTheDocument();
+    expect(screen.getByText('Block 2')).toBeInTheDocument();
+  });
+
+  it('exports the ticked nodes as Markdown', async () => {
     const anchorClick = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => undefined);
     render(<App />);
-    fireEvent.change(screen.getByLabelText('输入问题'), { target: { value: '优化团队协作流程' } });
-    fireEvent.click(screen.getByLabelText('提交问题'));
-    await finishAnalysis();
-    fireEvent.click(screen.getByLabelText('展开原始 JSON'));
-    expect(screen.getByText('PAYLOAD')).toBeInTheDocument();
-    expect(screen.getByText(/selected_agent/)).toBeInTheDocument();
-    fireEvent.click(screen.getByLabelText('选择节点 1'));
-    expect(screen.getByRole('button', { name: 'Export Skills' })).toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: 'Export Skills' }));
+    await ask('Design an AI thinking canvas');
+    await finishRun();
+
+    expect(screen.queryByRole('button', { name: /Export Skills/ })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByLabelText('Add block 1 to the export'));
+
+    const exportButton = screen.getByRole('button', { name: /Export Skills/ });
+    expect(exportButton.textContent).toContain('1');
+    fireEvent.click(exportButton);
+
     expect(URL.createObjectURL).toHaveBeenCalledOnce();
     expect(anchorClick).toHaveBeenCalledOnce();
+    expect(screen.getByRole('status').textContent).toContain('Exported 1 block');
+
+    const blob = (URL.createObjectURL as unknown as ReturnType<typeof vi.fn>).mock.calls[0][0] as Blob;
+    expect(blob.type).toBe('text/markdown;charset=utf-8');
+
+    fireEvent.click(screen.getByLabelText('Remove block 1 from the export'));
+    expect(screen.queryByRole('button', { name: /Export Skills/ })).not.toBeInTheDocument();
     anchorClick.mockRestore();
   });
 
-  it('连续追问会在画布中保留原节点并创建连接节点', async () => {
-    const { container } = render(<App />);
-    fireEvent.change(screen.getByLabelText('输入问题'), { target: { value: '制定第一版方案' } });
-    fireEvent.click(screen.getByLabelText('提交问题'));
-    await finishAnalysis();
-    fireEvent.change(screen.getByLabelText('输入问题'), { target: { value: '如果时间只有一天呢？' } });
-    fireEvent.click(screen.getByLabelText('提交问题'));
-    expect(container.querySelectorAll('.node-stack')).toHaveLength(2);
-    expect(screen.getByText('FOLLOW-UP SYNTHESIS')).toBeInTheDocument();
-    await finishAnalysis();
-    expect(screen.getAllByText('SYNTHESIS COMPLETE')).toHaveLength(2);
+  it('zooms with the controls and reports the level', async () => {
+    render(<App />);
+    await ask('Design an AI thinking canvas');
+    await finishRun();
+
+    const controls = screen.getByLabelText('Canvas zoom');
+    const level = () => Number(within(controls).getByText(/%$/).textContent!.replace('%', ''));
+    const before = level();
+
+    fireEvent.click(screen.getByLabelText('Zoom out'));
+    expect(level()).toBeLessThan(before);
+
+    fireEvent.click(screen.getByLabelText('Zoom in'));
+    expect(level()).toBe(before);
   });
 
-  it('始终按节点编号顺序连接箭头', async () => {
+  it('pans the canvas when the background is dragged', async () => {
     const { container } = render(<App />);
+    await ask('Design an AI thinking canvas');
+    await finishRun();
 
-    for (const question of ['节点一', '节点二']) {
-      fireEvent.change(screen.getByLabelText('输入问题'), { target: { value: question } });
-      fireEvent.click(screen.getByLabelText('提交问题'));
-      await finishAnalysis();
-    }
-
-    fireEvent.click(container.querySelectorAll<HTMLElement>('.node-stack')[0]);
-    fireEvent.change(screen.getByLabelText('输入问题'), { target: { value: '节点三' } });
-    fireEvent.click(screen.getByLabelText('提交问题'));
-
-    const paths = container.querySelectorAll<SVGPathElement>('.connections > path');
-    expect(paths).toHaveLength(2);
-    expect(paths[0].getAttribute('d')).toMatch(/^M 550 361/);
-    expect(paths[1].getAttribute('d')).toMatch(/^M 1100 361/);
-  });
-
-  it('拖动选中节点时会更新位置并保持连接线同步', async () => {
-    const { container } = render(<App />);
-    fireEvent.change(screen.getByLabelText('输入问题'), { target: { value: '创建父节点' } });
-    fireEvent.click(screen.getByLabelText('提交问题'));
-    await finishAnalysis();
-    fireEvent.change(screen.getByLabelText('输入问题'), { target: { value: '创建子节点' } });
-    fireEvent.click(screen.getByLabelText('提交问题'));
-
-    const nodes = container.querySelectorAll<HTMLElement>('.node-stack');
-    const child = nodes[1];
-    const connection = container.querySelector<SVGPathElement>('.connections > path');
-    const pathBefore = connection?.getAttribute('d');
-
-    fireEvent.pointerDown(child, { button: 0, pointerId: 7, clientX: 500, clientY: 300 });
-    fireEvent.pointerMove(child, { pointerId: 7, clientX: 560, clientY: 340 });
-
-    expect(child).toHaveClass('active', 'dragging');
-    expect(child.style.left).toBe('730px');
-    expect(child.style.top).toBe('285px');
-    expect(connection?.getAttribute('d')).not.toBe(pathBefore);
-
-    fireEvent.pointerUp(child, { pointerId: 7, clientX: 560, clientY: 340 });
-    expect(child).not.toHaveClass('dragging');
-  });
-
-  it('滚轮缩放时保持鼠标下方的世界坐标不移动', () => {
-    const { container } = render(<App />);
-    fireEvent.change(screen.getByLabelText('输入问题'), { target: { value: '测试缩放锚点' } });
-    fireEvent.click(screen.getByLabelText('提交问题'));
-    const canvas = screen.getByLabelText('Agent 思考路径画布');
-    Object.defineProperty(canvas, 'getBoundingClientRect', {
-      configurable: true,
-      value: () => ({ left: 10, top: 20, width: 1000, height: 700, right: 1010, bottom: 720, x: 10, y: 20, toJSON: () => ({}) }),
-    });
-
-    fireEvent.wheel(canvas, { deltaY: -16, clientX: 410, clientY: 320, ctrlKey: true });
-    const transform = (container.querySelector('.canvas-world') as HTMLElement).style.transform;
-    const values = transform.match(/-?\d+(?:\.\d+)?/g)?.map(Number) ?? [];
-    const [x, y, scale] = values;
-    const worldX = 400 - 90;
-    const worldY = 300 - 30;
-
-    expect(scale).toBeCloseTo(1.08);
-    expect(x + worldX * scale).toBeCloseTo(400);
-    expect(y + worldY * scale).toBeCloseTo(300);
-  });
-
-  it('允许缩小到更远的全画布视角', () => {
-    const { container } = render(<App />);
-    fireEvent.change(screen.getByLabelText('输入问题'), { target: { value: '测试全画布视角' } });
-    fireEvent.click(screen.getByLabelText('提交问题'));
-    const canvas = screen.getByLabelText('Agent 思考路径画布');
-
-    for (let index = 0; index < 10; index += 1) {
-      fireEvent.wheel(canvas, { deltaY: 100, clientX: 400, clientY: 300, ctrlKey: true });
-    }
-
-    const transform = (container.querySelector('.canvas-world') as HTMLElement).style.transform;
-    const values = transform.match(/-?\d+(?:\.\d+)?/g)?.map(Number) ?? [];
-    expect(values[2]).toBeCloseTo(0.25);
-  });
-
-  it('触控板双指滑动只平移画布而不改变缩放比例', () => {
-    const { container } = render(<App />);
-    fireEvent.change(screen.getByLabelText('输入问题'), { target: { value: '测试触控板平移' } });
-    fireEvent.click(screen.getByLabelText('提交问题'));
-    const canvas = screen.getByLabelText('Agent 思考路径画布');
-
-    fireEvent.wheel(canvas, { deltaX: 24, deltaY: 36, deltaMode: 0 });
-    const transform = (container.querySelector('.canvas-world') as HTMLElement).style.transform;
-    const values = transform.match(/-?\d+(?:\.\d+)?/g)?.map(Number) ?? [];
-
-    expect(values[0]).toBeCloseTo(66);
-    expect(values[1]).toBeCloseTo(-6);
-    expect(values[2]).toBeCloseTo(1);
-  });
-
-  it('鼠标悬停 JSON 文档时滚轮交给文档自身而不平移画布', async () => {
-    const { container } = render(<App />);
-    fireEvent.change(screen.getByLabelText('输入问题'), { target: { value: '测试 JSON 文档滚动' } });
-    fireEvent.click(screen.getByLabelText('提交问题'));
-    await finishAnalysis();
-    fireEvent.click(screen.getByLabelText('展开原始 JSON'));
-
-    const jsonDocument = screen.getByLabelText('节点 1 原始 JSON 文档');
+    const surface = screen.getByLabelText(/Thinking canvas/);
     const world = container.querySelector('.canvas-world') as HTMLElement;
-    const transformBefore = world.style.transform;
-    const wheelEvent = new WheelEvent('wheel', {
-      bubbles: true,
-      cancelable: true,
-      deltaY: 80,
-    });
+    const before = world.style.transform;
 
-    jsonDocument.dispatchEvent(wheelEvent);
+    fireEvent.pointerDown(surface, { button: 0, pointerId: 1, clientX: 400, clientY: 300 });
+    fireEvent.pointerMove(surface, { pointerId: 1, clientX: 460, clientY: 340 });
+    expect(world.style.transform).not.toBe(before);
+    fireEvent.pointerUp(surface, { pointerId: 1 });
+  });
 
-    expect(wheelEvent.defaultPrevented).toBe(false);
-    expect(world.style.transform).toBe(transformBefore);
+  it('drags a node by its header and keeps the connection attached', async () => {
+    const { container } = render(<App />);
+    await ask('First');
+    await finishRun();
+    await ask('Second');
+    await finishRun();
 
-    const zoomEvent = new WheelEvent('wheel', {
-      bubbles: true,
-      cancelable: true,
-      ctrlKey: true,
-      clientX: 240,
-      clientY: 180,
-      deltaY: -20,
-    });
+    const header = container.querySelectorAll('.node-header')[1] as HTMLElement;
+    const path = container.querySelector('.connections path[marker-end]') as SVGPathElement;
+    const before = path.getAttribute('d');
 
-    act(() => {
-      jsonDocument.dispatchEvent(zoomEvent);
-    });
+    fireEvent.pointerDown(header, { button: 0, pointerId: 3, clientX: 500, clientY: 300 });
+    fireEvent.pointerMove(header, { pointerId: 3, clientX: 560, clientY: 360 });
+    expect(path.getAttribute('d')).not.toBe(before);
+    fireEvent.pointerUp(header, { pointerId: 3 });
+  });
 
-    expect(zoomEvent.defaultPrevented).toBe(true);
-    expect(world.style.transform).not.toBe(transformBefore);
+  it('restores the canvas after a reload, and clearing forgets it', async () => {
+    const first = render(<App />);
+    await ask('Design an AI thinking canvas');
+    await finishRun();
+    first.unmount();
+
+    // A remount stands in for the page reload.
+    const second = render(<App />);
+    expect(second.container.querySelectorAll('.node-stack')).toHaveLength(1);
+    expect(screen.getByText('Block 1')).toBeInTheDocument();
+    expect(screen.getByText('让系统替模型兜底')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByLabelText('Clear canvas'));
+    second.unmount();
+
+    const third = render(<App />);
+    expect(third.container.querySelectorAll('.node-stack')).toHaveLength(0);
+  });
+
+  it('renames the canvas on double-click and uses the name as the filename', async () => {
+    const anchorClick = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => undefined);
+    render(<App />);
+    await ask('Design an AI thinking canvas');
+    await finishRun();
+
+    fireEvent.doubleClick(screen.getByText('Untitled canvas'));
+    const field = screen.getByLabelText('Canvas name');
+    fireEvent.change(field, { target: { value: '  Reliability   study  ' } });
+    fireEvent.keyDown(field, { key: 'Enter' });
+
+    expect(screen.queryByLabelText('Canvas name')).not.toBeInTheDocument();
+    expect(screen.getByText('Reliability study')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByLabelText('Save canvas'));
+    const link = anchorClick.mock.instances[0] as HTMLAnchorElement;
+    expect(link.download).toBe('Reliability study.json');
+    anchorClick.mockRestore();
+  });
+
+  it('discards a rename on Escape and falls back to the default when emptied', async () => {
+    render(<App />);
+    await ask('Design an AI thinking canvas');
+    await finishRun();
+
+    fireEvent.doubleClick(screen.getByText('Untitled canvas'));
+    fireEvent.change(screen.getByLabelText('Canvas name'), { target: { value: 'thrown away' } });
+    fireEvent.keyDown(screen.getByLabelText('Canvas name'), { key: 'Escape' });
+    expect(screen.getByText('Untitled canvas')).toBeInTheDocument();
+
+    fireEvent.doubleClick(screen.getByText('Untitled canvas'));
+    fireEvent.change(screen.getByLabelText('Canvas name'), { target: { value: '   ' } });
+    fireEvent.blur(screen.getByLabelText('Canvas name'));
+    expect(screen.getByText('Untitled canvas')).toBeInTheDocument();
+  });
+
+  it('shows skeleton bars for a model that has not answered yet', async () => {
+    render(<App />);
+    await ask('Design an AI thinking canvas');
+
+    const workspace = document.getElementById('agent-workspace')!;
+    expect(workspace.querySelectorAll('.agent-skeleton')).toHaveLength(3);
+
+    await finishRun();
+    expect(workspace.querySelectorAll('.agent-skeleton')).toHaveLength(0);
+  });
+
+  it('saves the canvas to a file', async () => {
+    const anchorClick = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => undefined);
+    render(<App />);
+    await ask('Design an AI thinking canvas');
+    await finishRun();
+
+    fireEvent.click(screen.getByLabelText('Save canvas'));
+    expect(URL.createObjectURL).toHaveBeenCalledOnce();
+    expect(anchorClick).toHaveBeenCalledOnce();
+    expect(screen.getByRole('status').textContent).toContain('Saved 1 block');
+
+    const blob = (URL.createObjectURL as unknown as ReturnType<typeof vi.fn>).mock.calls[0][0] as Blob;
+    expect(blob.type).toBe('application/json');
+    anchorClick.mockRestore();
+  });
+
+  it('clears the canvas back to the empty state', async () => {
+    render(<App />);
+    await ask('Design an AI thinking canvas');
+    await finishRun();
+
+    fireEvent.click(screen.getByLabelText('Clear canvas'));
+    expect(screen.queryByText('fastfusion')).not.toBeInTheDocument();
+    expect(screen.getByLabelText('Your prompt')).toHaveAttribute('placeholder', 'Write a message...');
+  });
+
+  it('submits on Enter but not on Shift+Enter or during IME composition', async () => {
+    const { container } = render(<App />);
+    const input = screen.getByLabelText('Your prompt');
+
+    fireEvent.change(input, { target: { value: '不要提交' } });
+    fireEvent.keyDown(input, { key: 'Enter', shiftKey: true });
+    fireEvent.keyDown(input, { key: 'Enter', keyCode: 229 });
+    expect(container.querySelectorAll('.node-stack')).toHaveLength(0);
+
+    fireEvent.keyDown(input, { key: 'Enter' });
+    expect(container.querySelectorAll('.node-stack')).toHaveLength(1);
   });
 });

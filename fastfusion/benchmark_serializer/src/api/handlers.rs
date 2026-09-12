@@ -13,8 +13,8 @@ use tokio::sync::mpsc;
 
 use crate::{
     benchmark::{
-        self,
-        types::{BenchmarkEvent, BenchmarkRequest},
+        self, summary,
+        types::{BenchmarkEvent, BenchmarkRecord, BenchmarkRequest, WinnerRef},
     },
     error::AppError,
     openrouter::{
@@ -71,11 +71,20 @@ pub async fn benchmark_stream(
     let (sender, receiver) = mpsc::channel::<Bytes>(32);
 
     tokio::spawn(async move {
+        let BenchmarkRequest {
+            models,
+            cases,
+            reasoning_effort,
+            summary_model,
+        } = input;
+        // An empty model id means "no summary", same as omitting the field.
+        let summary_model = summary_model.filter(|model| !model.trim().is_empty());
+
         let mut runs = FuturesUnordered::new();
-        for model in input.models {
-            for case in input.cases.iter().cloned() {
+        for model in models {
+            for case in cases.iter().cloned() {
                 let state = Arc::clone(&state);
-                let effort = input.reasoning_effort.clone();
+                let effort = reasoning_effort.clone();
                 let error_model = model.clone();
                 let run_model = model.clone();
                 let error_case_id = case.id.clone();
@@ -92,11 +101,33 @@ pub async fn benchmark_stream(
             }
         }
 
+        // Records in finish order: the winner tie-break relies on that order.
+        let mut records: Vec<BenchmarkRecord> = Vec::new();
         while let Some(event) = runs.next().await {
+            if let BenchmarkEvent::Result { record } = &event {
+                records.push(record.clone());
+            }
             if send_event(&sender, &event).await.is_err() {
                 return;
             }
         }
+
+        if let Some(model) = summary_model
+            && let Some(winner) = summary::pick_winner(&records)
+        {
+            let event = match summary::summarize(&state, &model, winner).await {
+                Ok(event) => event,
+                Err(error) => BenchmarkEvent::SummaryError {
+                    winner: WinnerRef::from(winner),
+                    summary_model: model,
+                    error,
+                },
+            };
+            if send_event(&sender, &event).await.is_err() {
+                return;
+            }
+        }
+
         let _ = send_event(&sender, &BenchmarkEvent::Done { total_runs }).await;
     });
 

@@ -13,6 +13,7 @@ pub async fn execute_case(
     case: BenchmarkCase,
     reasoning_effort: String,
 ) -> Result<BenchmarkRecord, String> {
+    let prompt = case.prompt.clone();
     let run = openrouter::run(
         state,
         RunInput {
@@ -37,6 +38,7 @@ pub async fn execute_case(
         model: run.model,
         case_id: case.id,
         category: case.category,
+        prompt,
         answer: run.answer,
         reasoning: run.reasoning,
         reasoning_details: run.reasoning_details,

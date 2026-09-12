@@ -18,3 +18,4 @@ class BenchmarkRequest(BaseModel):
     models: list[str]
     cases: list[BenchmarkCase]
     reasoning_effort: str = "high"
+    summary_model: str | None = None

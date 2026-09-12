@@ -3,7 +3,7 @@ use serde_json::Value;
 
 use crate::openrouter::types::RunResult;
 
-#[derive(Debug, Serialize)]
+#[derive(Clone, Debug, Serialize)]
 pub struct BenchmarkScore {
     pub total: f64,
     pub correctness_score: f64,
