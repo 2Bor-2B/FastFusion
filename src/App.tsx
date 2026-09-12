@@ -1,5 +1,5 @@
-import { useMemo, useRef, useState } from 'react';
-import type { FormEvent, PointerEvent as ReactPointerEvent, WheelEvent } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import type { FormEvent, PointerEvent as ReactPointerEvent } from 'react';
 import {
   ArrowDown,
   ArrowUp,
@@ -13,8 +13,6 @@ import {
   Focus,
   LoaderCircle,
   Maximize2,
-  Minus,
-  Plus,
   Send,
   Sparkles,
   Terminal,
@@ -73,6 +71,14 @@ export default function App() {
     const parent = nodes.find((candidate) => candidate.id === node.parentId);
     return parent ? [{ id: `${parent.id}-${node.id}`, from: parent, to: node }] : [];
   }), [nodes]);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const wheelHandler = (event: globalThis.WheelEvent) => handleWheel(event);
+    canvas.addEventListener('wheel', wheelHandler, { passive: false });
+    return () => canvas.removeEventListener('wheel', wheelHandler);
+  }, [nodes.length]);
 
   async function submitPrompt(event?: FormEvent) {
     event?.preventDefault();
@@ -203,14 +209,33 @@ export default function App() {
     });
   }
 
-  function handleWheel(event: WheelEvent<HTMLDivElement>) {
-    if (!nodes.length) return;
+  function handleWheel(event: globalThis.WheelEvent) {
     event.preventDefault();
-    const rect = event.currentTarget.getBoundingClientRect();
-    zoom(event.deltaY > 0 ? -0.08 : 0.08, {
-      x: event.clientX - rect.left,
-      y: event.clientY - rect.top,
-    });
+    if (!nodes.length) return;
+
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    // Browsers expose trackpad pinch as a wheel event with ctrlKey enabled.
+    // Regular two-finger scrolling has no modifier and should pan the canvas.
+    if (event.ctrlKey || event.metaKey) {
+      const rect = canvas.getBoundingClientRect();
+      const delta = Math.max(-0.12, Math.min(0.12, -event.deltaY * 0.005));
+      zoom(delta, {
+        x: event.clientX - rect.left,
+        y: event.clientY - rect.top,
+      });
+      return;
+    }
+
+    const unit = event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? canvas.clientHeight : 1;
+    const horizontal = (event.shiftKey && event.deltaX === 0 ? event.deltaY : event.deltaX) * unit;
+    const vertical = (event.shiftKey ? 0 : event.deltaY) * unit;
+    setViewport((current) => ({
+      ...current,
+      x: current.x - horizontal,
+      y: current.y - vertical,
+    }));
   }
 
   return (
@@ -236,7 +261,6 @@ export default function App() {
         onPointerMove={movePan}
         onPointerUp={stopPan}
         onPointerCancel={stopPan}
-        onWheel={handleWheel}
       >
         {!nodes.length && <div className="idle-mark" aria-hidden="true"><span /><p>YOUR QUESTION BECOMES A MAP</p></div>}
 
@@ -356,7 +380,7 @@ export default function App() {
           />
           <div className="prompt-meta"><span>{isProcessing ? 'Agents busy' : '↵ Run benchmark'}</span><button type="submit" disabled={!prompt.trim() || isProcessing} aria-label="提交问题">{isProcessing ? <LoaderCircle /> : <Send />}</button></div>
         </form>
-        <div className="dock-foot"><span><i /> 4 AGENTS READY</span><span>Responses shown as summaries, not private chain-of-thought</span><span>SHIFT + ENTER FOR NEW LINE</span></div>
+        <div className="dock-foot"><span><i /> TWO-FINGER PAN · PINCH / CTRL+WHEEL ZOOM</span><span>Responses shown as summaries, not private chain-of-thought</span><span>SHIFT + ENTER FOR NEW LINE</span></div>
       </section>
 
       {activeNode && nodes.length > 1 && <div className="active-trace"><span>ACTIVE TRACE</span><strong>{activeNode.prompt}</strong></div>}

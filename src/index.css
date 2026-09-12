@@ -92,7 +92,7 @@ button { color: inherit; }
 .idle-mark span::after { width: 1px; height: 34px; left: 16px; top: 0; }
 .idle-mark p { margin: 0; font: 600 9px/1 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .2em; }
 
-.canvas-world { position: absolute; left: 0; top: 0; width: 2400px; height: 1000px; transform-origin: 0 0; will-change: transform; transition: transform 120ms ease-out; }
+.canvas-world { position: absolute; left: 0; top: 0; width: 2400px; height: 1000px; transform-origin: 0 0; will-change: transform; backface-visibility: hidden; }
 .connections { position: absolute; inset: 0; overflow: visible; }
 .connections path { fill: none; stroke: #304c75; stroke-width: 1.5; stroke-dasharray: 5 6; opacity: .85; animation: dash 18s linear infinite; }
 @keyframes dash { to { stroke-dashoffset: -220; } }

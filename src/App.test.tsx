@@ -69,7 +69,7 @@ describe('TraceLab Agent Canvas', () => {
       value: () => ({ left: 10, top: 20, width: 1000, height: 700, right: 1010, bottom: 720, x: 10, y: 20, toJSON: () => ({}) }),
     });
 
-    fireEvent.wheel(canvas, { deltaY: -100, clientX: 410, clientY: 320 });
+    fireEvent.wheel(canvas, { deltaY: -16, clientX: 410, clientY: 320, ctrlKey: true });
     const transform = (container.querySelector('.canvas-world') as HTMLElement).style.transform;
     const values = transform.match(/-?\d+(?:\.\d+)?/g)?.map(Number) ?? [];
     const [x, y, scale] = values;
@@ -79,5 +79,20 @@ describe('TraceLab Agent Canvas', () => {
     expect(scale).toBeCloseTo(1.08);
     expect(x + worldX * scale).toBeCloseTo(400);
     expect(y + worldY * scale).toBeCloseTo(300);
+  });
+
+  it('触控板双指滑动只平移画布而不改变缩放比例', () => {
+    const { container } = render(<App />);
+    fireEvent.change(screen.getByLabelText('输入问题'), { target: { value: '测试触控板平移' } });
+    fireEvent.click(screen.getByLabelText('提交问题'));
+    const canvas = screen.getByLabelText('Agent 思考路径画布');
+
+    fireEvent.wheel(canvas, { deltaX: 24, deltaY: 36, deltaMode: 0 });
+    const transform = (container.querySelector('.canvas-world') as HTMLElement).style.transform;
+    const values = transform.match(/-?\d+(?:\.\d+)?/g)?.map(Number) ?? [];
+
+    expect(values[0]).toBeCloseTo(66);
+    expect(values[1]).toBeCloseTo(-6);
+    expect(values[2]).toBeCloseTo(1);
   });
 });
