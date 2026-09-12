@@ -95,4 +95,42 @@ describe('TraceLab Agent Canvas', () => {
     expect(values[1]).toBeCloseTo(-6);
     expect(values[2]).toBeCloseTo(1);
   });
+
+  it('鼠标悬停 JSON 文档时滚轮交给文档自身而不平移画布', async () => {
+    const { container } = render(<App />);
+    fireEvent.change(screen.getByLabelText('输入问题'), { target: { value: '测试 JSON 文档滚动' } });
+    fireEvent.click(screen.getByLabelText('提交问题'));
+    await finishAnalysis();
+    fireEvent.click(screen.getByLabelText('展开原始 JSON'));
+
+    const jsonDocument = screen.getByLabelText('节点 1 原始 JSON 文档');
+    const world = container.querySelector('.canvas-world') as HTMLElement;
+    const transformBefore = world.style.transform;
+    const wheelEvent = new WheelEvent('wheel', {
+      bubbles: true,
+      cancelable: true,
+      deltaY: 80,
+    });
+
+    jsonDocument.dispatchEvent(wheelEvent);
+
+    expect(wheelEvent.defaultPrevented).toBe(false);
+    expect(world.style.transform).toBe(transformBefore);
+
+    const zoomEvent = new WheelEvent('wheel', {
+      bubbles: true,
+      cancelable: true,
+      ctrlKey: true,
+      clientX: 240,
+      clientY: 180,
+      deltaY: -20,
+    });
+
+    act(() => {
+      jsonDocument.dispatchEvent(zoomEvent);
+    });
+
+    expect(zoomEvent.defaultPrevented).toBe(true);
+    expect(world.style.transform).not.toBe(transformBefore);
+  });
 });

@@ -210,6 +210,14 @@ export default function App() {
   }
 
   function handleWheel(event: globalThis.WheelEvent) {
+    const target = event.target instanceof Element ? event.target : null;
+    const isInsideJsonDocument = Boolean(target?.closest('[data-json-scroll]'));
+
+    // Let the browser preserve native wheel/trackpad scrolling (and inertia)
+    // while the pointer is over a JSON document. Pinch-to-zoom still belongs
+    // to the canvas because browsers expose it with ctrlKey/metaKey enabled.
+    if (isInsideJsonDocument && !event.ctrlKey && !event.metaKey) return;
+
     event.preventDefault();
     if (!nodes.length) return;
 
@@ -293,7 +301,7 @@ export default function App() {
                     <div className="raw-content">
                       <header><span><Braces /> RAW RESPONSE</span><span>JSON</span></header>
                       <label>PROMPT</label><p>{node.prompt}</p>
-                      <label>PAYLOAD</label><pre>{JSON.stringify(node.raw, null, 2)}</pre>
+                      <label>PAYLOAD</label><pre data-json-scroll tabIndex={0} style={{ overscrollBehavior: 'contain' }} aria-label={`节点 ${index + 1} 原始 JSON 文档`}>{JSON.stringify(node.raw, null, 2)}</pre>
                       <button type="button" onClick={(event) => { event.stopPropagation(); toggleExpanded(node.id); }} aria-label="收起原始 JSON"><ArrowUp /> Return to summary</button>
                     </div>
                   )}
