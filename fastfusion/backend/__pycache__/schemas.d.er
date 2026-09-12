@@ -1,0 +1,23 @@
+##[pylyzer] failed /home/wizard49/Projects/fastfusion/backend/schemas.py 1789195605 374
+.___v_desugar_1 = pyimport "pydantic"
+.pydantic = pyimport "pydantic"
+.BaseModel: Never
+.RunRequest: ClassType
+.RunRequest <: Never
+.RunRequest.model: Str
+.RunRequest.prompt: Str
+.RunRequest.reasoning_effort: Str
+
+.BenchmarkCase: ClassType
+.BenchmarkCase <: Never
+.BenchmarkCase.category: Str
+.BenchmarkCase.prompt: Str
+.BenchmarkCase.id: Str
+.BenchmarkCase.expected_contains: NoneType or Str
+
+.BenchmarkRequest: ClassType
+.BenchmarkRequest <: Never
+.BenchmarkRequest.cases: global::List!(schemas.BenchmarkCase, _: Nat)
+.BenchmarkRequest.models: global::List!(Str, _: Nat)
+.BenchmarkRequest.reasoning_effort: Str
+

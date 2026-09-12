@@ -1,0 +1,9 @@
+##[pylyzer] failed /home/wizard49/Projects/fastfusion/backend/rust_client.py 1789195600 816
+.json: Never
+
+.httpx = pyimport "__init__"
+.__init__ = pyimport "__init__"
+
+.RUST_URL: {"http:..127.0.0.1:8001"}
+.run_model: (payload: global::Dict!({Obj: Obj})) -> global::Dict!({Obj: Obj})
+.benchmark_stream: (payload: global::Dict!({Obj: Obj})) -> NoneType
