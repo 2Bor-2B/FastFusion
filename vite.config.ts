@@ -1,12 +1,8 @@
-import { sites } from '@openai/sites-vite-plugin';
-import react from '@vitejs/plugin-react';
-import tailwindcss from '@tailwindcss/postcss';
 import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import tailwindcss from '@tailwindcss/vite';
+import { sites } from '@openai/sites-vite-plugin';
 
 export default defineConfig({
-  css: { postcss: { plugins: [tailwindcss()] } },
-  plugins: [react(), sites()],
-  server: process.env.CODEX_SANDBOX === 'seatbelt'
-    ? { watch: { useFsEvents: false, usePolling: true } }
-    : undefined,
+  plugins: [react(), tailwindcss(), sites()],
 });
