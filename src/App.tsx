@@ -19,6 +19,15 @@ type ThoughtNode = {
 };
 
 type Viewport = { x: number; y: number; scale: number };
+type NodeDrag = {
+  id: string;
+  pointerId: number;
+  scale: number;
+  clientX: number;
+  clientY: number;
+  originX: number;
+  originY: number;
+};
 
 const INITIAL_VIEWPORT: Viewport = { x: 90, y: 30, scale: 1 };
 const NODE_WIDTH = 430;
@@ -40,10 +49,12 @@ export default function App() {
   const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set());
   const [selectedNodes, setSelectedNodes] = useState<Set<string>>(new Set());
   const [viewport, setViewport] = useState<Viewport>(INITIAL_VIEWPORT);
+  const [draggingNodeId, setDraggingNodeId] = useState<string>();
   const [exported, setExported] = useState(false);
   const [isBenchmarkExpanded, setIsBenchmarkExpanded] = useState(false);
   const canvasRef = useRef<HTMLDivElement | null>(null);
   const panRef = useRef<{ clientX: number; clientY: number; originX: number; originY: number } | null>(null);
+  const nodeDragRef = useRef<NodeDrag | null>(null);
 
   const isProcessing = phase === 'benchmarking' || phase === 'summarizing';
   const selectedCount = selectedNodes.size;
@@ -172,6 +183,47 @@ export default function App() {
 
   function stopPan() { panRef.current = null; }
 
+  function beginNodeDrag(event: ReactPointerEvent<HTMLElement>, node: ThoughtNode) {
+    const target = event.target instanceof Element ? event.target : null;
+    if (nodeDragRef.current || event.button !== 0 || target?.closest('button, label, input, textarea, pre')) return;
+
+    event.stopPropagation();
+    event.currentTarget.setPointerCapture?.(event.pointerId);
+    setActiveNodeId(node.id);
+    setDraggingNodeId(node.id);
+    nodeDragRef.current = {
+      id: node.id,
+      pointerId: event.pointerId,
+      scale: viewport.scale,
+      clientX: event.clientX,
+      clientY: event.clientY,
+      originX: node.x,
+      originY: node.y,
+    };
+  }
+
+  function moveNodeDrag(event: ReactPointerEvent<HTMLElement>) {
+    const drag = nodeDragRef.current;
+    if (!drag || drag.pointerId !== event.pointerId) return;
+
+    event.stopPropagation();
+    const x = drag.originX + (event.clientX - drag.clientX) / drag.scale;
+    const y = drag.originY + (event.clientY - drag.clientY) / drag.scale;
+    setNodes((current) => current.map((node) => node.id === drag.id ? { ...node, x, y } : node));
+  }
+
+  function stopNodeDrag(event: ReactPointerEvent<HTMLElement>) {
+    const drag = nodeDragRef.current;
+    if (!drag || drag.pointerId !== event.pointerId) return;
+
+    event.stopPropagation();
+    if (event.currentTarget.hasPointerCapture?.(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+    nodeDragRef.current = null;
+    setDraggingNodeId(undefined);
+  }
+
   function zoom(delta: number, anchor?: { x: number; y: number }) {
     const rect = canvasRef.current?.getBoundingClientRect();
     const zoomAnchor = anchor ?? {
@@ -194,6 +246,11 @@ export default function App() {
   }
 
   function handleWheel(event: globalThis.WheelEvent) {
+    if (nodeDragRef.current) {
+      event.preventDefault();
+      return;
+    }
+
     const target = event.target instanceof Element ? event.target : null;
     const isInsideJsonDocument = Boolean(target?.closest('[data-json-scroll]'));
 
@@ -231,7 +288,7 @@ export default function App() {
   }
 
   return (
-    <main className="app-frame">
+    <main className={`app-frame ${nodes.length ? 'has-nodes' : ''}`}>
       <header className="topbar">
         <div className="wordmark"><span>TRACE<span>LAB</span></span><em>/ AGENT CANVAS</em></div>
       </header>
@@ -259,12 +316,17 @@ export default function App() {
           <svg className="connections" width="2400" height="1000" aria-hidden="true">
             <defs>
               <marker id="connection-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
-                <path d="M1 1L7 4L1 7Z" fill="#5577a6" />
+                <path d="M1 1L7 4L1 7Z" fill="#5e83bb" />
               </marker>
             </defs>
             {connections.map(({ id, from, to }) => {
-              const x1 = from.x + NODE_WIDTH; const y1 = from.y + 116; const x2 = to.x - 18; const y2 = to.y + 116;
-              return <path key={id} d={`M ${x1} ${y1} C ${x1 + 70} ${y1}, ${x2 - 70} ${y2}, ${x2} ${y2}`} markerEnd="url(#connection-arrow)" />;
+              const direction = to.x + NODE_WIDTH / 2 >= from.x + NODE_WIDTH / 2 ? 1 : -1;
+              const x1 = direction === 1 ? from.x + NODE_WIDTH : from.x;
+              const x2 = direction === 1 ? to.x - 8 : to.x + NODE_WIDTH + 8;
+              const y1 = from.y + 116;
+              const y2 = to.y + 116;
+              const bend = Math.max(70, Math.abs(x2 - x1) * .35);
+              return <path key={id} d={`M ${x1} ${y1} C ${x1 + direction * bend} ${y1}, ${x2 - direction * bend} ${y2}, ${x2} ${y2}`} markerEnd="url(#connection-arrow)" />;
             })}
           </svg>
 
@@ -275,9 +337,14 @@ export default function App() {
               <article
                 data-node
                 key={node.id}
-                className={`node-stack ${expanded ? 'raw-expanded' : ''} ${activeNodeId === node.id ? 'active' : ''}`}
+                className={`node-stack ${expanded ? 'raw-expanded' : ''} ${activeNodeId === node.id ? 'active' : ''} ${draggingNodeId === node.id ? 'dragging' : ''}`}
                 style={{ left: node.x, top: node.y }}
                 onClick={() => setActiveNodeId(node.id)}
+                onPointerDown={(event) => beginNodeDrag(event, node)}
+                onPointerMove={moveNodeDrag}
+                onPointerUp={stopNodeDrag}
+                onPointerCancel={stopNodeDrag}
+                onLostPointerCapture={stopNodeDrag}
               >
                 <section className="raw-layer" aria-label={`原始数据 ${index + 1}`}>
                   {!expanded ? (

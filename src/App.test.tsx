@@ -99,6 +99,31 @@ describe('TraceLab Agent Canvas', () => {
     expect(screen.getAllByText('SYNTHESIS COMPLETE')).toHaveLength(2);
   });
 
+  it('拖动选中节点时会更新位置并保持连接线同步', async () => {
+    const { container } = render(<App />);
+    fireEvent.change(screen.getByLabelText('输入问题'), { target: { value: '创建父节点' } });
+    fireEvent.click(screen.getByLabelText('提交问题'));
+    await finishAnalysis();
+    fireEvent.change(screen.getByLabelText('输入问题'), { target: { value: '创建子节点' } });
+    fireEvent.click(screen.getByLabelText('提交问题'));
+
+    const nodes = container.querySelectorAll<HTMLElement>('.node-stack');
+    const child = nodes[1];
+    const connection = container.querySelector<SVGPathElement>('.connections > path');
+    const pathBefore = connection?.getAttribute('d');
+
+    fireEvent.pointerDown(child, { button: 0, pointerId: 7, clientX: 500, clientY: 300 });
+    fireEvent.pointerMove(child, { pointerId: 7, clientX: 560, clientY: 340 });
+
+    expect(child).toHaveClass('active', 'dragging');
+    expect(child.style.left).toBe('730px');
+    expect(child.style.top).toBe('285px');
+    expect(connection?.getAttribute('d')).not.toBe(pathBefore);
+
+    fireEvent.pointerUp(child, { pointerId: 7, clientX: 560, clientY: 340 });
+    expect(child).not.toHaveClass('dragging');
+  });
+
   it('滚轮缩放时保持鼠标下方的世界坐标不移动', () => {
     const { container } = render(<App />);
     fireEvent.change(screen.getByLabelText('输入问题'), { target: { value: '测试缩放锚点' } });
