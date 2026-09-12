@@ -31,6 +31,8 @@ type NodeDrag = {
 
 const INITIAL_VIEWPORT: Viewport = { x: 90, y: 30, scale: 1 };
 const NODE_WIDTH = 430;
+const MIN_ZOOM = 0.25;
+const MAX_ZOOM = 1.45;
 
 function statusLabel(status: AgentRun['status']) {
   if (status === 'running') return 'RUNNING';
@@ -232,7 +234,7 @@ export default function App() {
     };
 
     setViewport((current) => {
-      const scale = Math.min(1.45, Math.max(0.55, current.scale + delta));
+      const scale = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, current.scale + delta));
       if (scale === current.scale) return current;
 
       const worldX = (zoomAnchor.x - current.x) / current.scale;

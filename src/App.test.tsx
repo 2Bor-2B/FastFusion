@@ -146,6 +146,21 @@ describe('TraceLab Agent Canvas', () => {
     expect(y + worldY * scale).toBeCloseTo(300);
   });
 
+  it('允许缩小到更远的全画布视角', () => {
+    const { container } = render(<App />);
+    fireEvent.change(screen.getByLabelText('输入问题'), { target: { value: '测试全画布视角' } });
+    fireEvent.click(screen.getByLabelText('提交问题'));
+    const canvas = screen.getByLabelText('Agent 思考路径画布');
+
+    for (let index = 0; index < 10; index += 1) {
+      fireEvent.wheel(canvas, { deltaY: 100, clientX: 400, clientY: 300, ctrlKey: true });
+    }
+
+    const transform = (container.querySelector('.canvas-world') as HTMLElement).style.transform;
+    const values = transform.match(/-?\d+(?:\.\d+)?/g)?.map(Number) ?? [];
+    expect(values[2]).toBeCloseTo(0.25);
+  });
+
   it('触控板双指滑动只平移画布而不改变缩放比例', () => {
     const { container } = render(<App />);
     fireEvent.change(screen.getByLabelText('输入问题'), { target: { value: '测试触控板平移' } });

@@ -607,12 +607,12 @@ input:focus-visible + span {
   margin: 0 9px -9px;
   padding-bottom: 9px;
   overflow: hidden;
-  border: 1px solid #cbd9ec;
+  border: 1px solid #3a4b63;
   border-bottom: 0;
   border-radius: 14px 14px 0 0;
-  color: var(--text);
-  background: #ffffff;
-  box-shadow: 0 -6px 30px rgba(32, 47, 68, .035);
+  color: #e7eef8;
+  background: #202b3a;
+  box-shadow: 0 -8px 30px rgba(15, 23, 34, .16);
   animation: panel-enter 300ms ease;
 }
 
@@ -635,8 +635,8 @@ input:focus-visible + span {
   justify-content: space-between;
   gap: 18px;
   padding: 10px 18px;
-  border-bottom: 1px solid #dae4f1;
-  background: #f2f7fe;
+  border-bottom: 1px solid #3a4b63;
+  background: #263445;
 }
 
 .benchmark-panel.is-collapsed {
@@ -648,7 +648,7 @@ input:focus-visible + span {
 }
 
 .eyebrow {
-  color: #487cc4;
+  color: #9fbce4;
   font-size: 10px;
   font-weight: 600;
   letter-spacing: .13em;
@@ -656,7 +656,7 @@ input:focus-visible + span {
 
 .benchmark-panel h2 {
   margin: 5px 0 0;
-  color: #34465d;
+  color: #e2ecf9;
   font-size: 14px;
   font-weight: 500;
 }
@@ -673,7 +673,7 @@ input:focus-visible + span {
 }
 
 .benchmark-state {
-  color: #6581a8;
+  color: #a8bfdc;
   font-size: 11px;
   font-weight: 600;
   letter-spacing: .07em;
@@ -683,17 +683,17 @@ input:focus-visible + span {
   min-width: 52px;
   height: 32px;
   padding: 0 10px;
-  border: 1px solid #b9cce5;
+  border: 1px solid #4c6788;
   border-radius: 7px;
-  color: #436b9f;
-  background: #ffffff;
+  color: #bad0ef;
+  background: #263a53;
   font-size: 10px;
   font-weight: 600;
 }
 
 .benchmark-toggle:hover {
-  border-color: #8facd2;
-  background: #eaf2fd;
+  border-color: #6f91bf;
+  background: #304967;
 }
 
 .benchmark-details {
@@ -727,15 +727,15 @@ input:focus-visible + span {
   gap: 11px;
   align-items: center;
   padding: 16px 14px 12px;
-  border: 1px solid #d8e2ef;
+  border: 1px solid #3a4b63;
   border-radius: 9px;
-  background: #ffffff;
+  background: #263445;
   transition: border-color 180ms ease, background-color 180ms ease;
 }
 
 .agent-row.winner {
-  border-color: #5289db;
-  background: #eef5ff;
+  border-color: #5f8ed2;
+  background: #243951;
 }
 
 .agent-name strong,
@@ -747,21 +747,21 @@ input:focus-visible + span {
 }
 
 .agent-name strong {
-  color: #33455e;
+  color: #e0ebfb;
   font-size: 13px;
   font-weight: 600;
 }
 
 .agent-name small {
   margin-top: 5px;
-  color: #7890ad;
+  color: #93a9c7;
   font-size: 11px;
 }
 
 .agent-progress {
   height: 3px;
   overflow: hidden;
-  background: #e2eaf4;
+  background: #3a4b63;
 }
 
 .agent-progress span {
@@ -772,18 +772,18 @@ input:focus-visible + span {
 }
 
 .agent-status {
-  color: #8191a6;
+  color: #8fa5c2;
   font-size: 10px;
   font-weight: 600;
 }
 
 .agent-status.running,
 .agent-status.complete {
-  color: #487cc4;
+  color: #9fc3f5;
 }
 
 .agent-score {
-  color: #526b8d;
+  color: #b9cbe2;
   font-size: 15px;
   font-weight: 600;
   text-align: right;
@@ -791,7 +791,7 @@ input:focus-visible + span {
 
 .agent-score small {
   margin-left: 2px;
-  color: #93a2b5;
+  color: #7186a2;
   font-size: 8px;
 }
 
@@ -799,7 +799,7 @@ input:focus-visible + span {
   position: absolute;
   top: 5px;
   right: 12px;
-  color: #397bdd;
+  color: #9fc3f5;
   font-size: 8px;
   font-weight: 600;
   letter-spacing: .08em;
