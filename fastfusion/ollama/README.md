@@ -1,54 +1,162 @@
-# AI Reasoning Chunk & Summary Backend
+# Running the Local Reasoning Analyzer
 
-A minimal FastAPI backend that decomposes AI reasoning chains into meaningful logical chunks and produces an overall summary using a local Ollama model (`llama3.1:8b`) with structured JSON outputs.
+This service provides a simple FastAPI endpoint that sends AI reasoning text to a local Ollama model and returns:
 
-## Architecture & Flow
+- Logical reasoning chunks
+- A concise summary of the overall reasoning process
 
-```text
-reasoning text
-     ↓
-POST /analyze
-     ↓
-FastAPI
-     ↓
-Ollama /api/chat (format: JSON Schema, stream: false, temperature: 0)
-     ↓
-structured JSON
-     ↓
-FastAPI response (validated via Pydantic)
+## 1. Requirements
+
+Make sure you have:
+
+- Python 3.11 or newer
+- Ollama installed
+- The `llama3.1:8b` model available locally
+
+## 2. Install Python Dependencies
+
+Install the required Python packages:
+
+```bash
+pip install fastapi uvicorn httpx pydantic
 ```
 
-1. **Client Request**: The client sends a JSON payload with a `reasoning` string to `POST /analyze`.
-2. **Ollama Chat Request**: FastAPI constructs an async HTTP POST request using `httpx` to `http://localhost:11434/api/chat` using `llama3.1:8b`. A strict JSON Schema derived from the Pydantic `AnalyzeResponse` model is passed in the `format` field.
-3. **Structured Generation**: Ollama enforces schema constraints at `temperature: 0` to produce deterministic logical chunks and a summary.
-4. **Validation & Response**: FastAPI validates the returned JSON string against `AnalyzeResponse` and sends the validated payload back to the client.
+## 3. Start Ollama
 
-## Setup & Running
+If Ollama is not already running, start the Ollama service:
 
-### 1. Install Dependencies
 ```bash
-pip install -r requirements.txt
-```
-
-### 2. Start Ollama and Pull Model
-```bash
-# Start Ollama service (if not already running)
 ollama serve
+```
 
-# Pull the required model
+Keep this terminal open while the backend is running.
+
+## 4. Download the Model
+
+Pull the required model:
+
+```bash
 ollama pull llama3.1:8b
 ```
 
-### 3. Run the FastAPI Server
+You only need to do this once.
+
+You can verify that the model is installed with:
+
+```bash
+ollama list
+```
+
+## 5. Start the FastAPI Backend
+
+From the directory containing `main.py`, run:
+
 ```bash
 uvicorn main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-### 4. Test the API
+The backend should now be available at:
+
+```text
+http://localhost:8000
+```
+
+## 6. Open the API Documentation
+
+FastAPI automatically provides an interactive API testing interface.
+
+Open:
+
+```text
+http://localhost:8000/docs
+```
+
+Select the `POST /analyze` endpoint and click **Try it out**.
+
+Example request:
+
+```json
+{
+  "reasoning": "First, I identified the requirements of the problem. I considered using a cloud model, but this would introduce latency and API cost. I then considered a local model. Since the task only requires summarization, the local model provides sufficient quality while reducing latency and cost. Therefore, I selected the local model."
+}
+```
+
+A successful response should look similar to:
+
+```json
+{
+  "chunks": [
+    {
+      "title": "Identify the requirements",
+      "content": "The model first determines the main requirements and constraints of the problem."
+    },
+    {
+      "title": "Compare deployment options",
+      "content": "The model compares cloud and local model deployment based on latency, cost, and required capability."
+    },
+    {
+      "title": "Select the local approach",
+      "content": "The model determines that a local model provides sufficient quality while reducing latency and cost."
+    }
+  ],
+  "summary": "The reasoning identifies the main constraints, compares cloud and local deployment options, and selects the local model as the best balance between quality, latency, and cost."
+}
+```
+
+## 7. Test the API with curl
+
+You can also test the endpoint directly from the terminal:
+
 ```bash
-curl -X POST "http://localhost:8000/analyze" \
+curl -X POST http://localhost:8000/analyze \
   -H "Content-Type: application/json" \
   -d '{
-    "reasoning": "The user wants an algorithm to find if a cycle exists in a linked list. Let us consider possible constraints such as O(1) extra memory. One approach is using a hash table of visited nodes, which requires O(n) memory. Another approach is Floyd cycle-finding algorithm using two pointers (slow and fast). The slow pointer moves one step while fast moves two. If they meet, a cycle exists. This satisfies O(1) space and O(n) time. Therefore, Floyd cycle-finding is the optimal choice."
+    "reasoning": "First, I identified the requirements of the problem. I considered using a cloud model, but this would introduce latency and API cost. I then considered a local model. Since the task only requires summarization, the local model provides sufficient quality while reducing latency and cost. Therefore, I selected the local model."
   }'
+```
+
+## Request Flow
+
+```text
+Reasoning Text
+      ↓
+POST /analyze
+      ↓
+FastAPI Backend
+      ↓
+Ollama /api/chat
+      ↓
+llama3.1:8b
+      ↓
+Structured JSON
+      ↓
+Chunks + Summary
+```
+
+## Default Ports
+
+| Service | Address |
+|---|---|
+| FastAPI | `http://localhost:8000` |
+| Swagger UI | `http://localhost:8000/docs` |
+| Ollama | `http://localhost:11434` |
+
+## Troubleshooting
+
+If the backend reports that it cannot connect to Ollama, make sure Ollama is running:
+
+```bash
+ollama serve
+```
+
+If the model cannot be found, pull it again:
+
+```bash
+ollama pull llama3.1:8b
+```
+
+If port `8000` is already in use, start FastAPI on another port:
+
+```bash
+uvicorn main:app --reload --port 8001
 ```
