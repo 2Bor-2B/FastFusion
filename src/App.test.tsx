@@ -29,6 +29,46 @@ describe('TraceLab Agent Canvas', () => {
     expect(screen.getAllByText('92', { exact: true })).toHaveLength(2);
   });
 
+  it('允许用户收起和重新展开 Benchmark，同时保留运行状态', async () => {
+    render(<App />);
+    expect(screen.queryByRole('button', { name: '收起 Benchmark' })).not.toBeInTheDocument();
+
+    fireEvent.change(screen.getByLabelText('输入问题'), { target: { value: '测试 Benchmark 折叠' } });
+    fireEvent.click(screen.getByLabelText('提交问题'));
+
+    const collapseButton = screen.getByRole('button', { name: '收起 Benchmark' });
+    const details = screen.getByRole('region', { name: 'Agent Benchmark 详情' });
+    expect(collapseButton).toHaveAttribute('aria-expanded', 'true');
+    expect(details).not.toHaveAttribute('hidden');
+
+    fireEvent.click(collapseButton);
+    expect(screen.getByRole('button', { name: '展开 Benchmark' })).toHaveAttribute('aria-expanded', 'false');
+    expect(details).toHaveAttribute('hidden');
+    expect(screen.getByText('EVALUATING')).toBeInTheDocument();
+
+    await finishAnalysis();
+    expect(details).toHaveAttribute('hidden');
+    expect(screen.getByText('WINNER SELECTED')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: '展开 Benchmark' }));
+    expect(screen.getByRole('button', { name: '收起 Benchmark' })).toHaveAttribute('aria-expanded', 'true');
+    expect(details).not.toHaveAttribute('hidden');
+  });
+
+  it('提交新的追问时会重新展开 Benchmark', async () => {
+    render(<App />);
+    fireEvent.change(screen.getByLabelText('输入问题'), { target: { value: '第一轮问题' } });
+    fireEvent.click(screen.getByLabelText('提交问题'));
+    await finishAnalysis();
+    fireEvent.click(screen.getByRole('button', { name: '收起 Benchmark' }));
+
+    fireEvent.change(screen.getByLabelText('输入问题'), { target: { value: '继续追问' } });
+    fireEvent.click(screen.getByLabelText('提交问题'));
+
+    expect(screen.getByRole('button', { name: '收起 Benchmark' })).toHaveAttribute('aria-expanded', 'true');
+    expect(screen.getByRole('region', { name: 'Agent Benchmark 详情' })).not.toHaveAttribute('hidden');
+  });
+
   it('展开原始 JSON、选择节点并导出 Markdown Skills', async () => {
     const anchorClick = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => undefined);
     render(<App />);

@@ -59,12 +59,14 @@ export default function App() {
   const [selectedNodes, setSelectedNodes] = useState<Set<string>>(new Set());
   const [viewport, setViewport] = useState<Viewport>(INITIAL_VIEWPORT);
   const [exported, setExported] = useState(false);
+  const [isBenchmarkExpanded, setIsBenchmarkExpanded] = useState(false);
   const canvasRef = useRef<HTMLDivElement | null>(null);
   const panRef = useRef<{ clientX: number; clientY: number; originX: number; originY: number } | null>(null);
 
   const isProcessing = phase === 'benchmarking' || phase === 'summarizing';
   const selectedCount = selectedNodes.size;
   const activeNode = nodes.find((node) => node.id === activeNodeId);
+  const benchmarkStateLabel = phase === 'summarizing' ? 'SUMMARIZING' : phase === 'complete' ? 'WINNER SELECTED' : 'EVALUATING';
 
   const connections = useMemo(() => nodes.flatMap((node) => {
     if (!node.parentId) return [];
@@ -102,6 +104,7 @@ export default function App() {
     setAgents(AGENT_TEMPLATE.map((agent) => ({ ...agent })));
     setWinnerId(undefined);
     setExpandedNodes((current) => { const next = new Set(current); next.delete(id); return next; });
+    setIsBenchmarkExpanded(true);
     setPhase('benchmarking');
 
     const result = await runMockAgents(cleanPrompt, setAgents, (winner) => {
@@ -352,23 +355,38 @@ export default function App() {
 
       <section className={`command-dock ${phase !== 'idle' ? 'expanded' : ''}`} aria-label="Prompt command line" data-control>
         {phase !== 'idle' && (
-          <div className="benchmark-panel">
+          <div className={`benchmark-panel ${isBenchmarkExpanded ? '' : 'is-collapsed'}`}>
             <header>
               <div><span className="eyebrow"><CircleStop /> LIVE BENCHMARK</span><h2>{isProcessing ? 'Agents are working' : 'Comparison complete'}</h2></div>
-              <div className="benchmark-state"><span className={isProcessing ? 'pulse' : 'done'} />{phase === 'summarizing' ? 'SUMMARIZING' : phase === 'complete' ? 'WINNER SELECTED' : 'EVALUATING'}</div>
+              <div className="benchmark-actions">
+                <div className="benchmark-state" role="status" aria-label={benchmarkStateLabel} aria-live="polite" aria-atomic="true"><span className={`benchmark-state-dot ${isProcessing ? 'pulse' : 'done'}`} aria-hidden="true" /><span className="benchmark-state-label" aria-hidden="true">{benchmarkStateLabel}</span></div>
+                <button
+                  className="benchmark-toggle"
+                  type="button"
+                  onClick={() => setIsBenchmarkExpanded((current) => !current)}
+                  aria-expanded={isBenchmarkExpanded}
+                  aria-controls="benchmark-details"
+                  aria-label={isBenchmarkExpanded ? '收起 Benchmark' : '展开 Benchmark'}
+                  title={isBenchmarkExpanded ? '收起 Benchmark' : '展开 Benchmark'}
+                >
+                  {isBenchmarkExpanded ? <ArrowUp aria-hidden="true" /> : <ArrowDown aria-hidden="true" />}
+                </button>
+              </div>
             </header>
-            <div className="agent-grid">
-              {agents.map((agent) => {
-                const winner = winnerId === agent.id;
-                return <div className={`agent-row ${winner ? 'winner' : ''}`} key={agent.id}>
-                  <span className="agent-avatar" style={{ '--agent-color': agent.color } as React.CSSProperties}><Bot /></span>
-                  <div className="agent-name"><strong>{agent.name}</strong><small>{agent.model}</small></div>
-                  <div className="agent-progress"><span style={{ width: agent.status === 'complete' ? `${agent.score}%` : agent.status === 'running' ? '58%' : '8%', '--agent-color': agent.color } as React.CSSProperties} /></div>
-                  <span className={`agent-status ${agent.status}`}>{agent.status === 'running' && <LoaderCircle />}{statusLabel(agent.status)}</span>
-                  <strong className="agent-score">{agent.score ?? '—'}{agent.score && <small>/100</small>}</strong>
-                  {winner && <span className="winner-tag"><Sparkles /> WINNER</span>}
-                </div>;
-              })}
+            <div id="benchmark-details" className="benchmark-details" role="region" aria-label="Agent Benchmark 详情" aria-busy={isProcessing} hidden={!isBenchmarkExpanded}>
+              <div className="agent-grid">
+                {agents.map((agent) => {
+                  const winner = winnerId === agent.id;
+                  return <div className={`agent-row ${winner ? 'winner' : ''}`} key={agent.id}>
+                    <span className="agent-avatar" style={{ '--agent-color': agent.color } as React.CSSProperties}><Bot /></span>
+                    <div className="agent-name"><strong>{agent.name}</strong><small>{agent.model}</small></div>
+                    <div className="agent-progress"><span style={{ width: agent.status === 'complete' ? `${agent.score}%` : agent.status === 'running' ? '58%' : '8%', '--agent-color': agent.color } as React.CSSProperties} /></div>
+                    <span className={`agent-status ${agent.status}`}>{agent.status === 'running' && <LoaderCircle />}{statusLabel(agent.status)}</span>
+                    <strong className="agent-score">{agent.score ?? '—'}{agent.score && <small>/100</small>}</strong>
+                    {winner && <span className="winner-tag"><Sparkles /> WINNER</span>}
+                  </div>;
+                })}
+              </div>
             </div>
           </div>
         )}
