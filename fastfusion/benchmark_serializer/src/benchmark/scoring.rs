@@ -105,3 +105,91 @@ pub fn score(run: &RunResult, correct: Option<bool>) -> BenchmarkScore {
         has_encrypted_reasoning: info.encrypted,
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use serde_json::json;
+
+    use super::score;
+    use crate::openrouter::types::RunResult;
+
+    fn run(
+        reasoning: Option<&str>,
+        reasoning_details: serde_json::Value,
+        latency_ms: u128,
+    ) -> RunResult {
+        RunResult {
+            model: "test/model".into(),
+            answer: Some("answer".into()),
+            reasoning: reasoning.map(str::to_owned),
+            reasoning_details,
+            usage: json!({}),
+            latency_ms,
+        }
+    }
+
+    #[test]
+    fn scores_plaintext_reasoning_and_correctness() {
+        let result = run(Some("four"), json!(null), 1_999);
+        let scored = score(&result, Some(true));
+
+        assert_eq!(scored.correctness_score, 30.0);
+        assert_eq!(scored.visibility_score, 30.0);
+        assert_eq!(scored.latency_score, 20.0);
+        assert_eq!(scored.reasoning_chars, 4);
+        assert!(scored.reasoning_visible);
+        assert!(scored.has_plaintext_reasoning);
+    }
+
+    #[test]
+    fn finds_nested_summary_and_encrypted_telemetry() {
+        let result = run(
+            None,
+            json!({"wrapper": [
+                {"type": "reasoning.summary", "summary": "brief"},
+                {"type": "reasoning.encrypted", "data": "opaque"}
+            ]}),
+            5_000,
+        );
+        let scored = score(&result, None);
+
+        assert_eq!(scored.visibility_score, 15.0);
+        assert_eq!(scored.latency_score, 8.0);
+        assert_eq!(scored.reasoning_chars, 5);
+        assert!(scored.has_summary_reasoning);
+        assert!(scored.has_encrypted_reasoning);
+        assert!(!scored.has_plaintext_reasoning);
+    }
+
+    #[test]
+    fn encrypted_only_reasoning_is_not_marked_visible() {
+        let result = run(
+            None,
+            json!([{"type": "reasoning.encrypted", "data": "opaque"}]),
+            10_000,
+        );
+        let scored = score(&result, Some(false));
+
+        assert_eq!(scored.total, 0.0);
+        assert!(!scored.reasoning_visible);
+        assert!(scored.has_encrypted_reasoning);
+    }
+
+    #[test]
+    fn richness_caps_at_twenty_points() {
+        let result = run(Some(&"x".repeat(4_000)), json!(null), 2_000);
+        let scored = score(&result, None);
+
+        assert_eq!(scored.richness_score, 20.0);
+        assert_eq!(scored.latency_score, 15.0);
+    }
+
+    #[test]
+    fn counts_unicode_characters_not_bytes() {
+        let result = run(Some("a🦀é"), json!(null), 9_999);
+        let scored = score(&result, None);
+
+        assert_eq!(scored.reasoning_chars, 3);
+        assert_eq!(scored.latency_score, 8.0);
+    }
+}

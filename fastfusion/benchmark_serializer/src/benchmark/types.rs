@@ -52,3 +52,71 @@ pub enum BenchmarkEvent {
         total_runs: usize,
     },
 }
+
+#[cfg(test)]
+mod tests {
+    use serde_json::{Value, json};
+
+    use super::{BenchmarkEvent, BenchmarkRequest};
+
+    #[test]
+    fn request_defaults_reasoning_effort_to_high() {
+        let request: BenchmarkRequest = serde_json::from_value(json!({
+            "models": ["test/model"],
+            "cases": []
+        }))
+        .unwrap();
+
+        assert_eq!(request.reasoning_effort, "high");
+    }
+
+    #[test]
+    fn done_event_uses_tagged_ndjson_shape() {
+        let value = serde_json::to_value(BenchmarkEvent::Done { total_runs: 6 }).unwrap();
+
+        assert_eq!(value, json!({"type": "done", "total_runs": 6}));
+    }
+
+    #[test]
+    fn reasoning_details_keep_unknown_fields_when_serialized() {
+        let details = json!([{
+            "type": "reasoning.text",
+            "index": 7,
+            "text": "inspect",
+            "provider_extension": {"future": true}
+        }]);
+        let run = crate::openrouter::types::RunResult {
+            model: "test/model".into(),
+            answer: None,
+            reasoning: None,
+            reasoning_details: details.clone(),
+            usage: Value::Null,
+            latency_ms: 1,
+        };
+        let record = super::BenchmarkRecord {
+            model: run.model,
+            case_id: "case-1".into(),
+            category: "test".into(),
+            answer: run.answer,
+            reasoning: run.reasoning,
+            reasoning_details: run.reasoning_details,
+            usage: run.usage,
+            latency_ms: run.latency_ms,
+            correct: None,
+            score: crate::benchmark::scoring::score(
+                &crate::openrouter::types::RunResult {
+                    model: "test/model".into(),
+                    answer: None,
+                    reasoning: None,
+                    reasoning_details: details.clone(),
+                    usage: Value::Null,
+                    latency_ms: 1,
+                },
+                None,
+            ),
+        };
+        let value = serde_json::to_value(BenchmarkEvent::Result { record }).unwrap();
+
+        assert_eq!(value["record"]["reasoning_details"], details);
+    }
+}

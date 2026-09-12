@@ -24,13 +24,7 @@ pub async fn execute_case(
     .await
     .map_err(|error| error.to_string())?;
 
-    let correct = case.expected_contains.as_ref().map(|expected| {
-        run.answer
-            .as_deref()
-            .unwrap_or_default()
-            .to_lowercase()
-            .contains(&expected.to_lowercase())
-    });
+    let correct = answer_contains(run.answer.as_deref(), case.expected_contains.as_deref());
     let score = scoring::score(&run, correct);
 
     Ok(BenchmarkRecord {
@@ -45,4 +39,36 @@ pub async fn execute_case(
         correct,
         score,
     })
+}
+
+fn answer_contains(answer: Option<&str>, expected: Option<&str>) -> Option<bool> {
+    expected.map(|expected| {
+        answer
+            .unwrap_or_default()
+            .to_lowercase()
+            .contains(&expected.to_lowercase())
+    })
+}
+
+#[cfg(test)]
+mod tests {
+    use super::answer_contains;
+
+    #[test]
+    fn correctness_is_case_insensitive() {
+        assert_eq!(
+            answer_contains(Some("FINAL: Alice"), Some("alice")),
+            Some(true)
+        );
+    }
+
+    #[test]
+    fn missing_answer_is_incorrect_when_expectation_exists() {
+        assert_eq!(answer_contains(None, Some("expected")), Some(false));
+    }
+
+    #[test]
+    fn missing_expectation_is_unscored() {
+        assert_eq!(answer_contains(Some("anything"), None), None);
+    }
 }

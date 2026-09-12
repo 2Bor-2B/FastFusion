@@ -1,17 +1,28 @@
 import json
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 
 from schemas import (
     RunRequest,
     BenchmarkRequest,
+    ReasoningParseRequest,
+    ParsedReasoning,
+    SkillGenerateRequest,
+    AgentSkill,
 )
 
 from rust_client import (
     run_model,
     benchmark_stream,
+)
+
+from ollama_client import (
+    OllamaProcessingError,
+    OllamaUnavailableError,
+    generate_skill,
+    parse_reasoning,
 )
 
 app = FastAPI(
@@ -59,3 +70,23 @@ async def benchmark(
         stream(),
         media_type="application/x-ndjson",
     )
+
+
+@app.post("/api/reasoning/parse", response_model=ParsedReasoning)
+async def reasoning_parse(request: ReasoningParseRequest):
+    try:
+        return await parse_reasoning(request)
+    except OllamaUnavailableError as error:
+        raise HTTPException(status_code=503, detail=str(error)) from error
+    except OllamaProcessingError as error:
+        raise HTTPException(status_code=502, detail=str(error)) from error
+
+
+@app.post("/api/skills/generate", response_model=AgentSkill)
+async def skill_generate(request: SkillGenerateRequest):
+    try:
+        return await generate_skill(request)
+    except OllamaUnavailableError as error:
+        raise HTTPException(status_code=503, detail=str(error)) from error
+    except OllamaProcessingError as error:
+        raise HTTPException(status_code=502, detail=str(error)) from error

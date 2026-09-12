@@ -72,3 +72,42 @@ pub struct ResponseMessage {
     #[serde(default)]
     pub reasoning_details: Value,
 }
+
+#[cfg(test)]
+mod tests {
+    use serde_json::json;
+
+    use super::{ChatResponse, RunInput};
+
+    #[test]
+    fn run_input_defaults_reasoning_effort() {
+        let input: RunInput = serde_json::from_value(json!({
+            "model": "test/model",
+            "prompt": "test"
+        }))
+        .unwrap();
+
+        assert_eq!(input.reasoning_effort, "high");
+    }
+
+    #[test]
+    fn response_retains_arbitrary_reasoning_details() {
+        let details = json!([{
+            "type": "provider.future_type",
+            "index": 2,
+            "unknown": [1, 2, 3]
+        }]);
+        let response: ChatResponse = serde_json::from_value(json!({
+            "choices": [{
+                "message": {
+                    "content": "answer",
+                    "reasoning_details": details
+                }
+            }],
+            "usage": {"tokens": 4}
+        }))
+        .unwrap();
+
+        assert_eq!(response.choices[0].message.reasoning_details, details);
+    }
+}

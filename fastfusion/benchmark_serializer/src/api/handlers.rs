@@ -122,3 +122,23 @@ async fn send_event(
     line.push(b'\n');
     sender.send(Bytes::from(line)).await
 }
+
+#[cfg(test)]
+mod tests {
+    use tokio::sync::mpsc;
+
+    use super::send_event;
+    use crate::benchmark::types::BenchmarkEvent;
+
+    #[tokio::test]
+    async fn send_event_writes_one_json_object_per_line() {
+        let (sender, mut receiver) = mpsc::channel(1);
+
+        send_event(&sender, &BenchmarkEvent::Done { total_runs: 3 })
+            .await
+            .unwrap();
+
+        let line = receiver.recv().await.unwrap();
+        assert_eq!(&line[..], b"{\"type\":\"done\",\"total_runs\":3}\n");
+    }
+}
