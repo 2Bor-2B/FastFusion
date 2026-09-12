@@ -1,0 +1,10 @@
+/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/deps/rustc_serialize-d75c2c844338e627.d: /home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rustc-serialize-0.3.25/src/lib.rs /home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rustc-serialize-0.3.25/src/serialize.rs /home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rustc-serialize-0.3.25/src/collection_impls.rs /home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rustc-serialize-0.3.25/src/base64.rs /home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rustc-serialize-0.3.25/src/hex.rs /home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rustc-serialize-0.3.25/src/json.rs
+
+/home/wizard49/Projects/fastfusion/benchmark_serializer/target/debug/deps/librustc_serialize-d75c2c844338e627.rmeta: /home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rustc-serialize-0.3.25/src/lib.rs /home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rustc-serialize-0.3.25/src/serialize.rs /home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rustc-serialize-0.3.25/src/collection_impls.rs /home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rustc-serialize-0.3.25/src/base64.rs /home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rustc-serialize-0.3.25/src/hex.rs /home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rustc-serialize-0.3.25/src/json.rs
+
+/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rustc-serialize-0.3.25/src/lib.rs:
+/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rustc-serialize-0.3.25/src/serialize.rs:
+/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rustc-serialize-0.3.25/src/collection_impls.rs:
+/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rustc-serialize-0.3.25/src/base64.rs:
+/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rustc-serialize-0.3.25/src/hex.rs:
+/home/wizard49/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rustc-serialize-0.3.25/src/json.rs:

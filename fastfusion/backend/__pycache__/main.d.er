@@ -1,0 +1,25 @@
+##[pylyzer] failed /home/wizard49/Projects/fastfusion/backend/main.py 1789196193 1075
+.json: Never
+
+.___v_desugar_1 = pyimport "fastapi"
+.fastapi = pyimport "fastapi"
+.FastAPI: Never
+.___v_desugar_2 = pyimport "cors"
+.cors = pyimport "cors"
+.CORSMiddleware: Never
+.___v_desugar_3 = pyimport "responses"
+.responses = pyimport "responses"
+.StreamingResponse: Never
+.___v_desugar_4: Never
+.RunRequest: Never
+.BenchmarkRequest: Never
+.___v_desugar_5: Never
+.run_model: Never
+.benchmark_stream: Never
+.app: Never
+
+.health: () -> global::Dict!({{"status"}: {"ok"}})
+.run: (request: Obj) -> Never
+.benchmark: (request: Obj) -> Never
+ver
+.benchmark: (request: Obj) -> Never
