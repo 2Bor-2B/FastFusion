@@ -58,4 +58,26 @@ describe('TraceLab Agent Canvas', () => {
     await finishAnalysis();
     expect(screen.getAllByText('SYNTHESIS COMPLETE')).toHaveLength(2);
   });
+
+  it('滚轮缩放时保持鼠标下方的世界坐标不移动', () => {
+    const { container } = render(<App />);
+    fireEvent.change(screen.getByLabelText('输入问题'), { target: { value: '测试缩放锚点' } });
+    fireEvent.click(screen.getByLabelText('提交问题'));
+    const canvas = screen.getByLabelText('Agent 思考路径画布');
+    Object.defineProperty(canvas, 'getBoundingClientRect', {
+      configurable: true,
+      value: () => ({ left: 10, top: 20, width: 1000, height: 700, right: 1010, bottom: 720, x: 10, y: 20, toJSON: () => ({}) }),
+    });
+
+    fireEvent.wheel(canvas, { deltaY: -100, clientX: 410, clientY: 320 });
+    const transform = (container.querySelector('.canvas-world') as HTMLElement).style.transform;
+    const values = transform.match(/-?\d+(?:\.\d+)?/g)?.map(Number) ?? [];
+    const [x, y, scale] = values;
+    const worldX = 400 - 90;
+    const worldY = 300 - 30;
+
+    expect(scale).toBeCloseTo(1.08);
+    expect(x + worldX * scale).toBeCloseTo(400);
+    expect(y + worldY * scale).toBeCloseTo(300);
+  });
 });

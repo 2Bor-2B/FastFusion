@@ -61,6 +61,7 @@ export default function App() {
   const [selectedNodes, setSelectedNodes] = useState<Set<string>>(new Set());
   const [viewport, setViewport] = useState<Viewport>(INITIAL_VIEWPORT);
   const [exported, setExported] = useState(false);
+  const canvasRef = useRef<HTMLDivElement | null>(null);
   const panRef = useRef<{ clientX: number; clientY: number; originX: number; originY: number } | null>(null);
 
   const isProcessing = phase === 'benchmarking' || phase === 'summarizing';
@@ -181,14 +182,35 @@ export default function App() {
 
   function stopPan() { panRef.current = null; }
 
-  function zoom(delta: number) {
-    setViewport((current) => ({ ...current, scale: Math.min(1.45, Math.max(0.55, current.scale + delta)) }));
+  function zoom(delta: number, anchor?: { x: number; y: number }) {
+    const rect = canvasRef.current?.getBoundingClientRect();
+    const zoomAnchor = anchor ?? {
+      x: rect?.width ? rect.width / 2 : window.innerWidth / 2,
+      y: rect?.height ? rect.height / 2 : window.innerHeight / 2,
+    };
+
+    setViewport((current) => {
+      const scale = Math.min(1.45, Math.max(0.55, current.scale + delta));
+      if (scale === current.scale) return current;
+
+      const worldX = (zoomAnchor.x - current.x) / current.scale;
+      const worldY = (zoomAnchor.y - current.y) / current.scale;
+      return {
+        scale,
+        x: zoomAnchor.x - worldX * scale,
+        y: zoomAnchor.y - worldY * scale,
+      };
+    });
   }
 
   function handleWheel(event: WheelEvent<HTMLDivElement>) {
     if (!nodes.length) return;
     event.preventDefault();
-    zoom(event.deltaY > 0 ? -0.08 : 0.08);
+    const rect = event.currentTarget.getBoundingClientRect();
+    zoom(event.deltaY > 0 ? -0.08 : 0.08, {
+      x: event.clientX - rect.left,
+      y: event.clientY - rect.top,
+    });
   }
 
   return (
@@ -207,6 +229,7 @@ export default function App() {
       {exported && <div className="export-toast"><Check /> Markdown skill exported</div>}
 
       <div
+        ref={canvasRef}
         className={`canvas ${nodes.length ? 'has-nodes' : ''}`}
         aria-label="Agent 思考路径画布"
         onPointerDown={beginPan}
