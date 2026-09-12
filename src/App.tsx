@@ -1,24 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { FormEvent, PointerEvent as ReactPointerEvent } from 'react';
-import {
-  ArrowDown,
-  ArrowUp,
-  Bot,
-  Braces,
-  Check,
-  CheckCircle2,
-  ChevronRight,
-  CircleStop,
-  Download,
-  Focus,
-  LoaderCircle,
-  Maximize2,
-  Send,
-  Sparkles,
-  Terminal,
-  ZoomIn,
-  ZoomOut,
-} from 'lucide-react';
 import { AGENT_TEMPLATE, runMockAgents } from './mockApi';
 import type { AgentRun } from './mockApi';
 
@@ -40,6 +21,7 @@ type ThoughtNode = {
 type Viewport = { x: number; y: number; scale: number };
 
 const INITIAL_VIEWPORT: Viewport = { x: 90, y: 30, scale: 1 };
+const NODE_WIDTH = 430;
 
 function statusLabel(status: AgentRun['status']) {
   if (status === 'running') return 'RUNNING';
@@ -65,7 +47,6 @@ export default function App() {
 
   const isProcessing = phase === 'benchmarking' || phase === 'summarizing';
   const selectedCount = selectedNodes.size;
-  const activeNode = nodes.find((node) => node.id === activeNodeId);
   const benchmarkStateLabel = phase === 'summarizing' ? 'SUMMARIZING' : phase === 'complete' ? 'WINNER SELECTED' : 'EVALUATING';
 
   const connections = useMemo(() => nodes.flatMap((node) => {
@@ -94,7 +75,7 @@ export default function App() {
       parentId,
       prompt: cleanPrompt,
       status: 'loading',
-      x: 120 + nodes.length * 470,
+      x: 120 + nodes.length * (NODE_WIDTH + 120),
       y: 245,
     };
 
@@ -252,17 +233,16 @@ export default function App() {
   return (
     <main className="app-frame">
       <header className="topbar">
-        <div className="wordmark"><span className="wordmark-icon"><Terminal /></span><span>TRACE<span>LAB</span></span><em>/ AGENT CANVAS</em></div>
-        <div className="topbar-meta"><span><i /> LOCAL SIMULATION</span>{nodes.length > 0 && <span>{nodes.length.toString().padStart(2, '0')} TRACES</span>}</div>
+        <div className="wordmark"><span>TRACE<span>LAB</span></span><em>/ AGENT CANVAS</em></div>
       </header>
 
       {selectedCount > 0 && (
         <div className="export-cluster" data-control>
           <span>{selectedCount} BLOCK{selectedCount > 1 ? 'S' : ''} SELECTED</span>
-          <button type="button" onClick={exportSkills}><Download />Export Skills</button>
+          <button type="button" onClick={exportSkills}>Export Skills</button>
         </div>
       )}
-      {exported && <div className="export-toast"><Check /> Markdown skill exported</div>}
+      {exported && <div className="export-toast">Markdown skill exported</div>}
 
       <div
         ref={canvasRef}
@@ -273,14 +253,13 @@ export default function App() {
         onPointerUp={stopPan}
         onPointerCancel={stopPan}
       >
-        {!nodes.length && <div className="idle-mark" aria-hidden="true"><span /><p>YOUR QUESTION BECOMES A MAP</p></div>}
+        {!nodes.length && <div className="idle-mark" aria-hidden="true"><p>YOUR QUESTION BECOMES A MAP</p></div>}
 
         <div className="canvas-world" style={{ transform: `translate(${viewport.x}px, ${viewport.y}px) scale(${viewport.scale})` }}>
           <svg className="connections" width="2400" height="1000" aria-hidden="true">
-            <defs><marker id="arrowhead" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#456da8" /></marker></defs>
             {connections.map(({ id, from, to }) => {
-              const x1 = from.x + 356; const y1 = from.y + 116; const x2 = to.x - 18; const y2 = to.y + 116;
-              return <path key={id} d={`M ${x1} ${y1} C ${x1 + 70} ${y1}, ${x2 - 70} ${y2}, ${x2} ${y2}`} markerEnd="url(#arrowhead)" />;
+              const x1 = from.x + NODE_WIDTH; const y1 = from.y + 116; const x2 = to.x - 18; const y2 = to.y + 116;
+              return <path key={id} d={`M ${x1} ${y1} C ${x1 + 70} ${y1}, ${x2 - 70} ${y2}, ${x2} ${y2}`} />;
             })}
           </svg>
 
@@ -298,14 +277,14 @@ export default function App() {
                 <section className="raw-layer" aria-label={`原始数据 ${index + 1}`}>
                   {!expanded ? (
                     <button className="raw-peek" type="button" onClick={(event) => { event.stopPropagation(); toggleExpanded(node.id); }} disabled={!node.raw} aria-label="展开原始 JSON">
-                      <Braces /><span>RAW RESPONSE</span><ArrowDown />
+                      <span>RAW RESPONSE</span><span>OPEN</span>
                     </button>
                   ) : (
                     <div className="raw-content">
-                      <header><span><Braces /> RAW RESPONSE</span><span>JSON</span></header>
+                      <header><span>RAW RESPONSE</span><span>JSON</span></header>
                       <label>PROMPT</label><p>{node.prompt}</p>
                       <label>PAYLOAD</label><pre data-json-scroll tabIndex={0} style={{ overscrollBehavior: 'contain' }} aria-label={`节点 ${index + 1} 原始 JSON 文档`}>{JSON.stringify(node.raw, null, 2)}</pre>
-                      <button type="button" onClick={(event) => { event.stopPropagation(); toggleExpanded(node.id); }} aria-label="收起原始 JSON"><ArrowUp /> Return to summary</button>
+                      <button type="button" onClick={(event) => { event.stopPropagation(); toggleExpanded(node.id); }} aria-label="收起原始 JSON">Return to summary</button>
                     </div>
                   )}
                 </section>
@@ -313,29 +292,28 @@ export default function App() {
                 <section className="thought-card">
                   <header className="node-header">
                     <span className="node-index">{String(index + 1).padStart(2, '0')}</span>
-                    <div><strong>{node.parentId ? 'FOLLOW-UP SYNTHESIS' : 'PRIMARY SYNTHESIS'}</strong><small>{node.status === 'complete' ? 'Atlas · winning response' : 'Multi-agent benchmark'}</small></div>
+                    <div><strong>{node.parentId ? 'FOLLOW-UP SYNTHESIS' : 'PRIMARY SYNTHESIS'}</strong></div>
                     <label className="node-check" onClick={(event) => event.stopPropagation()}>
                       <input type="checkbox" checked={selected} onChange={() => toggleSelected(node.id)} aria-label={`选择节点 ${index + 1}`} />
-                      <span>{selected && <Check />}</span>
+                      <span>{selected ? 'SELECTED' : 'SELECT'}</span>
                     </label>
                   </header>
 
                   {node.status !== 'complete' ? (
                     <div className="node-loading">
-                      <div className="loader-orbit"><Sparkles /><i /><i /><i /></div>
                       <strong>{node.status === 'summarizing' ? 'SYNTHESIZING WINNER' : 'COMPARING AGENTS'}</strong>
-                      <p>{node.status === 'summarizing' ? 'Local model is compressing the best answer…' : 'Running benchmark and evaluating candidates…'}</p>
+                      <p>{node.status === 'summarizing' ? 'Local model is compressing the best answer' : 'Running benchmark and evaluating candidates'}</p>
                       <div className="loading-line"><span /></div>
                     </div>
                   ) : (
                     <div className="node-result">
-                      <div className="result-score"><span><CheckCircle2 /> SYNTHESIS COMPLETE</span><strong>{node.score}<small>/100</small></strong></div>
+                      <div className="result-score"><span>SYNTHESIS COMPLETE</span><strong>{node.score}<small>/100</small></strong></div>
                       <h2>{node.prompt}</h2>
                       <p>{node.summary}</p>
                       <ul>{node.insights?.map((insight, insightIndex) => <li key={insight}><span>{insightIndex + 1}</span>{insight}</li>)}</ul>
                     </div>
                   )}
-                  <footer><span><Focus /> TRACE {node.id.split('-').at(-1)?.slice(-5).toUpperCase()}</span><span>PUBLIC RATIONALE SUMMARY</span></footer>
+                  <footer><span>TRACE {node.id.split('-').at(-1)?.slice(-5).toUpperCase()}</span><span>PUBLIC RATIONALE SUMMARY</span></footer>
                 </section>
               </article>
             );
@@ -344,11 +322,10 @@ export default function App() {
 
         {nodes.length > 0 && (
           <div className="canvas-controls" data-control>
-            <button type="button" onClick={() => zoom(0.1)} aria-label="放大画布"><ZoomIn /></button>
+            <button type="button" onClick={() => zoom(0.1)} aria-label="放大画布">IN</button>
             <span>{Math.round(viewport.scale * 100)}%</span>
-            <button type="button" onClick={() => zoom(-0.1)} aria-label="缩小画布"><ZoomOut /></button>
-            <i />
-            <button type="button" onClick={() => setViewport(INITIAL_VIEWPORT)} aria-label="重置画布"><Maximize2 /></button>
+            <button type="button" onClick={() => zoom(-0.1)} aria-label="缩小画布">OUT</button>
+            <button type="button" onClick={() => setViewport(INITIAL_VIEWPORT)} aria-label="重置画布">RESET</button>
           </div>
         )}
       </div>
@@ -357,9 +334,9 @@ export default function App() {
         {phase !== 'idle' && (
           <div className={`benchmark-panel ${isBenchmarkExpanded ? '' : 'is-collapsed'}`}>
             <header>
-              <div><span className="eyebrow"><CircleStop /> LIVE BENCHMARK</span><h2>{isProcessing ? 'Agents are working' : 'Comparison complete'}</h2></div>
+              <div><span className="eyebrow">LIVE BENCHMARK</span><h2>{isProcessing ? 'Agents are working' : 'Comparison complete'}</h2></div>
               <div className="benchmark-actions">
-                <div className="benchmark-state" role="status" aria-label={benchmarkStateLabel} aria-live="polite" aria-atomic="true"><span className={`benchmark-state-dot ${isProcessing ? 'pulse' : 'done'}`} aria-hidden="true" /><span className="benchmark-state-label" aria-hidden="true">{benchmarkStateLabel}</span></div>
+                <div className="benchmark-state" role="status" aria-label={benchmarkStateLabel} aria-live="polite" aria-atomic="true"><span className="benchmark-state-label" aria-hidden="true">{benchmarkStateLabel}</span></div>
                 <button
                   className="benchmark-toggle"
                   type="button"
@@ -369,7 +346,7 @@ export default function App() {
                   aria-label={isBenchmarkExpanded ? '收起 Benchmark' : '展开 Benchmark'}
                   title={isBenchmarkExpanded ? '收起 Benchmark' : '展开 Benchmark'}
                 >
-                  {isBenchmarkExpanded ? <ArrowUp aria-hidden="true" /> : <ArrowDown aria-hidden="true" />}
+                  {isBenchmarkExpanded ? 'HIDE' : 'SHOW'}
                 </button>
               </div>
             </header>
@@ -378,12 +355,11 @@ export default function App() {
                 {agents.map((agent) => {
                   const winner = winnerId === agent.id;
                   return <div className={`agent-row ${winner ? 'winner' : ''}`} key={agent.id}>
-                    <span className="agent-avatar" style={{ '--agent-color': agent.color } as React.CSSProperties}><Bot /></span>
                     <div className="agent-name"><strong>{agent.name}</strong><small>{agent.model}</small></div>
-                    <div className="agent-progress"><span style={{ width: agent.status === 'complete' ? `${agent.score}%` : agent.status === 'running' ? '58%' : '8%', '--agent-color': agent.color } as React.CSSProperties} /></div>
-                    <span className={`agent-status ${agent.status}`}>{agent.status === 'running' && <LoaderCircle />}{statusLabel(agent.status)}</span>
-                    <strong className="agent-score">{agent.score ?? '—'}{agent.score && <small>/100</small>}</strong>
-                    {winner && <span className="winner-tag"><Sparkles /> WINNER</span>}
+                    <div className="agent-progress"><span style={{ width: agent.status === 'complete' ? `${agent.score}%` : agent.status === 'running' ? '58%' : '8%' }} /></div>
+                    <span className={`agent-status ${agent.status}`}>{statusLabel(agent.status)}</span>
+                    <strong className="agent-score">{agent.score ?? 'N/A'}{agent.score && <small>/100</small>}</strong>
+                    {winner && <span className="winner-tag">WINNER</span>}
                   </div>;
                 })}
               </div>
@@ -392,7 +368,6 @@ export default function App() {
         )}
 
         <form className="prompt-form" onSubmit={submitPrompt}>
-          <span className="prompt-prefix"><ChevronRight /></span>
           <textarea
             rows={1}
             value={prompt}
@@ -400,16 +375,13 @@ export default function App() {
             onKeyDown={(event) => {
               if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); void submitPrompt(); }
             }}
-            placeholder={nodes.length ? 'Ask a follow-up to extend this trace…' : 'Ask anything. We’ll compare the agents…'}
+            placeholder={nodes.length ? 'Ask a follow-up to extend this trace' : 'Ask anything. We’ll compare the agents'}
             aria-label="输入问题"
             disabled={isProcessing}
           />
-          <div className="prompt-meta"><span>{isProcessing ? 'Agents busy' : '↵ Run benchmark'}</span><button type="submit" disabled={!prompt.trim() || isProcessing} aria-label="提交问题">{isProcessing ? <LoaderCircle /> : <Send />}</button></div>
+          <div className="prompt-meta"><span>{isProcessing ? 'Agents busy' : 'Run benchmark'}</span><button type="submit" disabled={!prompt.trim() || isProcessing} aria-label="提交问题">{isProcessing ? 'WAIT' : 'RUN'}</button></div>
         </form>
-        <div className="dock-foot"><span><i /> TWO-FINGER PAN · PINCH / CTRL+WHEEL ZOOM</span><span>Responses shown as summaries, not private chain-of-thought</span><span>SHIFT + ENTER FOR NEW LINE</span></div>
       </section>
-
-      {activeNode && nodes.length > 1 && <div className="active-trace"><span>ACTIVE TRACE</span><strong>{activeNode.prompt}</strong></div>}
     </main>
   );
 }

@@ -87,13 +87,13 @@ describe('TraceLab Agent Canvas', () => {
   });
 
   it('连续追问会在画布中保留原节点并创建连接节点', async () => {
-    render(<App />);
+    const { container } = render(<App />);
     fireEvent.change(screen.getByLabelText('输入问题'), { target: { value: '制定第一版方案' } });
     fireEvent.click(screen.getByLabelText('提交问题'));
     await finishAnalysis();
     fireEvent.change(screen.getByLabelText('输入问题'), { target: { value: '如果时间只有一天呢？' } });
     fireEvent.click(screen.getByLabelText('提交问题'));
-    expect(screen.getByText('02 TRACES')).toBeInTheDocument();
+    expect(container.querySelectorAll('.node-stack')).toHaveLength(2);
     expect(screen.getByText('FOLLOW-UP SYNTHESIS')).toBeInTheDocument();
     await finishAnalysis();
     expect(screen.getAllByText('SYNTHESIS COMPLETE')).toHaveLength(2);
