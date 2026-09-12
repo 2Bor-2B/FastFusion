@@ -1,1 +1,2 @@
 ./benchmark_serializer/.env
+./benchmark_serializer/target/debug/benchmark_serializer

@@ -1,0 +1,40 @@
+{
+  "models": [
+    "nex-agi/nex-n2.5-mini:free",
+    "nex-agi/nex-n2.5-pro:free",
+    "nvidia/nemotron-3-ultra-550b-a55b:free"
+  ],
+  "cases": [
+    {
+      "id": "ordering-01",
+      "category": "ordering",
+      "prompt": "Alice is older than Bob. Bob is older than Charlie. Charlie is older than Diana. Return only: FINAL: <name of oldest person>",
+      "expected_contains": "Alice"
+    },
+    {
+      "id": "scheduling-01",
+      "category": "scheduling",
+      "prompt": "There are two workers. Task P takes 2 hours. Task Q takes 1 hour and can only begin after P finishes. Task R takes 3 hours and is independent. All tasks must complete. What is the minimum completion time? Return only: FINAL: <number> hours",
+      "expected_contains": "3"
+    },
+    {
+      "id": "shortest-path-01",
+      "category": "graph",
+      "prompt": "A weighted graph has edges A-B=2, A-C=5, B-C=1, B-D=4, C-D=1. Find the shortest distance from A to D. Return only: FINAL: <distance>",
+      "expected_contains": "4"
+    },
+    {
+      "id": "api-selection-01",
+      "category": "decision",
+      "prompt": "You need all records matching a filter from a dataset of 50,000 records. Exactly 400 records match. Each response contains at most 100 records. API A costs 1 unit per request but cannot paginate and therefore can return at most the first 100 records. API B costs 3 units per request, supports server-side filtering and pagination. API C costs 2 units per request, supports pagination but no server-side filtering, so all 50,000 records must be retrieved before filtering locally. Which API retrieves all matching records at minimum total request cost? Return only: FINAL: <A, B, or C>",
+      "expected_contains": "B"
+    },
+    {
+      "id": "wrong-labels-01",
+      "category": "logic",
+      "prompt": "There are three boxes labeled APPLES, ORANGES, and APPLES+ORANGES. Every label is wrong. You may draw one fruit from one box to determine all three correct labels. Which labeled box must you draw from? Return only: FINAL: <box label>",
+      "expected_contains": "APPLES+ORANGES"
+    }
+  ],
+  "reasoning_effort": "high"
+}

@@ -14,6 +14,11 @@ use tracing_subscriber::EnvFilter;
 async fn main() {
     dotenvy::dotenv().ok();
 
+    println!(
+        "key loaded: {}",
+        std::env::var("OPENROUTER_API_KEY").is_ok()
+    );
+
     tracing_subscriber::fmt()
         .with_env_filter(EnvFilter::try_from_default_env().unwrap_or_else(|_| "info".into()))
         .init();

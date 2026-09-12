@@ -1,0 +1,28 @@
+{
+  "models": [
+    "nex-agi/nex-n2.5-mini:free",
+    "nex-agi/nex-n2.5-pro:free",
+    "nvidia/nemotron-3-ultra-550b-a55b:free"
+  ],
+  "cases": [
+    {
+      "id": "ordering-01",
+      "category": "ordering",
+      "prompt": "Alice is older than Bob. Bob is older than Charlie. Who is oldest? Return only: FINAL: <name>",
+      "expected_contains": "Alice"
+    },
+    {
+      "id": "arithmetic-01",
+      "category": "math",
+      "prompt": "A box contains 12 rows of 8 items. How many items are there? Return only: FINAL: <number>",
+      "expected_contains": "96"
+    },
+    {
+      "id": "shortest-path-01",
+      "category": "graph",
+      "prompt": "A weighted graph has edges A-B=2, A-C=5, B-C=1, B-D=4, and C-D=1. Find the shortest distance from A to D. Return only: FINAL: <distance>",
+      "expected_contains": "4"
+    }
+  ],
+  "reasoning_effort": "high"
+}
