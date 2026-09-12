@@ -7,10 +7,10 @@ Submit a question and FastFusion:
 1. runs it against several OpenRouter reasoning models in parallel;
 2. scores each run on a 100-point scale computed in Rust (correctness, reasoning visibility, reasoning richness, latency);
 3. picks the winner;
-4. asks a summary model to synthesize the winning answer into a headline, a short summary, a few reusable insights, and a suggested next step;
+4. asks local Ollama, through FastAPI, to map the winner's exposed reasoning telemetry into readable snippets;
 5. shows everything on a pan/zoom canvas that branches into a mind map as you ask follow-up questions.
 
-Ticked canvas nodes can be exported as a Markdown "skills" file.
+Ticked canvas nodes are sent back through FastAPI so local Ollama can generate validated, reusable skills for Markdown export.
 
 ## Using the canvas
 
@@ -27,7 +27,7 @@ activity panel appear.
 | Move a block | Drag it by its header. |
 | Inspect a run | Click the RAW RESPONSE sheet peeking above a block. It slides over the card to show the original prompt and the raw JSON; Return to summary slides it back. |
 | Watch the models | The activity panel shows each model, its answer, its score, and the winner. Escape collapses it. |
-| Export | Tick the download icon in a block footer, then press Export Skills in the top bar. |
+| Generate skills | Tick the download icon in a block footer, then press Generate Skills. The selected block snippets are sent to local Ollama and the validated skills are downloaded as Markdown. |
 | Stop / retry | The square button stops a run; a stopped or failed block offers Try again. |
 | Name the canvas | Double-click the name in the top bar. Enter commits, Escape discards, an empty name falls back to Untitled canvas. |
 | Save / load | The disk icon writes `<canvas name>.json`; the folder icon reads one back and takes its name from the file. The folder icon stays available on an empty canvas. |
@@ -42,14 +42,11 @@ save and load to move a canvas between machines.
 
 ```text
 Frontend (Vite + React, dev server :5173)
-   │  POST /api/benchmark  (dev proxy)
+   │  POST /api/benchmark, /api/reasoning/parse, /api/skills/generate (dev proxy)
    ▼
-FastAPI backend (:8000) — thin proxy, CORS for http://localhost:5173 and http://localhost:3000
-   │  POST /benchmark/stream  (body forwarded unchanged; NDJSON lines streamed back unchanged)
-   ▼
-Rust benchmark_serializer (Axum, 0.0.0.0:8001) — concurrent runs, scoring, winner, summary call
-   ▼
-OpenRouter
+FastAPI backend (:8000)
+   ├── Rust benchmark_serializer (:8001) → OpenRouter (benchmark stream)
+   └── local Ollama (:11434) (reasoning blocks and generated skills)
 ```
 
 One API key in total: `OPENROUTER_API_KEY`, read by the Rust service. The frontend and FastAPI never talk to OpenRouter.
@@ -104,7 +101,7 @@ Environment variables (`frontend/.env.local` or the shell):
 
 ## Models
 
-The UI currently benchmarks the three free models from the contract below and uses `nex-agi/nex-n2.5-pro:free` as the summary model:
+The UI currently benchmarks these three free models:
 
 - `nex-agi/nex-n2.5-mini:free`
 - `nex-agi/nex-n2.5-pro:free`
@@ -120,21 +117,16 @@ REQUEST — POST /benchmark/stream on the Rust service (and POST /api/benchmark 
 {
   "models": ["nex-agi/nex-n2.5-mini:free", "nex-agi/nex-n2.5-pro:free", "nvidia/nemotron-3-ultra-550b-a55b:free"],
   "cases": [{"id": "trace-1757600000000", "category": "user", "prompt": "<user question>", "expected_contains": null}],
-  "reasoning_effort": "high",
-  "summary_model": "nex-agi/nex-n2.5-pro:free"
+  "reasoning_effort": "high"
 }
-- summary_model is optional; when absent or null, no summary/summary_error event is emitted.
 - expected_contains may be null (free-form questions have no reference answer, so correct = null and correctness_score = 0).
 
-RESPONSE — application/x-ndjson, one JSON object per line, each terminated by "\n". Order: zero or more result/error lines as each (model, case) run finishes (arbitrary order, they run concurrently); then at most ONE summary or summary_error line; then exactly one done line.
-{"type":"result","record":{"model":"<model id>","case_id":"trace-…","category":"user","prompt":"<case prompt>","answer":"<string|null>","reasoning":"<string|null>","reasoning_details":<json>,"usage":<json>,"latency_ms":1234,"correct":null,"score":{"total":57.5,"correctness_score":0,"visibility_score":30,"richness_score":12.5,"latency_score":15,"reasoning_visible":true,"reasoning_chars":1875,"has_plaintext_reasoning":true,"has_summary_reasoning":false,"has_encrypted_reasoning":false}}}
+RESPONSE — application/x-ndjson, one JSON object per line, each terminated by "\n". Order: zero or more result/error lines as each (model, case) run finishes (arbitrary order, because they run concurrently), followed by exactly one done line.
+{"type":"result","record":{"model":"<model id>","case_id":"trace-…","category":"user","answer":"<string|null>","reasoning":"<string|null>","reasoning_details":<json>,"usage":<json>,"latency_ms":1234,"correct":null,"score":{"total":57.5,"correctness_score":0,"visibility_score":30,"richness_score":12.5,"latency_score":15,"reasoning_visible":true,"reasoning_chars":1875,"has_plaintext_reasoning":true,"has_summary_reasoning":false,"has_encrypted_reasoning":false}}}
 {"type":"error","model":"<model id>","case_id":"trace-…","error":"<message>"}
-{"type":"summary","winner":{"model":"<model id>","case_id":"trace-…","score_total":57.5,"latency_ms":1234},"summary_model":"nex-agi/nex-n2.5-pro:free","title":"<headline, 6 words or fewer>","summary":"<2-4 sentences>","insights":["<principle>","<principle>","<principle>"],"next_step":"<one sentence>","parsed":true,"raw":{"model":"nex-agi/nex-n2.5-pro:free","answer":"<summarizer raw answer>","reasoning":"<string|null>","reasoning_details":<json>,"usage":<json>,"latency_ms":900}}
-{"type":"summary_error","winner":{"model":"<model id>","case_id":"trace-…","score_total":57.5,"latency_ms":1234},"summary_model":"nex-agi/nex-n2.5-pro:free","error":"<message>"}
 {"type":"done","total_runs":3}
 
-WINNER RULE (Rust and frontend must agree): among result records, the highest score.total; tie → lower latency_ms; tie → the one that finished first (Rust) / template order (frontend). If there are no result records at all: no summary event, just done.
-SUMMARY PARSING: the summarizer is asked for JSON {"title": string, "summary": string, "insights": string[], "next_step": string}; title and next_step are optional and default to "". If the answer cannot be parsed, summary = the raw answer text, the rest are emptied, parsed = false. Parse failures are never errors.
+After the stream completes, the frontend picks the highest score (then lowest latency), sends that winner's untouched reasoning telemetry to `POST /api/reasoning/parse`, and maps the validated snippets into the canvas block. Ollama is never part of the benchmark stream. If Ollama is offline, the block falls back to the winning answer and keeps the semantic error in its raw payload.
 ```
 
 ## Troubleshooting
@@ -145,15 +137,15 @@ the failing agent's row or in the node body.
 
 | Symptom | Cause |
 | --- | --- |
-| `429: Rate limit exceeded: free-models-per-day` | The account's daily free-model quota is gone. It resets at 00:00 UTC; adding 10 credits to the OpenRouter account raises the cap from 50 to 1000 requests per day. Every benchmark run costs one request per model plus one for the summary. |
+| `429: Rate limit exceeded: free-models-per-day` | The account's daily free-model quota is gone. It resets at 00:00 UTC; adding 10 credits to the OpenRouter account raises the cap from 50 to 1000 requests per day. Every benchmark run costs one request per configured model. |
 | `400: <id> is not a valid model ID` | The model id in `frontend/src/agents.ts` no longer exists. Check `https://openrouter.ai/api/v1/models`. |
 | `402` | Out of credits for a paid model. |
-| The node shows `Summary unavailable: ...` | The benchmark itself succeeded and the winner is still selected; only the summary call failed. |
+| A block contains only the winning answer | The benchmark succeeded, but local Ollama parsing failed. Open the raw response to see `semantic_error`. |
 | `Benchmark request failed (502)` | The Rust service on `:8001` is not running, or FastAPI cannot reach it. |
 | The whole run fails immediately | Usually the daily quota above, because all models share it. Verify with `curl -s -X POST http://127.0.0.1:8001/run -H 'Content-Type: application/json' -d '{"model":"nex-agi/nex-n2.5-pro:free","prompt":"Say OK"}'`. |
 
 Free models are also slow and unevenly so: a single run can take anywhere from two seconds
-to over two minutes per model. The summary only starts once every model has finished,
+to over two minutes per model. Local Ollama parsing starts only after every model has finished,
 because picking the winner needs all the scores.
 
 ## Security note
@@ -169,7 +161,6 @@ because picking the winner needs all the scores.
 ```text
 .
 ├── README.md
-├── frontend/                       # Vite + React UI: thinking canvas, stream client, mock, tests
 └── fastfusion/
     ├── backend/                    # FastAPI proxy: main.py, schemas.py, rust_client.py, requirements.txt
     ├── benchmark_serializer/       # Rust/Axum benchmark service: src/, Cargo.toml, .env (see Security note)
