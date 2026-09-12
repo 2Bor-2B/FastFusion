@@ -1,393 +1,756 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
-import type { FormEvent, PointerEvent as ReactPointerEvent } from 'react';
-import { AGENT_TEMPLATE, runMockAgents } from './mockApi';
-import type { AgentRun } from './mockApi';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import type { ChangeEvent, PointerEvent as ReactPointerEvent } from 'react';
+import { AGENT_TEMPLATE, freshAgents } from './agents';
+import { USE_MOCK, runAgents } from './api';
+import {
+  DEFAULT_CANVAS_NAME, buildSnapshot, clearCanvas, fileNameFor, loadCanvas, nameFromFile,
+  normaliseName, parseSnapshot, saveCanvas,
+} from './canvasStore';
+import type { CanvasView } from './canvasStore';
+import type { AgentRun, Stage, ThoughtNode } from './types';
+import {
+  ArrowUp, ArrowUpRight, Check, ChevronDown, ChevronRight, Copy, Download, Expand, FolderOpen,
+  GitBranch, Grip, LoaderCircle, Minus, Plus, RotateCcw, Save, Square, Terminal, Trophy, X,
+} from './icons';
 
-type Phase = 'idle' | 'benchmarking' | 'summarizing' | 'complete';
+const WIDTH = 430;
+const MIN_ZOOM = 0.2;
+const MAX_ZOOM = 1.6;
 
-type ThoughtNode = {
-  id: string;
-  parentId?: string;
-  prompt: string;
-  status: 'loading' | 'summarizing' | 'complete';
-  summary?: string;
-  insights?: string[];
-  raw?: Record<string, unknown>;
-  score?: number;
-  x: number;
-  y: number;
+const stageLabels: Record<Stage, string> = {
+  thinking: 'Exploring in parallel',
+  scoring: 'Evaluating responses',
+  summarizing: 'Synthesizing the best response',
+  complete: 'Exploration complete',
+  error: 'Something went wrong',
+  cancelled: 'Exploration stopped',
 };
 
-type Viewport = { x: number; y: number; scale: number };
-type NodeDrag = {
-  id: string;
-  pointerId: number;
-  scale: number;
-  clientX: number;
-  clientY: number;
-  originX: number;
-  originY: number;
-};
+const busyStages: Stage[] = ['thinking', 'scoring', 'summarizing'];
 
-const INITIAL_VIEWPORT: Viewport = { x: 90, y: 30, scale: 1 };
-const NODE_WIDTH = 430;
-const MIN_ZOOM = 0.25;
-const MAX_ZOOM = 1.45;
-
-function statusLabel(status: AgentRun['status']) {
-  if (status === 'running') return 'RUNNING';
-  if (status === 'complete') return 'COMPLETE';
-  if (status === 'failed') return 'FAILED';
-  return 'QUEUED';
-}
+type View = CanvasView;
+type Gesture = { kind: 'pan' | 'node'; id?: string; x: number; y: number; originX: number; originY: number };
 
 export default function App() {
+  // The canvas is restored from localStorage before the first paint, so a
+  // refresh lands on the same nodes at the same position.
+  const [restored] = useState(loadCanvas);
+  const [nodes, setNodes] = useState<ThoughtNode[]>(() => restored?.nodes ?? []);
+  const [selectedId, setSelectedId] = useState<string | null>(() => restored?.selectedId ?? null);
+  const [activeId, setActiveId] = useState<string | null>(null);
   const [prompt, setPrompt] = useState('');
-  const [phase, setPhase] = useState<Phase>('idle');
-  const [agents, setAgents] = useState<AgentRun[]>(AGENT_TEMPLATE.map((agent) => ({ ...agent })));
-  const [winnerId, setWinnerId] = useState<string>();
-  const [nodes, setNodes] = useState<ThoughtNode[]>([]);
-  const [activeNodeId, setActiveNodeId] = useState<string>();
-  const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set());
-  const [selectedNodes, setSelectedNodes] = useState<Set<string>>(new Set());
-  const [viewport, setViewport] = useState<Viewport>(INITIAL_VIEWPORT);
-  const [draggingNodeId, setDraggingNodeId] = useState<string>();
-  const [exported, setExported] = useState(false);
-  const [isBenchmarkExpanded, setIsBenchmarkExpanded] = useState(false);
-  const canvasRef = useRef<HTMLDivElement | null>(null);
-  const panRef = useRef<{ clientX: number; clientY: number; originX: number; originY: number } | null>(null);
-  const nodeDragRef = useRef<NodeDrag | null>(null);
+  const [view, setView] = useState<View>(() => restored?.view ?? { x: 0, y: 0, scale: 1 });
+  const [panelOpen, setPanelOpen] = useState(false);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [toast, setToast] = useState('');
+  /** True while a programmatic camera move is playing, so it eases instead of cutting. */
+  const [gliding, setGliding] = useState(false);
+  const [canvasName, setCanvasName] = useState(() => restored?.name ?? DEFAULT_CANVAS_NAME);
+  const [renaming, setRenaming] = useState(false);
+  const [nameDraft, setNameDraft] = useState('');
 
-  const isProcessing = phase === 'benchmarking' || phase === 'summarizing';
-  const selectedCount = selectedNodes.size;
-  const benchmarkStateLabel = phase === 'summarizing' ? 'SUMMARIZING' : phase === 'complete' ? 'WINNER SELECTED' : 'EVALUATING';
+  const inputRef = useRef<HTMLTextAreaElement>(null);
+  const surfaceRef = useRef<HTMLDivElement>(null);
+  const abortRef = useRef<AbortController | null>(null);
+  const gesture = useRef<Gesture | null>(null);
+  const viewRef = useRef(view); viewRef.current = view;
+  const nodesRef = useRef(nodes); nodesRef.current = nodes;
+  const selectedRef = useRef(selectedId); selectedRef.current = selectedId;
+  const activeRef = useRef<string | null>(null);
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const copyTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const toastTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const glideTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const nameRef = useRef(canvasName); nameRef.current = canvasName;
 
-  const connections = useMemo(() => nodes.slice(1).map((node, index) => ({
-    id: `${nodes[index].id}-${node.id}`,
-    from: nodes[index],
-    to: node,
-  })), [nodes]);
+  const current = nodes.find((node) => node.id === selectedId);
+  const activity = nodes.find((node) => node.id === (activeId || selectedId));
+  const busy = !!activeId;
+  const started = nodes.length > 0;
+  const pickedCount = nodes.filter((node) => node.picked && node.synthesis).length;
 
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const wheelHandler = (event: globalThis.WheelEvent) => handleWheel(event);
-    canvas.addEventListener('wheel', wheelHandler, { passive: false });
-    return () => canvas.removeEventListener('wheel', wheelHandler);
-  }, [nodes.length]);
+  const updateNode = useCallback(
+    (id: string, patch: Partial<ThoughtNode> | ((node: ThoughtNode) => Partial<ThoughtNode>)) =>
+      setNodes((list) => list.map((node) => (node.id === id
+        ? { ...node, ...(typeof patch === 'function' ? patch(node) : patch) }
+        : node))),
+    [],
+  );
 
-  async function submitPrompt(event?: FormEvent) {
-    event?.preventDefault();
-    const cleanPrompt = prompt.trim();
-    if (!cleanPrompt || isProcessing) return;
+  const notify = useCallback((message: string) => {
+    setToast(message);
+    clearTimeout(toastTimer.current);
+    toastTimer.current = setTimeout(() => setToast(''), 3200);
+  }, []);
 
-    const id = `trace-${Date.now()}`;
-    const parentId = nodes.at(-1)?.id;
-    const nextNode: ThoughtNode = {
-      id,
-      parentId,
-      prompt: cleanPrompt,
-      status: 'loading',
-      x: 120 + nodes.length * (NODE_WIDTH + 120),
-      y: 245,
+  /** Eases the next camera change instead of snapping to it. */
+  const glide = useCallback(() => {
+    setGliding(true);
+    clearTimeout(glideTimer.current);
+    glideTimer.current = setTimeout(() => setGliding(false), 480);
+  }, []);
+
+  /** Any direct manipulation must track the pointer exactly, so cancel the ease. */
+  const cutGlide = useCallback(() => {
+    clearTimeout(glideTimer.current);
+    setGliding(false);
+  }, []);
+
+  const centerNode = useCallback((node: ThoughtNode, scale = 1) => {
+    const width = window.innerWidth;
+    const element = document.querySelector<HTMLElement>(`[data-node-id="${node.id}"]`);
+    const height = element ? element.getBoundingClientRect().height / viewRef.current.scale : 350;
+    // Measure the command bar, not the whole dock: the activity panel animates
+    // its height, so the dock is still mid-transition on the frame after it closes.
+    const command = document.querySelector<HTMLElement>('.command');
+    const floor = command?.getBoundingClientRect().top || window.innerHeight - 110;
+    const available = Math.max(160, floor - 148);
+    const fitted = Math.max(0.25, Math.min(scale, (width - 40) / WIDTH, available / height));
+    glide();
+    setView({
+      x: width / 2 - (WIDTH * fitted) / 2 - node.x * fitted,
+      y: 120 + (available - height * fitted) / 2 - node.y * fitted,
+      scale: fitted,
+    });
+  }, [glide]);
+
+  const run = useCallback(async (id: string, question: string, retry = false) => {
+    if (activeRef.current) return;
+    clearTimeout(closeTimer.current);
+    activeRef.current = id;
+    setActiveId(id);
+    setPanelOpen(true);
+
+    const controller = new AbortController();
+    abortRef.current = controller;
+
+    if (retry) {
+      updateNode(id, {
+        stage: 'thinking',
+        agents: freshAgents(),
+        error: undefined,
+        winnerId: undefined,
+        synthesis: undefined,
+        raw: undefined,
+        score: undefined,
+      });
+    }
+
+    const handlers = {
+      onAgents: (agents: AgentRun[]) => {
+        if (!controller.signal.aborted) updateNode(id, { agents });
+      },
+      onStage: (stage: Stage) => {
+        if (!controller.signal.aborted) updateNode(id, { stage });
+      },
+      onWinner: (winnerId: string) => {
+        if (!controller.signal.aborted) updateNode(id, { winnerId });
+      },
     };
 
-    setNodes((current) => [...current, nextNode]);
-    setActiveNodeId(id);
+    try {
+      const result = await runAgents(question, handlers, { caseId: id, signal: controller.signal });
+      if (controller.signal.aborted) return;
+      updateNode(id, {
+        stage: 'complete',
+        winnerId: result.winnerId,
+        synthesis: result.synthesis,
+        raw: result.raw,
+        score: result.winnerScore,
+      });
+      closeTimer.current = setTimeout(() => setPanelOpen(false), 1500);
+    } catch (error) {
+      if (controller.signal.aborted) {
+        updateNode(id, (node) => ({
+          stage: 'cancelled',
+          agents: node.agents.map((agent) => (agent.status === 'running'
+            ? { ...agent, status: 'failed' as const }
+            : agent)),
+        }));
+      } else {
+        const message = error instanceof Error ? error.message : String(error);
+        updateNode(id, (node) => ({
+          stage: 'error',
+          error: message,
+          agents: node.agents.map((agent) => (agent.status === 'complete'
+            ? agent
+            : { ...agent, status: 'failed' as const })),
+        }));
+        setPanelOpen(false);
+      }
+    } finally {
+      if (activeRef.current === id) {
+        activeRef.current = null;
+        setActiveId(null);
+        abortRef.current = null;
+      }
+    }
+  }, [updateNode]);
+
+  const submit = useCallback(async (question: string) => {
+    const clean = question.trim();
+    if (!clean || clean.length > 2000 || activeRef.current) return;
+
+    // A new node branches from the selected completed node, or starts a root.
+    const parent = nodesRef.current.find(
+      (node) => node.id === selectedRef.current && node.stage === 'complete',
+    ) || null;
+    const siblings = nodesRef.current.filter((node) => node.parentId === (parent?.id || null));
+    const x = parent ? parent.x + WIDTH + 120 : 0;
+    let y = parent ? parent.y : 0;
+    if (siblings.length) y += siblings.length * 700;
+    while (nodesRef.current.some((node) => Math.abs(node.x - x) < WIDTH + 40 && Math.abs(node.y - y) < 680)) {
+      y += 700;
+    }
+
+    const id = `trace-${Date.now().toString(36)}-${nodesRef.current.length + 1}`;
+    const node: ThoughtNode = {
+      id,
+      parentId: parent?.id || null,
+      x,
+      y,
+      prompt: clean,
+      stage: 'thinking',
+      agents: freshAgents(),
+      expanded: false,
+      picked: false,
+    };
+    setNodes((list) => [...list, node]);
+    setSelectedId(id);
     setPrompt('');
-    setAgents(AGENT_TEMPLATE.map((agent) => ({ ...agent })));
-    setWinnerId(undefined);
-    setExpandedNodes((current) => { const next = new Set(current); next.delete(id); return next; });
-    setIsBenchmarkExpanded(true);
-    setPhase('benchmarking');
+    centerNode(node, Math.min(1, (window.innerWidth - 40) / WIDTH));
+    await run(id, clean);
+  }, [centerNode, run]);
 
-    const result = await runMockAgents(cleanPrompt, setAgents, (winner) => {
-      setWinnerId(winner);
-      setPhase('summarizing');
-      setNodes((current) => current.map((node) => node.id === id ? { ...node, status: 'summarizing' } : node));
-    });
-
-    setWinnerId(result.winnerId);
-    setNodes((current) => current.map((node) => node.id === id ? {
-      ...node,
-      status: 'complete',
-      summary: result.summary,
-      insights: result.insights,
-      raw: result.raw,
-      score: 92,
-    } : node));
-    setPhase('complete');
-  }
-
-  function toggleExpanded(id: string) {
-    setExpandedNodes((current) => {
-      const next = new Set(current);
-      if (next.has(id)) next.delete(id); else next.add(id);
-      return next;
-    });
-  }
-
-  function toggleSelected(id: string) {
-    setSelectedNodes((current) => {
-      const next = new Set(current);
-      if (next.has(id)) next.delete(id); else next.add(id);
-      return next;
-    });
-  }
+  const copy = async (node: ThoughtNode, json = false) => {
+    const synthesis = node.synthesis;
+    if (!synthesis && !json) return;
+    const text = json
+      ? JSON.stringify(node.raw ?? { prompt: node.prompt, stage: node.stage, agents: node.agents }, null, 2)
+      : [synthesis?.title, synthesis?.summary, synthesis?.insights.join('\n'), synthesis?.nextStep]
+        .filter(Boolean)
+        .join('\n\n');
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopiedId(`${node.id}-${json}`);
+      clearTimeout(copyTimer.current);
+      copyTimer.current = setTimeout(() => setCopiedId(null), 1800);
+    } catch {
+      notify('Copy is unavailable. Expand the details to select and copy the text.');
+    }
+  };
 
   function exportSkills() {
-    const chosen = nodes.filter((node) => selectedNodes.has(node.id));
+    const chosen = nodesRef.current.filter((node) => node.picked && node.synthesis);
     if (!chosen.length) return;
     const markdown = [
-      '# TraceLab Exported Skills',
+      '# FastFusion Exported Skills',
       '',
-      '> Reusable execution summaries selected from an Agent comparison session.',
+      '> Reusable syntheses selected from a multi-model comparison session.',
       '',
-      ...chosen.flatMap((node, index) => [
-        `## ${index + 1}. ${node.prompt}`,
-        '',
-        '### Recommended approach',
-        '',
-        node.summary ?? 'Summary pending.',
-        '',
-        '### Reusable principles',
-        '',
-        ...(node.insights ?? []).map((insight) => `- ${insight}`),
-        '',
-      ]),
+      ...chosen.flatMap((node, index) => {
+        const synthesis = node.synthesis!;
+        return [
+          `## ${index + 1}. ${synthesis.title || node.prompt}`,
+          '',
+          `**Question:** ${node.prompt}`,
+          '',
+          '### Recommended approach',
+          '',
+          synthesis.summary,
+          '',
+          ...(synthesis.insights.length
+            ? ['### Reusable principles', '', ...synthesis.insights.map((insight) => `- ${insight}`), '']
+            : []),
+          ...(synthesis.nextStep ? ['### Next step', '', synthesis.nextStep, ''] : []),
+        ];
+      }),
     ].join('\n');
+
     const url = URL.createObjectURL(new Blob([markdown], { type: 'text/markdown;charset=utf-8' }));
     const link = document.createElement('a');
     link.href = url;
-    link.download = 'tracelab-skills.md';
+    link.download = 'fastfusion-skills.md';
     document.body.appendChild(link);
     link.click();
     link.remove();
     URL.revokeObjectURL(url);
-    setExported(true);
-    window.setTimeout(() => setExported(false), 2200);
+    notify(`Exported ${chosen.length} block${chosen.length > 1 ? 's' : ''} as Markdown`);
   }
 
-  function beginPan(event: ReactPointerEvent<HTMLDivElement>) {
-    if ((event.target as HTMLElement).closest('[data-node], [data-control]')) return;
-    event.currentTarget.setPointerCapture(event.pointerId);
-    panRef.current = { clientX: event.clientX, clientY: event.clientY, originX: viewport.x, originY: viewport.y };
+  function saveToFile() {
+    const snapshot = buildSnapshot(
+      nodesRef.current, viewRef.current, selectedRef.current, new Date().toISOString(), nameRef.current,
+    );
+    const url = URL.createObjectURL(
+      new Blob([JSON.stringify(snapshot, null, 2)], { type: 'application/json' }),
+    );
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = fileNameFor(snapshot.name);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+    notify(`Saved ${snapshot.nodes.length} block${snapshot.nodes.length === 1 ? '' : 's'}`);
   }
 
-  function movePan(event: ReactPointerEvent<HTMLDivElement>) {
-    if (!panRef.current) return;
-    setViewport((current) => ({
-      ...current,
-      x: panRef.current!.originX + event.clientX - panRef.current!.clientX,
-      y: panRef.current!.originY + event.clientY - panRef.current!.clientY,
-    }));
-  }
-
-  function stopPan() { panRef.current = null; }
-
-  function beginNodeDrag(event: ReactPointerEvent<HTMLElement>, node: ThoughtNode) {
-    const target = event.target instanceof Element ? event.target : null;
-    if (nodeDragRef.current || event.button !== 0 || target?.closest('button, label, input, textarea, pre')) return;
-
-    event.stopPropagation();
-    event.currentTarget.setPointerCapture?.(event.pointerId);
-    setActiveNodeId(node.id);
-    setDraggingNodeId(node.id);
-    nodeDragRef.current = {
-      id: node.id,
-      pointerId: event.pointerId,
-      scale: viewport.scale,
-      clientX: event.clientX,
-      clientY: event.clientY,
-      originX: node.x,
-      originY: node.y,
-    };
-  }
-
-  function moveNodeDrag(event: ReactPointerEvent<HTMLElement>) {
-    const drag = nodeDragRef.current;
-    if (!drag || drag.pointerId !== event.pointerId) return;
-
-    event.stopPropagation();
-    const x = drag.originX + (event.clientX - drag.clientX) / drag.scale;
-    const y = drag.originY + (event.clientY - drag.clientY) / drag.scale;
-    setNodes((current) => current.map((node) => node.id === drag.id ? { ...node, x, y } : node));
-  }
-
-  function stopNodeDrag(event: ReactPointerEvent<HTMLElement>) {
-    const drag = nodeDragRef.current;
-    if (!drag || drag.pointerId !== event.pointerId) return;
-
-    event.stopPropagation();
-    if (event.currentTarget.hasPointerCapture?.(event.pointerId)) {
-      event.currentTarget.releasePointerCapture(event.pointerId);
+  async function loadFromFile(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    event.target.value = '';
+    if (!file || activeRef.current) return;
+    try {
+      const snapshot = parseSnapshot(JSON.parse(await file.text()));
+      if (!snapshot) {
+        notify('That file is not a FastFusion canvas.');
+        return;
+      }
+      clearTimeout(closeTimer.current);
+      cutGlide();
+      setNodes(snapshot.nodes);
+      setView(snapshot.view);
+      setSelectedId(snapshot.selectedId);
+      setCanvasName(nameFromFile(file.name));
+      setRenaming(false);
+      setPanelOpen(false);
+      notify(`Loaded ${snapshot.nodes.length} block${snapshot.nodes.length === 1 ? '' : 's'}`);
+    } catch {
+      notify('That file could not be read.');
     }
-    nodeDragRef.current = null;
-    setDraggingNodeId(undefined);
   }
 
-  function zoom(delta: number, anchor?: { x: number; y: number }) {
-    const rect = canvasRef.current?.getBoundingClientRect();
-    const zoomAnchor = anchor ?? {
-      x: rect?.width ? rect.width / 2 : window.innerWidth / 2,
-      y: rect?.height ? rect.height / 2 : window.innerHeight / 2,
-    };
-
-    setViewport((current) => {
-      const scale = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, current.scale + delta));
-      if (scale === current.scale) return current;
-
-      const worldX = (zoomAnchor.x - current.x) / current.scale;
-      const worldY = (zoomAnchor.y - current.y) / current.scale;
-      return {
-        scale,
-        x: zoomAnchor.x - worldX * scale,
-        y: zoomAnchor.y - worldY * scale,
-      };
-    });
+  function startRenaming() {
+    setNameDraft(canvasName === DEFAULT_CANVAS_NAME ? '' : canvasName);
+    setRenaming(true);
   }
 
-  function handleWheel(event: globalThis.WheelEvent) {
-    if (nodeDragRef.current) {
-      event.preventDefault();
-      return;
-    }
+  function commitName() {
+    setCanvasName(normaliseName(nameDraft));
+    setRenaming(false);
+  }
 
-    const target = event.target instanceof Element ? event.target : null;
-    const isInsideJsonDocument = Boolean(target?.closest('[data-json-scroll]'));
+  const choose = (id: string) => { setSelectedId(id); clearTimeout(closeTimer.current); };
+  const follow = (node: ThoughtNode) => { choose(node.id); inputRef.current?.focus(); };
 
-    // Let the browser preserve native wheel/trackpad scrolling (and inertia)
-    // while the pointer is over a JSON document. Pinch-to-zoom still belongs
-    // to the canvas because browsers expose it with ctrlKey/metaKey enabled.
-    if (isInsideJsonDocument && !event.ctrlKey && !event.metaKey) return;
+  const reset = () => {
+    if (activeRef.current) return;
+    clearTimeout(closeTimer.current);
+    clearCanvas();
+    setCanvasName(DEFAULT_CANVAS_NAME);
+    setRenaming(false);
+    setNodes([]);
+    setSelectedId(null);
+    setPanelOpen(false);
+    setPrompt('');
+    inputRef.current?.focus();
+  };
 
-    event.preventDefault();
+  const zoom = (delta: number) => { glide(); setView((v) => {
+    const scale = Math.min(MAX_ZOOM, Math.max(0.35, v.scale + delta));
+    const cx = window.innerWidth / 2;
+    const cy = (window.innerHeight - 180) / 2;
+    return { x: cx - ((cx - v.x) * scale) / v.scale, y: cy - ((cy - v.y) * scale) / v.scale, scale };
+  }); };
+
+  const fit = () => {
     if (!nodes.length) return;
+    const minX = Math.min(...nodes.map((n) => n.x));
+    const minY = Math.min(...nodes.map((n) => n.y));
+    const maxX = Math.max(...nodes.map((n) => n.x + WIDTH));
+    const maxY = Math.max(...nodes.map((n) => n.y + (
+      document.querySelector<HTMLElement>(`[data-node-id="${n.id}"]`)?.getBoundingClientRect().height
+      || 600 * view.scale
+    ) / view.scale));
+    const h = window.innerHeight - (panelOpen ? 400 : 250);
+    const w = window.innerWidth - 70;
+    const scale = Math.max(MIN_ZOOM, Math.min(1, w / (maxX - minX), Math.max(180, h) / (maxY - minY)));
+    glide();
+    setView({
+      scale,
+      x: window.innerWidth / 2 - ((minX + maxX) / 2) * scale,
+      y: 95 + (Math.max(180, h) - (maxY - minY) * scale) / 2 - minY * scale,
+    });
+  };
 
-    const canvas = canvasRef.current;
-    if (!canvas) return;
+  const beginPan = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (event.button !== 0 || (event.target as HTMLElement).closest('[data-node],button')) return;
+    cutGlide();
+    gesture.current = { kind: 'pan', x: event.clientX, y: event.clientY, originX: view.x, originY: view.y };
+    event.currentTarget.setPointerCapture(event.pointerId);
+  };
 
-    // Browsers expose trackpad pinch as a wheel event with ctrlKey enabled.
-    // Regular two-finger scrolling has no modifier and should pan the canvas.
-    if (event.ctrlKey || event.metaKey) {
-      const rect = canvas.getBoundingClientRect();
-      const delta = Math.max(-0.12, Math.min(0.12, -event.deltaY * 0.005));
-      zoom(delta, {
-        x: event.clientX - rect.left,
-        y: event.clientY - rect.top,
-      });
-      return;
+  const beginNode = (event: ReactPointerEvent<HTMLElement>, node: ThoughtNode) => {
+    if (event.button !== 0 || (event.target as HTMLElement).closest('button')) return;
+    event.stopPropagation();
+    cutGlide();
+    choose(node.id);
+    gesture.current = {
+      kind: 'node', id: node.id, x: event.clientX, y: event.clientY, originX: node.x, originY: node.y,
+    };
+    event.currentTarget.setPointerCapture(event.pointerId);
+  };
+
+  const move = (event: ReactPointerEvent) => {
+    const g = gesture.current;
+    if (!g) return;
+    const dx = event.clientX - g.x;
+    const dy = event.clientY - g.y;
+    if (g.kind === 'pan') setView((v) => ({ ...v, x: g.originX + dx, y: g.originY + dy }));
+    else updateNode(g.id!, { x: g.originX + dx / view.scale, y: g.originY + dy / view.scale });
+  };
+
+  useEffect(() => {
+    const surface = surfaceRef.current;
+    if (!surface) return;
+    const wheel = (event: WheelEvent) => {
+      // Let the JSON drawer and a long prompt title scroll natively.
+      if ((event.target as HTMLElement).closest('.raw-content,.prompt-title')) return;
+      event.preventDefault();
+      cutGlide();
+      if (event.ctrlKey || event.metaKey) {
+        setView((v) => {
+          const scale = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, v.scale * Math.exp(-event.deltaY * 0.006)));
+          return {
+            x: event.clientX - ((event.clientX - v.x) * scale) / v.scale,
+            y: event.clientY - ((event.clientY - v.y) * scale) / v.scale,
+            scale,
+          };
+        });
+      } else {
+        setView((v) => ({ ...v, x: v.x - event.deltaX, y: v.y - event.deltaY }));
+      }
+    };
+    surface.addEventListener('wheel', wheel, { passive: false });
+    return () => surface.removeEventListener('wheel', wheel);
+  }, [cutGlide]);
+
+  useEffect(() => {
+    const key = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && event.key === 'k') {
+        event.preventDefault();
+        inputRef.current?.focus();
+      }
+      if (event.key === 'Escape') setPanelOpen(false);
+    };
+    window.addEventListener('keydown', key);
+    return () => {
+      window.removeEventListener('keydown', key);
+      abortRef.current?.abort();
+      clearTimeout(closeTimer.current);
+      clearTimeout(copyTimer.current);
+      clearTimeout(toastTimer.current);
+      clearTimeout(glideTimer.current);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (current?.stage === 'complete' && !panelOpen && !gesture.current) {
+      const frame = requestAnimationFrame(() => { if (!gesture.current) centerNode(current); });
+      return () => cancelAnimationFrame(frame);
     }
+  }, [current?.id, current?.stage, panelOpen, centerNode]);
 
-    const unit = event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? canvas.clientHeight : 1;
-    const horizontal = (event.shiftKey && event.deltaX === 0 ? event.deltaY : event.deltaX) * unit;
-    const vertical = (event.shiftKey ? 0 : event.deltaY) * unit;
-    setViewport((current) => ({
-      ...current,
-      x: current.x - horizontal,
-      y: current.y - vertical,
-    }));
-  }
+  // Autosave, so a refresh comes back to the same canvas.
+  useEffect(() => {
+    if (!nodes.length) return;
+    saveCanvas(buildSnapshot(nodes, view, selectedId, new Date().toISOString(), canvasName));
+  }, [nodes, view, selectedId, canvasName]);
+
+  useEffect(() => {
+    const resize = () => {
+      const node = nodesRef.current.find((n) => n.id === selectedRef.current);
+      if (node) centerNode(node);
+    };
+    window.addEventListener('resize', resize);
+    return () => window.removeEventListener('resize', resize);
+  }, [centerNode]);
+
+  const scored = activity
+    ? [...activity.agents].sort((a, b) => (b.score ?? -1) - (a.score ?? -1))
+    : [];
+  const winnerAgent = activity?.agents.find((agent) => agent.id === activity.winnerId);
 
   return (
-    <main className={`app-frame ${nodes.length ? 'has-nodes' : ''}`}>
-      <header className="topbar">
-        <div className="wordmark"><span>TRACE<span>LAB</span></span><em>/ AGENT CANVAS</em></div>
+    <main className={`workspace ${started ? 'has-nodes' : ''}`}>
+      <div
+        className="dot-grid"
+        style={started ? {
+          backgroundSize: `${24 * view.scale}px ${24 * view.scale}px`,
+          backgroundPosition: `${view.x}px ${view.y}px`,
+        } : undefined}
+      />
+
+      {/* The bar is bare on an empty canvas: only Load stays, so a saved file is
+          never out of reach. */}
+      <header className={`topbar ${started ? '' : 'is-bare'}`}>
+        {started && (
+          <div className="brand">
+            <span className="brand-symbol"><GitBranch size={20} /></span>
+            <b>fastfusion</b>
+            <span className="canvas-name">
+              {renaming ? (
+                <input
+                  autoFocus
+                  aria-label="Canvas name"
+                  value={nameDraft}
+                  maxLength={60}
+                  onChange={(event) => setNameDraft(event.target.value)}
+                  onBlur={commitName}
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter') { event.preventDefault(); commitName(); }
+                    if (event.key === 'Escape') { event.preventDefault(); setRenaming(false); }
+                  }}
+                />
+              ) : (
+                <b
+                  role="button"
+                  tabIndex={0}
+                  title="Double-click to rename"
+                  onDoubleClick={startRenaming}
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); startRenaming(); }
+                  }}
+                >
+                  {canvasName}
+                </b>
+              )}
+            </span>
+          </div>
+        )}
+        <div className="top-actions">
+          {pickedCount > 0 && (
+            <button type="button" className="export-button" onClick={exportSkills}>
+              <Download size={14} />
+              Export Skills <i>{pickedCount}</i>
+            </button>
+          )}
+          {started && (
+            <button
+              className="icon-button reset"
+              aria-label="Save canvas"
+              title="Save canvas to a file"
+              onClick={saveToFile}
+            >
+              <Save size={17} />
+            </button>
+          )}
+          <button
+            className="icon-button reset"
+            aria-label="Load canvas"
+            title="Load a canvas file"
+            disabled={busy}
+            onClick={() => fileInputRef.current?.click()}
+          >
+            <FolderOpen size={17} />
+          </button>
+          {started && (
+            <button
+              className="icon-button reset"
+              aria-label="Clear canvas"
+              title="Clear canvas"
+              disabled={busy}
+              onClick={reset}
+            >
+              <RotateCcw size={17} />
+            </button>
+          )}
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="application/json,.json"
+            className="sr-only"
+            aria-label="Canvas file"
+            onChange={loadFromFile}
+          />
+        </div>
       </header>
 
-      {selectedCount > 0 && (
-        <div className="export-cluster" data-control>
-          <span>{selectedCount} BLOCK{selectedCount > 1 ? 'S' : ''} SELECTED</span>
-          <button type="button" onClick={exportSkills}>Export Skills</button>
-        </div>
-      )}
-      {exported && <div className="export-toast">Markdown skill exported</div>}
-
       <div
-        ref={canvasRef}
-        className={`canvas ${nodes.length ? 'has-nodes' : ''}`}
-        aria-label="Agent 思考路径画布"
+        ref={surfaceRef}
+        className="canvas-surface"
+        aria-label="Thinking canvas. Drag the background to pan."
         onPointerDown={beginPan}
-        onPointerMove={movePan}
-        onPointerUp={stopPan}
-        onPointerCancel={stopPan}
+        onPointerMove={move}
+        onPointerUp={() => { gesture.current = null; }}
+        onPointerCancel={() => { gesture.current = null; }}
       >
-        {!nodes.length && <div className="idle-mark" aria-hidden="true"><p>YOUR QUESTION BECOMES A MAP</p></div>}
-
-        <div className="canvas-world" style={{ transform: `translate(${viewport.x}px, ${viewport.y}px) scale(${viewport.scale})` }}>
-          <svg className="connections" width="2400" height="1000" aria-hidden="true">
+        <div
+          className={`canvas-world ${gliding ? 'gliding' : ''}`}
+          style={{ transform: `translate(${view.x}px,${view.y}px) scale(${view.scale})` }}
+        >
+          <svg className="connections" aria-hidden="true">
             <defs>
-              <marker id="connection-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
-                <path d="M1 1L7 4L1 7Z" fill="#5e83bb" />
+              <marker id="arrowhead" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+                <path d="M1 1L7 4L1 7" fill="none" stroke="#7e8ca0" strokeWidth="1.3" />
               </marker>
             </defs>
-            {connections.map(({ id, from, to }) => {
-              const direction = to.x + NODE_WIDTH / 2 >= from.x + NODE_WIDTH / 2 ? 1 : -1;
-              const x1 = direction === 1 ? from.x + NODE_WIDTH : from.x;
-              const x2 = direction === 1 ? to.x - 8 : to.x + NODE_WIDTH + 8;
-              const y1 = from.y + 116;
-              const y2 = to.y + 116;
-              const bend = Math.max(70, Math.abs(x2 - x1) * .35);
-              return <path key={id} d={`M ${x1} ${y1} C ${x1 + direction * bend} ${y1}, ${x2 - direction * bend} ${y2}, ${x2} ${y2}`} markerEnd="url(#connection-arrow)" />;
+            {nodes.filter((node) => node.parentId).map((node) => {
+              const parent = nodes.find((candidate) => candidate.id === node.parentId);
+              if (!parent) return null;
+              const x1 = parent.x + WIDTH + 5;
+              const y1 = parent.y + 62;
+              const x2 = node.x - 8;
+              const y2 = node.y + 62;
+              return (
+                <g key={node.id}>
+                  <path
+                    d={`M${x1},${y1} C${x1 + 65},${y1} ${x2 - 65},${y2} ${x2},${y2}`}
+                    stroke={node.id === selectedId ? '#8195b0' : '#b5beca'}
+                    strokeWidth="1.6"
+                    fill="none"
+                    markerEnd="url(#arrowhead)"
+                  />
+                  <circle cx={x1} cy={y1} r="3" fill="#98a6b9" />
+                </g>
+              );
             })}
           </svg>
 
           {nodes.map((node, index) => {
-            const expanded = expandedNodes.has(node.id);
-            const selected = selectedNodes.has(node.id);
+            const isBusy = busyStages.includes(node.stage);
+            const winner = node.agents.find((agent) => agent.id === node.winnerId);
+            const synthesis = node.synthesis;
+            const payload = node.raw ?? { prompt: node.prompt, stage: node.stage, agents: node.agents };
             return (
               <article
                 data-node
+                data-node-id={node.id}
                 key={node.id}
-                className={`node-stack ${expanded ? 'raw-expanded' : ''} ${activeNodeId === node.id ? 'active' : ''} ${draggingNodeId === node.id ? 'dragging' : ''}`}
-                style={{ left: node.x, top: node.y }}
-                onClick={() => setActiveNodeId(node.id)}
-                onPointerDown={(event) => beginNodeDrag(event, node)}
-                onPointerMove={moveNodeDrag}
-                onPointerUp={stopNodeDrag}
-                onPointerCancel={stopNodeDrag}
-                onLostPointerCapture={stopNodeDrag}
+                className={`node-stack ${selectedId === node.id ? 'selected' : ''} ${isBusy ? 'is-loading' : ''} ${node.stage === 'error' ? 'is-failed' : ''} ${node.expanded ? 'raw-expanded' : ''}`}
+                style={{ left: node.x, top: node.y, width: WIDTH }}
+                onClick={() => choose(node.id)}
               >
-                <section className="raw-layer" aria-label={`原始数据 ${index + 1}`}>
-                  {!expanded ? (
-                    <button className="raw-peek" type="button" onClick={(event) => { event.stopPropagation(); toggleExpanded(node.id); }} disabled={!node.raw} aria-label="展开原始 JSON">
-                      <span>RAW RESPONSE</span><span>OPEN</span>
-                    </button>
-                  ) : (
+                {/* The raw payload sits behind the card as a peeking sheet. */}
+                <section className="raw-layer">
+                  {node.expanded ? (
                     <div className="raw-content">
-                      <header><span>RAW RESPONSE</span><span>JSON</span></header>
-                      <label>PROMPT</label><p>{node.prompt}</p>
-                      <label>PAYLOAD</label><pre data-json-scroll tabIndex={0} style={{ overscrollBehavior: 'contain' }} aria-label={`节点 ${index + 1} 原始 JSON 文档`}>{JSON.stringify(node.raw, null, 2)}</pre>
-                      <button type="button" onClick={(event) => { event.stopPropagation(); toggleExpanded(node.id); }} aria-label="收起原始 JSON">Return to summary</button>
+                      <header><span>Raw response</span><span>JSON</span></header>
+                      <label>Prompt</label>
+                      <p>{node.prompt}</p>
+                      <label>Payload</label>
+                      <pre tabIndex={0} aria-label={`Block ${index + 1} raw JSON`}>
+                        {JSON.stringify(payload, null, 2)}
+                      </pre>
+                      <button
+                        type="button"
+                        aria-label="Close raw response"
+                        onClick={(event) => { event.stopPropagation(); updateNode(node.id, { expanded: false }); }}
+                      >
+                        Return to summary
+                      </button>
                     </div>
+                  ) : (
+                    <button
+                      type="button"
+                      className="raw-peek"
+                      aria-label="Open raw response"
+                      aria-expanded={false}
+                      onClick={(event) => { event.stopPropagation(); updateNode(node.id, { expanded: true }); }}
+                    >
+                      <span>Raw response</span><span>Open</span>
+                    </button>
                   )}
                 </section>
 
                 <section className="thought-card">
-                  <header className="node-header">
-                    <span className="node-index">{String(index + 1).padStart(2, '0')}</span>
-                    <div><strong>{node.parentId ? 'FOLLOW-UP SYNTHESIS' : 'PRIMARY SYNTHESIS'}</strong></div>
-                    <label className="node-check" onClick={(event) => event.stopPropagation()}>
-                      <input type="checkbox" checked={selected} onChange={() => toggleSelected(node.id)} aria-label={`选择节点 ${index + 1}`} />
-                      <span>{selected ? 'SELECTED' : 'SELECT'}</span>
-                    </label>
+                  <header
+                    className="node-header"
+                    onPointerDown={(event) => beginNode(event, node)}
+                    tabIndex={0}
+                    role="button"
+                    aria-label={`Select or drag block ${index + 1}`}
+                    onKeyDown={(event) => {
+                      if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); choose(node.id); }
+                    }}
+                  >
+                    <span className="node-type">Block {index + 1}</span>
+                    <Grip size={15} className="drag-grip" />
                   </header>
 
-                  {node.status !== 'complete' ? (
-                    <div className="node-loading">
-                      <strong>{node.status === 'summarizing' ? 'SYNTHESIZING WINNER' : 'COMPARING AGENTS'}</strong>
-                      <p>{node.status === 'summarizing' ? 'Local model is compressing the best answer' : 'Running benchmark and evaluating candidates'}</p>
-                      <div className="loading-line"><span /></div>
+                  <div className="node-content">
+                    {synthesis ? (
+                      <>
+                        <div className="answer-label"><span className="tiny-spark">✳</span> Selected response</div>
+                        <h2>{synthesis.title || node.prompt}</h2>
+                        <p className="answer-intro">{synthesis.summary}</p>
+                        {synthesis.insights.length > 0 && (
+                          <ol className="answer-points">
+                            {synthesis.insights.map((insight, i) => (
+                              <li key={insight}><span>{String(i + 1).padStart(2, '0')}</span><p>{insight}</p></li>
+                            ))}
+                          </ol>
+                        )}
+                        {synthesis.nextStep && <p className="next-thought">{synthesis.nextStep}</p>}
+                      </>
+                    ) : isBusy ? (
+                      <>
+                        <div className="answer-label">
+                          <LoaderCircle size={14} className="spin" /> {stageLabels[node.stage]}
+                        </div>
+                        <h2 className="prompt-title">{node.prompt}</h2>
+                        <div className="skeleton-stack"><div /><div /><div /></div>
+                      </>
+                    ) : (
+                      <>
+                        <div className="answer-label">{stageLabels[node.stage]}</div>
+                        <h2 className="prompt-title">{node.prompt}</h2>
+                        <p className="answer-intro">
+                          {node.error || 'You can run this prompt again whenever you are ready.'}
+                        </p>
+                        <button
+                          className="retry-button"
+                          disabled={busy}
+                          onClick={(event) => { event.stopPropagation(); void run(node.id, node.prompt, true); }}
+                        >
+                          <RotateCcw size={14} />Try again
+                        </button>
+                      </>
+                    )}
+                  </div>
+
+                  <footer className="node-footer">
+                    <div className="winner-label">
+                      {winner ? (
+                        <>
+                          <b>{winner.name}</b>
+                          <span className="score-badge">{node.score ?? winner.score}<small>/100</small></span>
+                        </>
+                      ) : (
+                        <>
+                          <span className={`status-dot ${isBusy ? 'pulsing' : ''}`} />
+                          {isBusy ? `${AGENT_TEMPLATE.length} models at work` : stageLabels[node.stage]}
+                        </>
+                      )}
                     </div>
-                  ) : (
-                    <div className="node-result">
-                      <div className="result-score"><span>SYNTHESIS COMPLETE</span><strong>{node.score}<small>/100</small></strong></div>
-                      <h2>{node.prompt}</h2>
-                      <p>{node.summary}</p>
-                      <ul>{node.insights?.map((insight, insightIndex) => <li key={insight}><span>{insightIndex + 1}</span>{insight}</li>)}</ul>
-                    </div>
-                  )}
-                  <footer><span>TRACE {node.id.split('-').at(-1)?.slice(-5).toUpperCase()}</span><span>PUBLIC RATIONALE SUMMARY</span></footer>
+                    {synthesis && (
+                      <div className="node-footer-actions">
+                        <button
+                          className={`pick-button ${node.picked ? 'picked' : ''}`}
+                          aria-label={node.picked ? `Remove block ${index + 1} from the export` : `Add block ${index + 1} to the export`}
+                          aria-pressed={node.picked}
+                          title="Include in the Markdown skills export"
+                          onClick={(event) => { event.stopPropagation(); updateNode(node.id, { picked: !node.picked }); }}
+                        >
+                          {node.picked ? <Check size={14} /> : <Download size={14} />}
+                        </button>
+                        <button
+                          className="icon-button"
+                          title="Copy response"
+                          aria-label="Copy response"
+                          onClick={(event) => { event.stopPropagation(); void copy(node); }}
+                        >
+                          {copiedId === `${node.id}-false` ? <Check size={15} /> : <Copy size={15} />}
+                        </button>
+                        <button
+                          className="continue-button"
+                          onClick={(event) => { event.stopPropagation(); follow(node); }}
+                        >
+                          Continue<ArrowUpRight size={15} />
+                        </button>
+                      </div>
+                    )}
+                  </footer>
                 </section>
               </article>
             );
@@ -395,58 +758,168 @@ export default function App() {
         </div>
       </div>
 
-      <section className={`command-dock ${phase !== 'idle' ? 'expanded' : ''}`} aria-label="Prompt command line" data-control>
-        {phase !== 'idle' && (
-          <div className={`benchmark-panel ${isBenchmarkExpanded ? '' : 'is-collapsed'}`}>
-            <header>
-              <div><span className="eyebrow">LIVE BENCHMARK</span><h2>{isProcessing ? 'Agents are working' : 'Comparison complete'}</h2></div>
-              <div className="benchmark-actions">
-                <div className="benchmark-state" role="status" aria-label={benchmarkStateLabel} aria-live="polite" aria-atomic="true"><span className="benchmark-state-label" aria-hidden="true">{benchmarkStateLabel}</span></div>
-                <button
-                  className="benchmark-toggle"
-                  type="button"
-                  onClick={() => setIsBenchmarkExpanded((current) => !current)}
-                  aria-expanded={isBenchmarkExpanded}
-                  aria-controls="benchmark-details"
-                  aria-label={isBenchmarkExpanded ? '收起 Benchmark' : '展开 Benchmark'}
-                  title={isBenchmarkExpanded ? '收起 Benchmark' : '展开 Benchmark'}
-                >
-                  {isBenchmarkExpanded ? 'HIDE' : 'SHOW'}
-                </button>
-              </div>
-            </header>
-            <div id="benchmark-details" className="benchmark-details" role="region" aria-label="Agent Benchmark 详情" aria-busy={isProcessing} hidden={!isBenchmarkExpanded}>
-              <div className="agent-grid">
-                {agents.map((agent) => {
-                  const winner = winnerId === agent.id;
-                  return <div className={`agent-row ${winner ? 'winner' : ''}`} key={agent.id}>
-                    <div className="agent-name"><strong>{agent.name}</strong><small>{agent.model}</small></div>
-                    <div className="agent-progress"><span style={{ width: agent.status === 'complete' ? `${agent.score}%` : agent.status === 'running' ? '58%' : '8%' }} /></div>
-                    <span className={`agent-status ${agent.status}`}>{statusLabel(agent.status)}</span>
-                    <strong className="agent-score">{agent.score ?? 'N/A'}{agent.score && <small>/100</small>}</strong>
-                    {winner && <span className="winner-tag">WINNER</span>}
-                  </div>;
-                })}
+      {started && (
+        <aside className="canvas-controls" aria-label="Canvas zoom">
+          <button aria-label="Zoom out" onClick={() => zoom(-0.1)}><Minus size={16} /></button>
+          <span>{Math.round(view.scale * 100)}%</span>
+          <button aria-label="Zoom in" onClick={() => zoom(0.1)}><Plus size={16} /></button>
+          <div />
+          <button aria-label="Fit all nodes" title="Fit all nodes" onClick={fit}><Expand size={16} /></button>
+        </aside>
+      )}
+
+      <section className={`dock ${panelOpen ? 'expanded' : ''}`}>
+        {activity && (
+          <div className="activity-shell">
+            <button
+              className={`activity-bar ${panelOpen ? 'active' : ''}`}
+              aria-expanded={panelOpen}
+              aria-controls="agent-workspace"
+              onClick={() => { clearTimeout(closeTimer.current); setPanelOpen((open) => !open); }}
+            >
+              <span className="activity-bar-left">
+                {busy ? <LoaderCircle className="spin" size={14} />
+                  : activity.stage === 'complete' ? <Check size={14} />
+                    : <Square size={12} />}
+                <b>{stageLabels[activity.stage]}</b>
+                {winnerAgent && (
+                  <span className="activity-description">
+                    {`${winnerAgent.name} · ${activity.score ?? winnerAgent.score} points`}
+                  </span>
+                )}
+              </span>
+              <span className="activity-bar-right">
+                {panelOpen ? 'Hide activity' : 'View activity'}
+                <ChevronDown size={14} className={panelOpen ? 'rotate-180' : ''} />
+              </span>
+            </button>
+
+            {/* Always mounted so the open/close height can animate. */}
+            <div className={`workspace-reveal ${panelOpen ? 'open' : ''}`}>
+              <div className="agent-workspace" id="agent-workspace" aria-hidden={!panelOpen}>
+                <div className="panel-heading"><span>Model workspace</span></div>
+                <div className="agents-grid">
+                  {scored.map((agent, i) => {
+                    const won = activity.winnerId === agent.id;
+                    return (
+                      <div
+                        className={`agent-card ${won ? 'winner' : ''} ${agent.status === 'failed' ? 'failed' : ''}`}
+                        key={agent.id}
+                      >
+                        <div className="agent-title">
+                          <span className="agent-avatar" style={{ background: agent.color }}>
+                            {agent.name.slice(0, 1)}
+                          </span>
+                          <div><b>{agent.name}</b><small>{agent.role}</small></div>
+                          <span className="agent-progress">
+                            {agent.score !== undefined ? <strong>{agent.score}<small>/100</small></strong>
+                              : agent.status === 'failed' ? <X size={16} />
+                                : agent.status === 'complete' ? <Check size={17} />
+                                  : <LoaderCircle size={15} className="spin" />}
+                          </span>
+                        </div>
+                        {agent.preview ? (
+                          <p title={agent.reason}>{agent.preview}</p>
+                        ) : agent.status === 'complete' ? (
+                          <p>Response ready. Waiting for evaluation.</p>
+                        ) : (
+                          <div className="agent-skeleton" aria-hidden="true">
+                            <span /><span /><span />
+                          </div>
+                        )}
+                        <div className="agent-bottom">
+                          <span>
+                            {agent.status === 'failed' ? 'Failed'
+                              : agent.score !== undefined ? (won ? 'Top score' : 'Evaluated')
+                                : agent.status === 'complete' ? 'Response ready' : 'Thinking'}
+                          </span>
+                          {won ? <Trophy size={12} /> : (
+                            <div className={`agent-line ${agent.status !== 'running' ? 'finished' : ''}`}><span /></div>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+                <div className="synthesis-row">
+                  <span>
+                    <b>Synthesis</b>
+                    {activity.stage !== 'complete' && (
+                      <span>
+                        {activity.stage === 'summarizing'
+                          ? 'Refining the best response…'
+                          : 'Waiting for the top response'}
+                      </span>
+                    )}
+                  </span>
+                  {activity.stage === 'complete' ? <Check size={15} /> : (
+                    <span className="local-tag">{USE_MOCK ? 'Mock' : 'Nex Pro'}</span>
+                  )}
+                </div>
               </div>
             </div>
           </div>
         )}
 
-        <form className="prompt-form" onSubmit={submitPrompt}>
-          <textarea
-            rows={1}
-            value={prompt}
-            onChange={(event) => setPrompt(event.target.value)}
-            onKeyDown={(event) => {
-              if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); void submitPrompt(); }
-            }}
-            placeholder={nodes.length ? 'Ask a follow-up to extend this trace' : 'Ask anything. We’ll compare the agents'}
-            aria-label="输入问题"
-            disabled={isProcessing}
-          />
-          <div className="prompt-meta"><span>{isProcessing ? 'Agents busy' : 'Run benchmark'}</span><button type="submit" disabled={!prompt.trim() || isProcessing} aria-label="提交问题">{isProcessing ? 'WAIT' : 'RUN'}</button></div>
+        <form className="command" onSubmit={(event) => { event.preventDefault(); void submit(prompt); }}>
+          <div className="command-icon"><Terminal size={22} /></div>
+          <div className="input-area">
+            {current?.stage === 'complete' && (
+              <button
+                type="button"
+                className="context-chip"
+                title="Focus the selected node"
+                onClick={() => centerNode(current, Math.min(1, (window.innerWidth - 40) / WIDTH))}
+              >
+                <GitBranch size={12} />
+                Continue from {String(nodes.indexOf(current) + 1).padStart(2, '0')}
+                <ChevronRight size={12} />
+              </button>
+            )}
+            <textarea
+              ref={inputRef}
+              rows={1}
+              aria-label="Your prompt"
+              placeholder="Write a message..."
+              value={prompt}
+              maxLength={2000}
+              onChange={(event) => setPrompt(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter' && !event.shiftKey
+                  && !event.nativeEvent.isComposing && event.nativeEvent.keyCode !== 229) {
+                  event.preventDefault();
+                  void submit(prompt);
+                }
+              }}
+            />
+          </div>
+          {busy ? (
+            <button
+              type="button"
+              aria-label="Stop exploration"
+              className="send-button stop-button"
+              onClick={() => abortRef.current?.abort()}
+            >
+              <Square size={16} fill="currentColor" />
+            </button>
+          ) : (
+            <button type="submit" aria-label="Submit prompt" className="send-button" disabled={!prompt.trim()}>
+              <ArrowUp size={21} />
+            </button>
+          )}
         </form>
       </section>
+
+      <div className="sr-only" aria-live="polite">{activity ? stageLabels[activity.stage] : ''}</div>
+
+      {toast && (
+        <div className="toast" role="status">
+          {toast}
+          <button className="icon-button" aria-label="Dismiss notification" onClick={() => setToast('')}>
+            <X size={14} />
+          </button>
+        </div>
+      )}
     </main>
   );
 }
